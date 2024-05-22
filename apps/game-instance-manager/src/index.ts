@@ -51,7 +51,7 @@ export class GameInstance extends DurableObject {
 		const data = JSON.parse(message);
 		switch (data.type) {
 			case 'presence':
-				await this.updatePresence(data.connectionId, data.presence);
+				await this.updatePresence(this.ctx.getTags(ws)[0], data.presence);
 				break;
 			default:
 				break;
