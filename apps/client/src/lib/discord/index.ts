@@ -2,8 +2,8 @@ import { DiscordSDK } from '@discord/embedded-app-sdk';
 import { create } from 'zustand';
 import { authenticate, Auth } from './auth';
 
-if (!process.env.DISCORD_CLIENT_ID) {
-  throw new Error('DISCORD_CLIENT_ID is not set');
+if (!process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID) {
+  throw new Error('NEXT_PUBLIC_DISCORD_CLIENT_ID is not set');
 }
 
 // ---- Store ----
@@ -21,7 +21,7 @@ const useDiscordStore = create<DiscordStore>((set) => ({
   setAuth: (auth: Auth | null) => set({ auth }),
 }));
 
-const discordSdk = new DiscordSDK(process.env.DISCORD_CLIENT_ID);
+const discordSdk = new DiscordSDK(process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID);
 
 useDiscordStore.getState().setInstanceId(discordSdk.instanceId);
 

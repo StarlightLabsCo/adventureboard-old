@@ -2,7 +2,7 @@ import type { RESTPostOAuth2AccessTokenResult } from 'discord-api-types/v10';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  if (!process.env.DISCORD_CLIENT_ID) {
+  if (!process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID) {
     console.error('DISCORD_CLIENT_ID is required');
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      client_id: process.env.DISCORD_CLIENT_ID,
+      client_id: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID,
       client_secret: process.env.DISCORD_CLIENT_SECRET,
       grant_type: 'authorization_code',
       code: code,

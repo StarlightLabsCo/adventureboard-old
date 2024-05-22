@@ -2,13 +2,13 @@ import discordSdk from '.';
 import type { AsyncReturnType } from 'type-fest';
 export type Auth = AsyncReturnType<typeof discordSdk.commands.authenticate>;
 
-if (!process.env.DISCORD_CLIENT_ID) {
-  throw new Error('DISCORD_CLIENT_ID is not set');
+if (!process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID) {
+  throw new Error('NEXT_PUBLIC_DISCORD_CLIENT_ID is not set');
 }
 
 export async function authenticate() {
   const { code } = await discordSdk.commands.authorize({
-    client_id: process.env.DISCORD_CLIENT_ID!,
+    client_id: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
     response_type: 'code',
     state: '',
     prompt: 'none',
