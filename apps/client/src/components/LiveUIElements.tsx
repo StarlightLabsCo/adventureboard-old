@@ -10,22 +10,35 @@ export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
 
   const handlePointerMove = useCallback(
-    throttle(
-      (event: React.PointerEvent) => {
-        event.preventDefault();
+    (event: React.PointerEvent) => {
+      event.preventDefault();
 
-        const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-        const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+      const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+      const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-        updateMyPresence({
-          cursor: { x, y },
-        });
-      },
-      1000 / 120, // Throttle to 120 updates per second
-      { leading: true, trailing: true },
-    ),
+      updateMyPresence({
+        cursor: { x, y },
+      });
+    },
     [updateMyPresence],
   );
+  // const handlePointerMove = useCallback(
+  //   throttle(
+  //     (event: React.PointerEvent) => {
+  //       event.preventDefault();
+
+  //       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+  //       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+
+  //       updateMyPresence({
+  //         cursor: { x, y },
+  //       });
+  //     },
+  //     1000 / 120,
+  //     { leading: true, trailing: true },
+  //   ), // Throttle to 120 updates per second
+  //   [updateMyPresence],
+  // );
 
   const handlePointerLeave = useCallback(() => {
     updateMyPresence({
