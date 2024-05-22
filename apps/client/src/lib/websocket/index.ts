@@ -44,7 +44,12 @@ export const useWebsocketStore = create<WebSocketStore>((set, get) => ({
       (presence: Presence) => {
         set((state) => {
           state.connections[connectionId].presence = presence;
-          // TODO: send presence to server
+
+          const ws = get().ws;
+          if (ws) {
+            ws.send(JSON.stringify({ type: 'presence', presence }));
+          }
+
           return { connections: state.connections };
         });
       },
