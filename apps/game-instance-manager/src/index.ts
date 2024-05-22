@@ -26,8 +26,15 @@ export interface Env {
 // TODO: figure out a cleaner way to handle connections rather than sending the entire list every time
 
 export class GameInstance extends DurableObject {
+	private connections: Connections = {};
+
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
+
+		this.ctx.blockConcurrencyWhile(async () => {
+			const storedConnections = await this.ctx.storage.get<Connections>('connections');
+			this.connections = storedConnections || {};
+		});
 	}
 
 	async fetch(request: Request) {
@@ -41,7 +48,7 @@ export class GameInstance extends DurableObject {
 		const connectionId = crypto.randomUUID();
 		this.ctx.acceptWebSocket(server, [connectionId]);
 
-		this.ctx.waitUntil(this.addConnection(connectionId));
+		this.addConnection(connectionId);
 		server.send(JSON.stringify({ type: 'connectionId', connectionId }));
 
 		return new Response(null, { status: 101, webSocket: client });
@@ -51,7 +58,7 @@ export class GameInstance extends DurableObject {
 		const data = JSON.parse(message);
 		switch (data.type) {
 			case 'presence':
-				await this.updatePresence(this.ctx.getTags(ws)[0], data.presence);
+				this.updatePresence(this.ctx.getTags(ws)[0], data.presence);
 				break;
 			default:
 				break;
@@ -65,7 +72,7 @@ export class GameInstance extends DurableObject {
 		const connectionId = tags ? tags[0] : null;
 
 		if (connectionId) {
-			await this.removeConnection(connectionId);
+			this.removeConnection(connectionId);
 		}
 	}
 
@@ -81,30 +88,25 @@ export class GameInstance extends DurableObject {
 			}
 		});
 	}
-	/* Connections */
-	async addConnection(connectionId: string) {
-		const connections = (await this.ctx.storage.get<Connections>('connections')) || {};
-		connections[connectionId] = { connectionId, presence: { cursor: null } };
-		this.ctx.storage.put('connections', connections);
 
-		this.broadcast(JSON.stringify({ type: 'connections', connections }));
+	/* Connections */
+	// We only put in storage on add/remove because we don't want to hit the storage on every presence update
+	addConnection(connectionId: string) {
+		this.connections[connectionId] = { connectionId, presence: { cursor: null } };
+		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }));
+		this.ctx.storage.put('connections', this.connections);
 	}
 
-	async removeConnection(connectionId: string) {
-		const connections = (await this.ctx.storage.get<Connections>('connections')) || {};
-		delete connections[connectionId];
-		this.ctx.storage.put('connections', connections);
-
-		this.broadcast(JSON.stringify({ type: 'connections', connections }));
+	removeConnection(connectionId: string) {
+		delete this.connections[connectionId];
+		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }));
+		this.ctx.storage.put('connections', this.connections);
 	}
 
 	/* Presence */
-	async updatePresence(connectionId: string, presence: Presence) {
-		const connections = (await this.ctx.storage.get<Connections>('connections')) || {};
-		connections[connectionId].presence = presence;
-		this.ctx.storage.put('connections', connections);
-
-		this.broadcast(JSON.stringify({ type: 'connections', connections }));
+	updatePresence(connectionId: string, presence: Presence) {
+		this.connections[connectionId].presence = presence;
+		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }));
 	}
 }
 
