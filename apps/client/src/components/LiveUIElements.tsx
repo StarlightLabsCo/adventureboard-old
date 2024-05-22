@@ -7,6 +7,7 @@ import { useWebsocketStore } from '@/lib/websocket';
 
 export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+  console.log(`updateMyPresence: ${updateMyPresence}`);
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {

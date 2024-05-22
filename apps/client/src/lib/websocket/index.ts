@@ -35,8 +35,11 @@ export const useWebsocketStore = create<WebSocketStore>((set, get) => ({
     return connectionId ? get().connections[connectionId] : undefined;
   },
 
+  // TODO: for some reason this is returning undefined , () => {} and then doesn't update later? need to fix the reactivity of it.
   useMyPresence: () => {
+    console.log(`useMyPresence`);
     const connectionId = get().connectionId;
+    console.log(`connectionId: ${connectionId}`);
     if (!connectionId) return [undefined, () => {}];
 
     return [
