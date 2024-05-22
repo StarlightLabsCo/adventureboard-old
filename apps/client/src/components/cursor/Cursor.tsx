@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-// import { useOther } from "@liveblocks-config";
+import { useWebsocketStore } from '@/lib/websocket';
 
 //
 // RATIONALE:
@@ -12,18 +12,26 @@ import { motion } from 'framer-motion';
 const COLORS = ['#E57373', '#9575CD', '#4FC3F7', '#81C784', '#FFF176', '#FF8A65', '#F06292', '#7986CB'];
 
 type Props = {
-  connectionId: number;
+  connectionId: string;
 };
 
+function hashStringToNumber(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash);
+}
+
 function CursorComponent({ connectionId }: Props) {
-  // const cursor = useOther(connectionId, (user) => user.presence.cursor);
-  const cursor = null; // TODO: remove
+  const cursor = useWebsocketStore().useOther(connectionId, (user) => user.presence.cursor);
   if (!cursor) {
     return null;
   }
 
   const { x, y } = cursor;
-  const color = COLORS[connectionId % COLORS.length];
+  const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
+  const color = COLORS[colorIndex];
 
   return (
     <motion.div

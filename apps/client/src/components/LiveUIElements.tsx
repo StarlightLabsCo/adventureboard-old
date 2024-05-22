@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useMyPresence } from '@liveblocks-config';
 import { LiveCursors } from './cursor/LiveCursors';
 import { LiveUsers } from './users/LiveUsers';
+import { useWebsocketStore } from '@/lib/websocket';
 
 export function LiveUIElements() {
-  const [_, updateMyPresence] = useMyPresence();
+  const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {

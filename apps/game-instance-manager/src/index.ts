@@ -1,4 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
+import { Connections, Connection, Presence } from 'adventureboard-ws-types';
 
 export interface Env {
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -21,20 +22,6 @@ export interface Env {
 // TODO: implement yjs for shared state
 // TODO: - presence (cusor, selection, etc)
 // TODO: - canvas objects
-
-interface Connections {
-	[connectionId: string]: Connection;
-}
-
-interface Connection {
-	connectionId: string;
-	presence: Presence;
-}
-
-interface Presence {
-	cursor: { x: number; y: number } | null;
-	// Add other presence-related fields here
-}
 
 // TODO: figure out a cleaner way to handle connections rather than sending the entire list every time
 
