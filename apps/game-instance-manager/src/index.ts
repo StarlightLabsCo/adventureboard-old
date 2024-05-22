@@ -6,6 +6,7 @@ export interface Env {
 	//
 	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
 	GAME_INSTANCES: DurableObjectNamespace<GameInstance>;
+	DISCORD_API_BASE: string;
 	//
 	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
 	// MY_BUCKET: R2Bucket;
@@ -34,6 +35,8 @@ interface Presence {
 	cursor: { x: number; y: number } | null;
 	// Add other presence-related fields here
 }
+
+// TODO: figure out a cleaner way to handle connections rather than sending the entire list every time
 
 export class GameInstance extends DurableObject {
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -65,8 +68,6 @@ export class GameInstance extends DurableObject {
 			default:
 				break;
 		}
-
-		this.broadcast(ws, message);
 	}
 
 	async webSocketClose(ws: WebSocket, code: number, reason: string) {
@@ -80,19 +81,25 @@ export class GameInstance extends DurableObject {
 		}
 	}
 
-	broadcast(ws: WebSocket, message: string) {
-		this.ctx.getWebSockets().forEach((client) => {
-			if (client !== ws) client.send(message);
+	async broadcast(message: string, connectionIdsToExclude: string[] = []) {
+		const webSockets = this.ctx.getWebSockets();
+
+		webSockets.forEach((ws) => {
+			const tags = this.ctx.getTags(ws);
+			const connectionId = tags ? tags[0] : null;
+
+			if (connectionId && !connectionIdsToExclude.includes(connectionId)) {
+				ws.send(message);
+			}
 		});
 	}
-
 	/* Connections */
 	async addConnection(connectionId: string) {
 		const connections = (await this.ctx.storage.get<Connections>('connections')) || {};
 		connections[connectionId] = { connectionId, presence: { cursor: null } };
 		this.ctx.storage.put('connections', connections);
 
-		// TODO: Broadcast change
+		this.broadcast(JSON.stringify({ type: 'connections', connections }));
 	}
 
 	async removeConnection(connectionId: string) {
@@ -100,7 +107,7 @@ export class GameInstance extends DurableObject {
 		delete connections[connectionId];
 		this.ctx.storage.put('connections', connections);
 
-		// TODO: Broadcast change
+		this.broadcast(JSON.stringify({ type: 'connections', connections }));
 	}
 
 	/* Presence */
@@ -109,13 +116,32 @@ export class GameInstance extends DurableObject {
 		connections[connectionId].presence = presence;
 		this.ctx.storage.put('connections', connections);
 
-		// TODO: Broadcast change
+		this.broadcast(JSON.stringify({ type: 'connections', connections }));
 	}
 }
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
 		const url = new URL(request.url);
+
+		// Authenticate as valid Discord user
+		const accessToken = url.searchParams.get('access_token');
+
+		if (!accessToken) {
+			return new Response('Unauthorized', { status: 401 });
+		}
+
+		const userResponse = await fetch(`${env.DISCORD_API_BASE}/users/@me`, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		});
+
+		if (!userResponse.ok) {
+			return new Response('Unauthorized', { status: 401 });
+		}
+
+		// Connect to game instance
 		const pathParts = url.pathname.split('/');
 		if (pathParts[1] === 'game' && pathParts[2]) {
 			const id = env.GAME_INSTANCES.idFromName(pathParts[2]);
