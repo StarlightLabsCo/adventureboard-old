@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useWebsocketStore } from '@/lib/websocket';
-import { useEffect, useState, useRef } from 'react';
 
 //
 // RATIONALE:
@@ -27,28 +26,9 @@ function hashStringToNumber(str: string): number {
 function CursorComponent({ connectionId }: Props) {
   const connection = useWebsocketStore().useOther(connectionId);
   const cursor = connection?.presence.cursor;
-  const updatesRef = useRef(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log(`[Cursor] Updates per second for ${connectionId}:`, updatesRef.current);
-      updatesRef.current = 0;
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [connectionId]);
-
-  useEffect(() => {
-    if (cursor) {
-      updatesRef.current += 1;
-    }
-  }, [cursor]);
-
   if (!cursor) {
-    console.log(`[Cursor] No cursor for ${connectionId}`);
     return null;
   }
-  console.log(`[Cursor] Cursor for ${connectionId}`, cursor);
 
   const { x, y } = cursor;
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
