@@ -10,11 +10,13 @@ export function LiveUIElements() {
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
+      console.log(`handlePointerMove`);
       event.preventDefault();
 
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
+      console.log(`x: ${x}, y: ${y}`);
       updateMyPresence({
         cursor: { x, y },
       });
