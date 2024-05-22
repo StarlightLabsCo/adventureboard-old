@@ -15,7 +15,6 @@ export function LiveUIElements() {
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-      console.log(`updating cursor to ${x}, ${y}`);
       updateMyPresence({
         cursor: { x, y },
       });
