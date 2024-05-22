@@ -42,18 +42,18 @@ export const useWebsocketStore = create<WebSocketStore>((set, get) => ({
     return [
       get().connections[connectionId]?.presence,
       (presence: Presence) => {
+        console.log('updating presence', presence);
         set((state) => {
           state.connections[connectionId].presence = presence;
-
-          console.log('sending presence', presence);
-          const ws = get().ws;
-          if (ws) {
-            ws.send(JSON.stringify({ type: 'presence', presence }));
-            console.log('sent presence', presence);
-          }
-
           return { connections: state.connections };
         });
+
+        console.log('sending presence', presence);
+        const ws = get().ws;
+        if (ws) {
+          ws.send(JSON.stringify({ type: 'presence', presence }));
+          console.log('sent presence', presence);
+        }
       },
     ];
   },
