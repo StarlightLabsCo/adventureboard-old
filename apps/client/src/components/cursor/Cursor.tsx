@@ -26,8 +26,10 @@ function hashStringToNumber(str: string): number {
 function CursorComponent({ connectionId }: Props) {
   const cursor = useWebsocketStore().useOther(connectionId, (user) => user.presence.cursor);
   if (!cursor) {
+    console.log(`[Cursor] No cursor for ${connectionId}`);
     return null;
   }
+  console.log(`[Cursor] Cursor for ${connectionId}`, cursor);
 
   const { x, y } = cursor;
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
