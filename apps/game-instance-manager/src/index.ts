@@ -40,7 +40,7 @@ export class GameInstance extends DurableObject {
 
 		const connectionId = crypto.randomUUID();
 		this.ctx.acceptWebSocket(server, [connectionId]);
-		server.send(JSON.stringify({ type: 'connectionId', connectionId }));
+		client.send(JSON.stringify({ type: 'connectionId', connectionId })); // is this right?
 
 		await this.addConnection(connectionId);
 
