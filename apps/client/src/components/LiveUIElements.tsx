@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { throttle } from 'lodash';
 import { LiveCursors } from './cursor/LiveCursors';
 import { LiveUsers } from './users/LiveUsers';
 import { useWebsocketStore } from '@/lib/websocket';
@@ -9,16 +10,20 @@ export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
 
   const handlePointerMove = useCallback(
-    (event: React.PointerEvent) => {
-      event.preventDefault();
+    throttle(
+      (event: React.PointerEvent) => {
+        event.preventDefault();
 
-      const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-      const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+        const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
+        const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-      updateMyPresence({
-        cursor: { x, y },
-      });
-    },
+        updateMyPresence({
+          cursor: { x, y },
+        });
+      },
+      1000 / 120, // Throttle to 120 updates per second
+      { leading: true, trailing: true },
+    ),
     [updateMyPresence],
   );
 

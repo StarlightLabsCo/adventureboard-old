@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useWebsocketStore } from '@/lib/websocket';
 
 //
@@ -24,7 +24,8 @@ function hashStringToNumber(str: string): number {
 }
 
 function CursorComponent({ connectionId }: Props) {
-  const cursor = useWebsocketStore().useOther(connectionId, (user) => user.presence.cursor);
+  const connection = useWebsocketStore().useOther(connectionId);
+  const cursor = connection?.presence.cursor;
   if (!cursor) {
     console.log(`[Cursor] No cursor for ${connectionId}`);
     return null;
@@ -36,23 +37,30 @@ function CursorComponent({ connectionId }: Props) {
   const color = COLORS[colorIndex];
 
   return (
-    <motion.div
-      style={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-      }}
-      initial={{ x, y }}
-      animate={{ x, y }}
-      transition={{
-        type: 'spring',
-        damping: 30,
-        mass: 0.8,
-        stiffness: 350,
-      }}
-    >
-      <CursorSvg color={color} />
-    </motion.div>
+    <AnimatePresence>
+      {cursor && (
+        <motion.div
+          key={connectionId}
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+          }}
+          initial={{ x, y, opacity: 1 }}
+          animate={{ x, y, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            type: 'spring',
+            damping: 30,
+            mass: 0.8,
+            stiffness: 350,
+            opacity: { duration: 1 },
+          }}
+        >
+          <CursorSvg color={color} />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

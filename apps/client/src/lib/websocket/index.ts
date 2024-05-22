@@ -15,7 +15,7 @@ export type WebSocketStore = {
 
   useOthers: () => Connection[];
   useOthersConnectionIds: () => string[];
-  useOther: <T>(connectionId: string, selector: (conn: Connection) => T) => T | undefined;
+  useOther: (connectionId: string) => Connection | undefined;
 };
 
 export type WebSocketStoreSet = (partial: Partial<WebSocketStore>) => void;
@@ -35,7 +35,6 @@ export const useWebsocketStore = create<WebSocketStore>((set, get) => ({
     return connectionId ? get().connections[connectionId] : undefined;
   },
 
-  // TODO: for some reason this is returning undefined , () => {} and then doesn't update later? need to fix the reactivity of it.
   useMyPresence: () => {
     const connectionId = get().connectionId;
     if (!connectionId) return [undefined, () => {}];
@@ -66,8 +65,8 @@ export const useWebsocketStore = create<WebSocketStore>((set, get) => ({
     return Object.keys(get().connections).filter((conn) => conn !== connectionId);
   },
 
-  useOther: <T>(connectionId: string, selector: (conn: Connection) => T) => {
+  useOther: (connectionId: string) => {
     const connection = get().connections[connectionId];
-    return connection ? selector(connection) : undefined;
+    return connection;
   },
 }));
