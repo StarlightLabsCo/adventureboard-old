@@ -26,7 +26,12 @@ export async function connect(set: WebSocketStoreSet, get: () => WebSocketStore)
 
     ws.onmessage = (event: MessageEvent) => {
       console.log(`[WS] Message: ${event.data}`);
-      // Handle incoming messages
+      const data = JSON.parse(event.data);
+      if (data.type === 'connectionId') {
+        set({ connectionId: data.connectionId });
+      } else if (data.type === 'connections') {
+        set({ connections: data.connections });
+      }
     };
 
     ws.onerror = (error) => {
