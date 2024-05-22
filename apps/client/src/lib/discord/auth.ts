@@ -7,7 +7,6 @@ if (!process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID) {
 }
 
 export async function authenticate() {
-  console.log('authenticating');
   const { code } = await discordSdk.commands.authorize({
     client_id: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID!,
     response_type: 'code',
@@ -37,8 +36,7 @@ export async function authenticate() {
     ],
   });
 
-  console.log(`fetching token with code ${code}`);
-  let response = await fetch('/api/token', {
+  const response = await fetch('/api/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
