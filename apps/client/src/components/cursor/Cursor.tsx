@@ -26,11 +26,7 @@ function hashStringToNumber(str: string): number {
 function CursorComponent({ connectionId }: Props) {
   const connection = useWebsocketStore().useOther(connectionId);
   const cursor = connection?.presence.cursor;
-  if (!cursor) {
-    return null;
-  }
 
-  const { x, y } = cursor;
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
   const color = COLORS[colorIndex];
 
@@ -44,8 +40,8 @@ function CursorComponent({ connectionId }: Props) {
             top: '0',
             left: '0',
           }}
-          initial={{ x, y, opacity: 1 }}
-          animate={{ x, y, opacity: 1 }}
+          initial={{ x: cursor.x, y: cursor.y, opacity: 1 }}
+          animate={{ x: cursor.x, y: cursor.y, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{
             type: 'spring',
