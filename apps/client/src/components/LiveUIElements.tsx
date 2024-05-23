@@ -13,8 +13,6 @@ export function LiveUIElements() {
     // Throttle to 120 updates per second
     throttle(
       (event: React.PointerEvent) => {
-        event.preventDefault();
-
         const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
         const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
