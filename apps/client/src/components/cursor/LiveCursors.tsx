@@ -1,3 +1,5 @@
+'use client';
+
 import { useWebsocketStore } from '@/lib/websocket';
 import { Cursor } from './Cursor';
 

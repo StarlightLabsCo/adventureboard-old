@@ -1,11 +1,14 @@
-import { Tldraw } from 'tldraw';
+'use client';
 
-// TODO: implement syncing
+import dynamic from 'next/dynamic';
+const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
+import { getAssetUrls } from '@tldraw/assets/selfHosted';
+const assetUrls = getAssetUrls();
 
 export function SyncedCanvas() {
   return (
     <div className="fixed inset-0">
-      <Tldraw inferDarkMode />
+      <Tldraw inferDarkMode assetUrls={assetUrls} />
     </div>
   );
 }

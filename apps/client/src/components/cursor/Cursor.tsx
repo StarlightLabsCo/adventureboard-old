@@ -1,3 +1,5 @@
+"use client";
+
 import { memo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useWebsocketStore } from '@/lib/websocket';
