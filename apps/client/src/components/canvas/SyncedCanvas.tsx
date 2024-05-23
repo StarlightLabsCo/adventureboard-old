@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
+import 'tldraw/tldraw.css';
 const assetUrls = getAssetUrls();
 
 export function SyncedCanvas() {
