@@ -7,7 +7,7 @@ const assetUrls = getAssetUrls();
 
 export function SyncedCanvas() {
   return (
-    <div className="fixed inset-0">
+    <div className="fixed inset-0 w-[100vw] h-[100vh]">
       <Tldraw inferDarkMode assetUrls={assetUrls} />
     </div>
   );
