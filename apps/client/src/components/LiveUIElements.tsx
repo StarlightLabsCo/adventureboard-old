@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { throttle } from 'lodash';
 import { LiveCursors } from './cursor/LiveCursors';
 import { LiveUsers } from './users/LiveUsers';
@@ -10,11 +10,10 @@ export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
 
   const handlePointerMove = useCallback(
-    // Throttle to 120 updates per second
     throttle(
-      (event: React.PointerEvent) => {
-        const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
-        const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
+      (event: PointerEvent) => {
+        const x = event.clientX;
+        const y = event.clientY;
 
         updateMyPresence({
           cursor: { x, y },
@@ -32,10 +31,20 @@ export function LiveUIElements() {
     });
   }, [updateMyPresence]);
 
+  useEffect(() => {
+    document.addEventListener('pointermove', handlePointerMove);
+    document.addEventListener('pointerleave', handlePointerLeave);
+
+    return () => {
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerleave', handlePointerLeave);
+    };
+  }, [handlePointerMove, handlePointerLeave]);
+
   return (
-    <div className="absolute top-0  h-[100vh] w-[100vw] z-10" onPointerMove={handlePointerMove} onPointerLeave={handlePointerLeave}>
+    <>
       <LiveUsers />
       <LiveCursors />
-    </div>
+    </>
   );
 }
