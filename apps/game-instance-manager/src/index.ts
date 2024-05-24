@@ -1,22 +1,10 @@
 import { DurableObject } from 'cloudflare:workers';
 import { Connections, Connection, Presence } from 'adventureboard-ws-types';
+import { HistoryEntry, TLRecord, TLStoreSnapshot, createTLSchema, throttle } from 'tldraw';
 
 export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
 	GAME_INSTANCES: DurableObjectNamespace<GameInstance>;
 	DISCORD_API_BASE: string;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-	//
-	// Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-	// MY_QUEUE: Queue;
 }
 
 // TODO: implement yjs for shared state
@@ -27,6 +15,8 @@ export interface Env {
 
 export class GameInstance extends DurableObject {
 	private connections: Connections = {};
+	private schema = createTLSchema();
+	private records: Record<string, TLRecord> = {};
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -34,6 +24,16 @@ export class GameInstance extends DurableObject {
 		this.ctx.blockConcurrencyWhile(async () => {
 			const storedConnections = await this.ctx.storage.get<Connections>('connections');
 			this.connections = storedConnections || {};
+
+			const snapshot = (await this.ctx.storage.get('snapshot')) as TLStoreSnapshot | undefined;
+			if (!snapshot) return;
+
+			const migrationResult = this.schema.migrateStoreSnapshot(snapshot);
+			if (migrationResult.type === 'error') {
+				throw new Error(migrationResult.reason);
+			}
+
+			this.records = migrationResult.value;
 		});
 	}
 
@@ -49,16 +49,52 @@ export class GameInstance extends DurableObject {
 		this.ctx.acceptWebSocket(server, [connectionId]);
 
 		this.addConnection(connectionId);
+
 		server.send(JSON.stringify({ type: 'connectionId', connectionId }));
+		server.send(
+			JSON.stringify({
+				type: 'init',
+				snapshot: { store: this.records, schema: this.schema.serialize() },
+			}),
+		);
 
 		return new Response(null, { status: 101, webSocket: client });
 	}
 
 	async webSocketMessage(ws: WebSocket, message: string) {
 		const data = JSON.parse(message);
+		const connectionId = this.ctx.getTags(ws)[0];
+
 		switch (data.type) {
 			case 'presence':
-				this.updatePresence(this.ctx.getTags(ws)[0], data.presence);
+				this.updatePresence(connectionId, data.presence);
+				break;
+			case 'update':
+				try {
+					data.updates.forEach((update: HistoryEntry<TLRecord>) => {
+						const { added, updated, removed } = update.changes;
+						Object.values(added).forEach((record) => (this.records[record.id] = record));
+						Object.values(updated).forEach(([, to]) => (this.records[to.id] = to));
+						Object.values(removed).forEach((record) => delete this.records[record.id]);
+					});
+					this.broadcast(message, [connectionId]);
+					this.saveSnapshot();
+				} catch (e) {
+					ws.send(
+						JSON.stringify({
+							type: 'recovery',
+							snapshot: { store: this.records, schema: this.schema.serialize() },
+						}),
+					);
+				}
+				break;
+			case 'recovery':
+				ws.send(
+					JSON.stringify({
+						type: 'recovery',
+						snapshot: { store: this.records, schema: this.schema.serialize() },
+					}),
+				);
 				break;
 			default:
 				break;
@@ -88,6 +124,10 @@ export class GameInstance extends DurableObject {
 			}
 		});
 	}
+
+	saveSnapshot = throttle(async () => {
+		await this.ctx.storage.put('snapshot', { store: this.records, schema: this.schema.serialize() });
+	}, 1000);
 
 	/* Connections */
 	// We only put in storage on add/remove because we don't want to hit the storage on every presence update

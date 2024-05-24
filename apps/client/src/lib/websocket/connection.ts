@@ -19,12 +19,12 @@ export async function connect(set: WebSocketStoreSet, get: () => WebSocketStore)
 
     let ws = new WebSocket(`wss://${location.host}/game/${instanceId}?access_token=${access_token}`);
 
-    ws.onopen = () => {
+    ws.addEventListener('open', () => {
       console.log(`[AdventureBoard WS] Connected`);
       set({ ws, exponentialBackoff: 1000 });
-    };
+    });
 
-    ws.onmessage = (event: MessageEvent) => {
+    ws.addEventListener('message', (event: MessageEvent) => {
       console.log(`[WS] Message: ${event.data}`);
       const data = JSON.parse(event.data);
       if (data.type === 'connectionId') {
@@ -32,13 +32,13 @@ export async function connect(set: WebSocketStoreSet, get: () => WebSocketStore)
       } else if (data.type === 'connections') {
         set({ connections: data.connections });
       }
-    };
+    });
 
-    ws.onerror = (error) => {
+    ws.addEventListener('error', (error) => {
       console.error('[AdventureBoard WS] Error:', error);
-    };
+    });
 
-    ws.onclose = (event: CloseEvent) => {
+    ws.addEventListener('close', (event: CloseEvent) => {
       console.log(`[AdventureBoard WS] WebSocket connection closed. Code: ${event.code} Reason: ${event.reason}`);
 
       set({
@@ -50,7 +50,7 @@ export async function connect(set: WebSocketStoreSet, get: () => WebSocketStore)
       }
 
       retry(set, get);
-    };
+    });
   } catch (error) {
     console.error('[AdventureBoard WS] Error:', error);
     retry(set, get);
