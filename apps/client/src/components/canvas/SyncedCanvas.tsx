@@ -134,32 +134,29 @@ const handlePresence = (
   presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
   data: { connectionId: string; presence: Presence },
 ) => {
-  console.log(`[SyncedCanvas] handlePresence`);
   const editor = editorRef.current;
   if (!editor) return;
-  console.log(`[SyncedCanvas] editor exists`);
 
-  console.log(`[SyncedCanvas] data: ${JSON.stringify(data)}`);
   const { connectionId, presence } = data;
   const { cursor } = presence;
-  console.log(`[SyncedCanvas] Received presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
 
-  let peerPresence = presenceMapRef.current!.get(connectionId);
-  console.log(`[SyncedCanvas] peerPresence: ${peerPresence}`);
+  if (!presenceMapRef.current) {
+    console.log('[SyncedCanvas] Presence map not initialized');
+    return;
+  }
+  let peerPresence = presenceMapRef.current.get(connectionId);
 
   if (!peerPresence) {
-    console.log(`[SyncedCanvas] Creating new presence for ${connectionId}`);
-    peerPresence = {
+    peerPresence = InstancePresenceRecordType.create({
       id: InstancePresenceRecordType.createId(store.id),
       currentPageId: editor.getCurrentPageId(),
       userId: connectionId,
       userName: 'Placeholder',
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
-    } as TLInstancePresence;
+    });
     presenceMapRef.current!.set(connectionId, peerPresence);
     store.put([peerPresence]);
   } else {
-    console.log(`[SyncedCanvas] Updating presence for ${connectionId}`);
     store.put([
       {
         ...peerPresence,
