@@ -12,7 +12,7 @@
     "adventureboard-ws-types": "workspace:*",
     "@cloudflare/workers-types": "^4.20240512.0",
     "typescript": "^5.0.4",
-    "wrangler": "^3.57.0"
+    "wrangler": "^3.57.1"
   },
   "dependencies": {
     "lodash": "^4.17.21",
