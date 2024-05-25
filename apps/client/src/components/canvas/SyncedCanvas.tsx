@@ -1,37 +1,37 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { throttle } from 'lodash';
+import { useEffect, useRef, useState } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
-import { useTldrawStore } from '@/lib/tldraw';
+import { Presence } from 'adventureboard-ws-types';
 
-// Tldraw
-import dynamic from 'next/dynamic';
+// Tl draw
 import {
-  createTLStore,
   TLStoreWithStatus,
-  defaultShapeUtils,
-  HistoryEntry,
-  TLRecord,
   Editor,
   TLEventInfo,
-  InstancePresenceRecordType,
+  throttle,
+  TLStore,
+  HistoryEntry,
+  TLRecord,
   TLInstancePresence,
+  createTLStore,
+  defaultShapeUtils,
+  InstancePresenceRecordType,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
 
-const assetUrls = getAssetUrls();
+import dynamic from 'next/dynamic';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
+const assetUrls = getAssetUrls();
 
 export function SyncedCanvas() {
   const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
   const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
-  const ws = useWebsocketStore((state) => state.ws);
-  const editor = useTldrawStore((state) => state.editor);
-
-  const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+  const [editor, setEditor] = useState<Editor | null>(null);
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
+
+  const ws = useWebsocketStore().ws;
 
   useEffect(() => {
     if (!ws) return;
@@ -42,60 +42,20 @@ export function SyncedCanvas() {
       store,
     });
 
-    const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-
+    // Setup websocket listeners
+    const handleWebSocketMessage = (event: MessageEvent) => {
+      const data = JSON.parse((event as MessageEvent).data);
       switch (data.type) {
         case 'init':
         case 'recovery':
           store.loadSnapshot(data.snapshot);
           break;
+        case 'presence':
+          handlePresence(store, editor, presenceMap, data.presence);
+          break;
         case 'update':
-          try {
-            data.updates.forEach((update: HistoryEntry<TLRecord>) => {
-              store.mergeRemoteChanges(() => {
-                const { added, updated, removed } = update.changes;
-                store.put(Object.values(added));
-                store.put(Object.values(updated).map(([, to]) => to));
-                store.remove(Object.values(removed).map((record) => record.id));
-              });
-            });
-          } catch (e) {
-            console.error(e);
-            ws.send(
-              JSON.stringify({
-                type: 'recovery',
-              }),
-            );
-          }
+          handleUpdates(store, data, ws);
           break;
-        case 'presence': {
-          if (!editor) return;
-
-          const { connectionId, cursor } = data;
-          let peerPresence = presenceMap.current.get(connectionId);
-
-          if (!peerPresence) {
-            peerPresence = {
-              id: InstancePresenceRecordType.createId(store.id),
-              currentPageId: editor.getCurrentPageId(),
-              userId: connectionId,
-              userName: 'Placeholder',
-              cursor: { x: cursor.x, y: cursor.y, type: 'default', rotation: 0 },
-            } as TLInstancePresence;
-            presenceMap.current.set(connectionId, peerPresence);
-            store.put([peerPresence]);
-          } else {
-            store.put([
-              {
-                ...peerPresence,
-                cursor: { x: cursor.x, y: cursor.y, type: 'default', rotation: 0 },
-                lastActivityTimestamp: Date.now(),
-              },
-            ]);
-          }
-          break;
-        }
       }
     };
 
@@ -107,53 +67,88 @@ export function SyncedCanvas() {
       });
     };
 
-    ws.addEventListener('message', handleMessage);
+    ws.addEventListener('message', handleWebSocketMessage);
     ws.addEventListener('close', handleClose);
 
-    // Tldraw store listener
-    let pendingChanges: HistoryEntry<TLRecord>[] = [];
-
-    const sendChanges = throttle(() => {
-      if (pendingChanges.length === 0) return;
-      ws.send(JSON.stringify({ type: 'update', updates: pendingChanges }));
-      pendingChanges = [];
-    }, 32);
-
-    const handleChange = (event: HistoryEntry<TLRecord>) => {
-      if (event.source !== 'user') return;
-      pendingChanges.push(event);
-      sendChanges();
-    };
-
-    const unsubscribe = store.listen(handleChange, { source: 'user', scope: 'document' });
-
-    // Cleanup
     return () => {
-      unsubscribe();
-      ws.removeEventListener('message', handleMessage);
+      ws.removeEventListener('message', handleWebSocketMessage);
       ws.removeEventListener('close', handleClose);
     };
-  }, [ws, store]);
-
-  const handleEvent = throttle((event: TLEventInfo) => {
-    if (event.name === 'pointer_move' && event.target == 'canvas') {
-      const point = event.point;
-      const { x, y } = point;
-
-      updateMyPresence({
-        cursor: { x, y },
-      });
-    }
-  }, 1000 / 120);
-
-  const onMount = (editor: Editor) => {
-    useTldrawStore.getState().setEditor(editor);
-    editor.on('event', (event: TLEventInfo) => handleEvent(event));
-  };
+  }, []);
 
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
-      <Tldraw autoFocus inferDarkMode assetUrls={assetUrls} store={storeWithStatus} onMount={onMount} />
+      <Tldraw
+        autoFocus
+        inferDarkMode
+        assetUrls={assetUrls}
+        store={storeWithStatus}
+        onMount={(editor) => {
+          setEditor(editor);
+          editor.on('event', (event) => {
+            sendPresence(editor, event);
+          });
+        }}
+      />
     </div>
   );
 }
+
+// Handling functions
+const sendPresence = throttle((editor: Editor, event: TLEventInfo) => {
+  if (event.name === 'pointer_move' && event.target === 'canvas') {
+    const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+    const { x, y } = event.point;
+    updateMyPresence({ cursor: { x, y } });
+  }
+}, 1000 / 120);
+
+const handlePresence = (
+  store: TLStore,
+  editor: Editor | null,
+  presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
+  data: { connectionId: string; presence: Presence },
+) => {
+  if (!editor) return;
+
+  const { connectionId, presence } = data;
+  const { cursor } = presence;
+
+  let peerPresence = presenceMapRef.current!.get(connectionId);
+  if (!peerPresence) {
+    peerPresence = {
+      id: InstancePresenceRecordType.createId(store.id),
+      currentPageId: editor.getCurrentPageId(),
+      userId: connectionId,
+      userName: 'Placeholder',
+      cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
+    } as TLInstancePresence;
+    presenceMapRef.current!.set(connectionId, peerPresence);
+    store.put([peerPresence]);
+  } else {
+    store.put([
+      {
+        ...peerPresence,
+        cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
+        lastActivityTimestamp: Date.now(),
+      },
+    ]);
+  }
+};
+
+const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket) => {
+  const { updates } = data;
+  try {
+    updates.forEach((update) => {
+      store.mergeRemoteChanges(() => {
+        const { added, updated, removed } = update.changes;
+        store.put(Object.values(added));
+        store.put(Object.values(updated).map(([, to]) => to));
+        store.remove(Object.values(removed).map((record) => record.id));
+      });
+    });
+  } catch (e) {
+    console.error(e);
+    ws.send(JSON.stringify({ type: 'recovery' }));
+  }
+};

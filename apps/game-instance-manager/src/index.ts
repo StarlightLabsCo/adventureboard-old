@@ -146,7 +146,7 @@ export class GameInstance extends DurableObject {
 	/* Presence */
 	updatePresence(connectionId: string, presence: Presence) {
 		this.connections[connectionId].presence = presence;
-		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }), [connectionId]);
+		this.broadcast(JSON.stringify({ type: 'presence', connectionId, presence }));
 	}
 }
 
