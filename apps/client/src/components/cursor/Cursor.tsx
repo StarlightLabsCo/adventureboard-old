@@ -31,6 +31,9 @@ function CursorComponent({ connectionId }: Props) {
 
   const cursor = connection?.presence.cursor;
   const editor = useEditor();
+  if (!editor) {
+    console.error('Editor not found');
+  }
   const viewportBounds = editor.getViewportPageBounds();
 
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
