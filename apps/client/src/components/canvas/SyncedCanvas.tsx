@@ -139,15 +139,16 @@ const handlePresence = (
   if (!editor) return;
   console.log(`[SyncedCanvas] editor exists`);
 
+  console.log(`[SyncedCanvas] data: ${JSON.stringify(data)}`);
   const { connectionId, presence } = data;
   const { cursor } = presence;
-  console.log(`Received presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
+  console.log(`[SyncedCanvas] Received presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
 
   let peerPresence = presenceMapRef.current!.get(connectionId);
-  console.log(`peerPresence: ${peerPresence}`);
+  console.log(`[SyncedCanvas] peerPresence: ${peerPresence}`);
 
   if (!peerPresence) {
-    console.log(`Creating new presence for ${connectionId}`);
+    console.log(`[SyncedCanvas] Creating new presence for ${connectionId}`);
     peerPresence = {
       id: InstancePresenceRecordType.createId(store.id),
       currentPageId: editor.getCurrentPageId(),
@@ -158,7 +159,7 @@ const handlePresence = (
     presenceMapRef.current!.set(connectionId, peerPresence);
     store.put([peerPresence]);
   } else {
-    console.log(`Updating presence for ${connectionId}`);
+    console.log(`[SyncedCanvas] Updating presence for ${connectionId}`);
     store.put([
       {
         ...peerPresence,
