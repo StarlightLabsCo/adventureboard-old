@@ -100,7 +100,7 @@ export function SyncedCanvas() {
         onMount={(editor) => {
           editorRef.current = editor;
           editor.on('event', (event) => {
-            sendPresence(event);
+            sendPresence(editor, event);
           });
         }}
       />
@@ -120,10 +120,11 @@ const sendChanges = throttle((pendingChanges: HistoryEntry<TLRecord>[]) => {
   pendingChanges.splice(0, pendingChanges.length);
 }, 32);
 
-const sendPresence = throttle((event: TLEventInfo) => {
+const sendPresence = throttle((editor: Editor, event: TLEventInfo) => {
   if (event.name === 'pointer_move' && event.target === 'canvas') {
     const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
-    const { x, y } = event.point;
+    const { x, y } = editor.screenToPage(event.point);
+
     updateMyPresence({ cursor: { x, y } });
   }
 }, 1000 / 120);
