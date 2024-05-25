@@ -9,14 +9,14 @@ import { useTldrawStore } from '@/lib/tldraw';
 
 export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+  const editor = useTldrawStore().editor;
 
   const handlePointerMove = useCallback(
     throttle(
       (event: PointerEvent) => {
-        const editor = useTldrawStore().editor;
         if (!editor) return;
 
-        const viewportBounds = editor.getViewportPageBounds(); // TODO: get editor somehow
+        const viewportBounds = editor.getViewportPageBounds();
         const x = event.clientX + viewportBounds.minX;
         const y = event.clientY + viewportBounds.minY;
 
@@ -27,7 +27,7 @@ export function LiveUIElements() {
       1000 / 120,
       { leading: true },
     ),
-    [updateMyPresence],
+    [updateMyPresence, editor],
   );
 
   const handlePointerLeave = useCallback(() => {
