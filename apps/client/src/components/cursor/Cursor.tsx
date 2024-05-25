@@ -33,7 +33,10 @@ function CursorComponent({ connectionId }: Props) {
   const editor = useEditor();
   if (!editor) {
     console.error('Editor not found');
+  } else {
+    console.log(editor);
   }
+
   const viewportBounds = editor.getViewportPageBounds();
 
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;

@@ -12,6 +12,8 @@ export function LiveUIElements() {
   const editor = useEditor();
   if (!editor) {
     console.error('Editor not found');
+  } else {
+    console.log(editor);
   }
 
   const handlePointerMove = useCallback(
