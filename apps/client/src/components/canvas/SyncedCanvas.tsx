@@ -30,7 +30,9 @@ export function SyncedCanvas() {
   const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
   const [editor, setEditor] = useState<Editor | null>(null);
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
+  let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
+  // ---- Setup WebSocket Listener ----
   const ws = useWebsocketStore().ws;
 
   useEffect(() => {
@@ -70,9 +72,21 @@ export function SyncedCanvas() {
     ws.addEventListener('message', handleWebSocketMessage);
     ws.addEventListener('close', handleClose);
 
+    // Listen for changes on our end, and send them to the server
+    const unsubscribe = store.listen(
+      (change: HistoryEntry<TLRecord>) => {
+        if (change.source !== 'user') return;
+        pendingChanges.push(change);
+        sendChanges(pendingChanges);
+      },
+      { source: 'user', scope: 'document' },
+    );
+
     return () => {
       ws.removeEventListener('message', handleWebSocketMessage);
       ws.removeEventListener('close', handleClose);
+
+      unsubscribe();
     };
   }, [ws]);
 
@@ -94,7 +108,18 @@ export function SyncedCanvas() {
   );
 }
 
-// Handling functions
+// ----- Handling functions -----
+const sendChanges = throttle((pendingChanges: HistoryEntry<TLRecord>[]) => {
+  if (pendingChanges.length === 0) return;
+
+  const ws = useWebsocketStore.getState().ws;
+  if (!ws) return;
+
+  ws.send(JSON.stringify({ type: 'update', updates: pendingChanges }));
+
+  pendingChanges.splice(0, pendingChanges.length);
+}, 32);
+
 const sendPresence = throttle((event: TLEventInfo) => {
   if (event.name === 'pointer_move' && event.target === 'canvas') {
     const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
