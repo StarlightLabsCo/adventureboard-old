@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
 import { Presence } from 'adventureboard-ws-types';
 
@@ -35,17 +35,8 @@ export function SyncedCanvas() {
   // ---- Setup WebSocket Listener ----
   const ws = useWebsocketStore().ws;
 
-  useEffect(() => {
-    if (!ws) return;
-
-    setStoreWithStatus({
-      status: 'synced-remote',
-      connectionStatus: 'online',
-      store,
-    });
-
-    // Setup websocket listeners
-    const handleWebSocketMessage = (event: MessageEvent) => {
+  const handleWebSocketMessage = useCallback(
+    (event: MessageEvent) => {
       const data = JSON.parse((event as MessageEvent).data);
       switch (data.type) {
         case 'init':
@@ -59,15 +50,26 @@ export function SyncedCanvas() {
           handleUpdates(store, data, ws);
           break;
       }
-    };
+    },
+    [store, editor, presenceMap, ws],
+  );
 
-    const handleClose = () => {
-      setStoreWithStatus({
-        status: 'synced-remote',
-        connectionStatus: 'offline',
-        store,
-      });
-    };
+  const handleClose = () => {
+    setStoreWithStatus({
+      status: 'synced-remote',
+      connectionStatus: 'offline',
+      store,
+    });
+  };
+
+  useEffect(() => {
+    if (!ws) return;
+
+    setStoreWithStatus({
+      status: 'synced-remote',
+      connectionStatus: 'online',
+      store,
+    });
 
     ws.addEventListener('message', handleWebSocketMessage);
     ws.addEventListener('close', handleClose);
@@ -161,7 +163,9 @@ const handlePresence = (
   }
 };
 
-const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket) => {
+const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket | null) => {
+  if (!ws) return;
+
   const { updates } = data;
   try {
     updates.forEach((update) => {
