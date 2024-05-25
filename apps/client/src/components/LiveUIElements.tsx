@@ -5,15 +5,18 @@ import { throttle } from 'lodash';
 import { LiveCursors } from './cursor/LiveCursors';
 import { LiveUsers } from './users/LiveUsers';
 import { useWebsocketStore } from '@/lib/websocket';
+import { useEditor } from 'tldraw';
 
 export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+  const editor = useEditor();
 
   const handlePointerMove = useCallback(
     throttle(
       (event: PointerEvent) => {
-        const x = event.clientX;
-        const y = event.clientY;
+        const viewportBounds = editor.getViewportPageBounds();
+        const x = event.clientX + viewportBounds.minX;
+        const y = event.clientY + viewportBounds.minY;
 
         updateMyPresence({
           cursor: { x, y },
@@ -22,7 +25,7 @@ export function LiveUIElements() {
       1000 / 120,
       { leading: true },
     ),
-    [updateMyPresence],
+    [updateMyPresence, editor],
   );
 
   const handlePointerLeave = useCallback(() => {

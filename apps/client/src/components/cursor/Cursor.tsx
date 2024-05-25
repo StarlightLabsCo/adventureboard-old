@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
 import { memo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useWebsocketStore } from '@/lib/websocket';
+import { useEditor } from 'tldraw';
 
 //
 // RATIONALE:
@@ -27,7 +28,10 @@ function hashStringToNumber(str: string): number {
 
 function CursorComponent({ connectionId }: Props) {
   const connection = useWebsocketStore().useOther(connectionId);
+
   const cursor = connection?.presence.cursor;
+  const editor = useEditor();
+  const viewportBounds = editor.getViewportPageBounds();
 
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
   const color = COLORS[colorIndex];
@@ -42,8 +46,8 @@ function CursorComponent({ connectionId }: Props) {
             top: '0',
             left: '0',
           }}
-          initial={{ x: cursor.x, y: cursor.y, opacity: 1 }}
-          animate={{ x: cursor.x, y: cursor.y, opacity: 1 }}
+          initial={{ x: cursor.x - viewportBounds.minX, y: cursor.y - viewportBounds.minY, opacity: 1 }}
+          animate={{ x: cursor.x - viewportBounds.minX, y: cursor.y - viewportBounds.minY, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{
             type: 'spring',
