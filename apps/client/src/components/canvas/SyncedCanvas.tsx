@@ -136,13 +136,19 @@ const handlePresence = (
   presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
   data: { connectionId: string; presence: Presence },
 ) => {
+  console.log(`[SyncedCanvas] handlePresence`);
   if (!editor) return;
+  console.log(`[SyncedCanvas] editor exists`);
 
   const { connectionId, presence } = data;
   const { cursor } = presence;
+  console.log(`Recieved presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
 
   let peerPresence = presenceMapRef.current!.get(connectionId);
+  console.log(`peerPresence: ${peerPresence}`);
+
   if (!peerPresence) {
+    console.log(`Creating new presence for ${connectionId}`);
     peerPresence = {
       id: InstancePresenceRecordType.createId(store.id),
       currentPageId: editor.getCurrentPageId(),
@@ -153,6 +159,7 @@ const handlePresence = (
     presenceMapRef.current!.set(connectionId, peerPresence);
     store.put([peerPresence]);
   } else {
+    console.log(`Updating presence for ${connectionId}`);
     store.put([
       {
         ...peerPresence,
