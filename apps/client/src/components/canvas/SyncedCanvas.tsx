@@ -1,13 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { throttle } from 'lodash';
 import { useWebsocketStore } from '@/lib/websocket';
 import { useTldrawStore } from '@/lib/tldraw';
 
 // Tldraw
 import dynamic from 'next/dynamic';
-import { createTLStore, TLStoreWithStatus, defaultShapeUtils, HistoryEntry, TLRecord } from 'tldraw';
+import {
+  createTLStore,
+  TLStoreWithStatus,
+  defaultShapeUtils,
+  HistoryEntry,
+  TLRecord,
+  Editor,
+  TLEventInfo,
+  InstancePresenceRecordType,
+  TLInstancePresence,
+} from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
 
@@ -18,6 +28,10 @@ export function SyncedCanvas() {
   const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
   const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
   const ws = useWebsocketStore((state) => state.ws);
+  const editor = useTldrawStore((state) => state.editor);
+
+  const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+  const presenceMap = useRef(new Map<string, TLInstancePresence>());
 
   useEffect(() => {
     if (!ws) return;
@@ -55,6 +69,33 @@ export function SyncedCanvas() {
             );
           }
           break;
+        case 'presence': {
+          if (!editor) return;
+
+          const { connectionId, cursor } = data;
+          let peerPresence = presenceMap.current.get(connectionId);
+
+          if (!peerPresence) {
+            peerPresence = {
+              id: InstancePresenceRecordType.createId(store.id),
+              currentPageId: editor.getCurrentPageId(),
+              userId: connectionId,
+              userName: 'Placeholder',
+              cursor: { x: cursor.x, y: cursor.y, type: 'default', rotation: 0 },
+            } as TLInstancePresence;
+            presenceMap.current.set(connectionId, peerPresence);
+            store.put([peerPresence]);
+          } else {
+            store.put([
+              {
+                ...peerPresence,
+                cursor: { x: cursor.x, y: cursor.y, type: 'default', rotation: 0 },
+                lastActivityTimestamp: Date.now(),
+              },
+            ]);
+          }
+          break;
+        }
       }
     };
 
@@ -94,15 +135,25 @@ export function SyncedCanvas() {
     };
   }, [ws, store]);
 
+  const handleEvent = throttle((event: TLEventInfo) => {
+    if (event.name === 'pointer_move' && event.target == 'canvas') {
+      const point = event.point;
+      const { x, y } = point;
+
+      updateMyPresence({
+        cursor: { x, y },
+      });
+    }
+  }, 1000 / 120);
+
+  const onMount = (editor: Editor) => {
+    useTldrawStore.getState().setEditor(editor);
+    editor.on('event', (event: TLEventInfo) => handleEvent(event));
+  };
+
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
-      <Tldraw
-        autoFocus
-        inferDarkMode
-        assetUrls={assetUrls}
-        store={storeWithStatus}
-        onMount={(editor) => useTldrawStore.getState().setEditor(editor)}
-      />
+      <Tldraw autoFocus inferDarkMode assetUrls={assetUrls} store={storeWithStatus} onMount={onMount} />
     </div>
   );
 }
