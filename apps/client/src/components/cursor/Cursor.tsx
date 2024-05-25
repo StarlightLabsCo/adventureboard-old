@@ -3,14 +3,7 @@
 import { memo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useWebsocketStore } from '@/lib/websocket';
-import { useEditor } from 'tldraw';
-
-//
-// RATIONALE:
-// Each cursor itself subscribes to _just_ the change for the user. This
-// means that if only one user's cursor is moving, only one <Cursor />
-// component has to re-render. All the others can remain idle.
-//
+import { useTldrawStore } from '@/lib/tldraw';
 
 const COLORS = ['#E57373', '#9575CD', '#4FC3F7', '#81C784', '#FFF176', '#FF8A65', '#F06292', '#7986CB'];
 
@@ -28,25 +21,30 @@ function hashStringToNumber(str: string): number {
 
 function CursorComponent({ connectionId }: Props) {
   const connection = useWebsocketStore().useOther(connectionId);
-
   const cursor = connection?.presence.cursor;
-  const editor = useEditor();
+  const editor = useTldrawStore().editor;
 
+  if (!editor) return null;
+
+  const viewportBounds = editor.getViewportPageBounds();
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
   const color = COLORS[colorIndex];
+
+  const cursorPosition = cursor
+    ? {
+        x: cursor.x - viewportBounds.minX,
+        y: cursor.y - viewportBounds.minY,
+      }
+    : { x: 0, y: 0 };
 
   return (
     <AnimatePresence>
       {cursor && (
         <motion.div
           key={connectionId}
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-          }}
-          initial={{ x: cursor.x - editor.getViewportPageBounds().minX, y: cursor.y - editor.getViewportPageBounds().minY, opacity: 1 }}
-          animate={{ x: cursor.x - editor.getViewportPageBounds().minX, y: cursor.y - editor.getViewportPageBounds().minY, opacity: 1 }}
+          style={{ position: 'absolute', top: '0', left: '0' }}
+          initial={{ ...cursorPosition, opacity: 1 }}
+          animate={{ ...cursorPosition, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{
             type: 'spring',

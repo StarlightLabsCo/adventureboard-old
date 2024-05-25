@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { throttle } from 'lodash';
 import { useWebsocketStore } from '@/lib/websocket';
+import { useTldrawStore } from '@/lib/tldraw';
 
 // Tldraw
 import dynamic from 'next/dynamic';
@@ -19,7 +20,6 @@ export function SyncedCanvas() {
   const ws = useWebsocketStore((state) => state.ws);
 
   useEffect(() => {
-    // Websocket bindings
     if (!ws) return;
 
     setStoreWithStatus({
@@ -96,7 +96,13 @@ export function SyncedCanvas() {
 
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
-      <Tldraw autoFocus inferDarkMode assetUrls={assetUrls} store={storeWithStatus} />
+      <Tldraw
+        autoFocus
+        inferDarkMode
+        assetUrls={assetUrls}
+        store={storeWithStatus}
+        onMount={(editor) => useTldrawStore.getState().setEditor(editor)}
+      />
     </div>
   );
 }
