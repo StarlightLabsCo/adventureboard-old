@@ -31,13 +31,6 @@ function CursorComponent({ connectionId }: Props) {
 
   const cursor = connection?.presence.cursor;
   const editor = useEditor();
-  if (!editor) {
-    console.error('Editor not found');
-  } else {
-    console.log(editor);
-  }
-
-  const viewportBounds = editor.getViewportPageBounds();
 
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
   const color = COLORS[colorIndex];
@@ -52,8 +45,8 @@ function CursorComponent({ connectionId }: Props) {
             top: '0',
             left: '0',
           }}
-          initial={{ x: cursor.x - viewportBounds.minX, y: cursor.y - viewportBounds.minY, opacity: 1 }}
-          animate={{ x: cursor.x - viewportBounds.minX, y: cursor.y - viewportBounds.minY, opacity: 1 }}
+          initial={{ x: cursor.x - editor.getViewportPageBounds().minX, y: cursor.y - editor.getViewportPageBounds().minY, opacity: 1 }}
+          animate={{ x: cursor.x - editor.getViewportPageBounds().minX, y: cursor.y - editor.getViewportPageBounds().minY, opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{
             type: 'spring',

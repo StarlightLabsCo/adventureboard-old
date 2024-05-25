@@ -10,11 +10,6 @@ import { useEditor } from 'tldraw';
 export function LiveUIElements() {
   const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
   const editor = useEditor();
-  if (!editor) {
-    console.error('Editor not found');
-  } else {
-    console.log(editor);
-  }
 
   const handlePointerMove = useCallback(
     throttle(
