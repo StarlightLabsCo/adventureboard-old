@@ -19,12 +19,14 @@ function hashStringToNumber(str: string): number {
   return Math.abs(hash);
 }
 
+// TODO: new bug presents itself i want the motion div to smooth the user motion as it's moving around, but I don't want it to apply when I'm moving the viewport around
+
 function CursorComponent({ connectionId }: Props) {
   const connection = useWebsocketStore().useOther(connectionId);
   const cursor = connection?.presence.cursor;
   const editor = useTldrawStore().editor;
 
-  if (!editor) return null;
+  if (!editor || !cursor) return null;
 
   const viewportBounds = editor.getViewportPageBounds();
   const colorIndex = hashStringToNumber(connectionId) % COLORS.length;
@@ -38,26 +40,17 @@ function CursorComponent({ connectionId }: Props) {
     : { x: 0, y: 0 };
 
   return (
-    <AnimatePresence>
-      {cursor && (
-        <motion.div
-          key={connectionId}
-          style={{ position: 'absolute', top: '0', left: '0' }}
-          initial={{ ...cursorPosition, opacity: 1 }}
-          animate={{ ...cursorPosition, opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{
-            type: 'spring',
-            damping: 30,
-            mass: 0.8,
-            stiffness: 350,
-            opacity: { duration: 1 },
-          }}
-        >
-          <CursorSvg color={color} />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div
+      key={connectionId}
+      style={{
+        position: 'absolute',
+        top: cursorPosition.y,
+        left: cursorPosition.x,
+        opacity: 1,
+      }}
+    >
+      <CursorSvg color={color} />
+    </div>
   );
 }
 
