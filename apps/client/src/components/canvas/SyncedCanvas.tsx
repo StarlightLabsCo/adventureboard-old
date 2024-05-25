@@ -28,11 +28,10 @@ const assetUrls = getAssetUrls();
 export function SyncedCanvas() {
   const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
   const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
-  const [editor, setEditor] = useState<Editor | null>(null);
+  const editorRef = useRef<Editor | null>(null);
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
-  // ---- Setup WebSocket Listener ----
   const ws = useWebsocketStore().ws;
 
   const handleWebSocketMessage = useCallback(
@@ -44,14 +43,14 @@ export function SyncedCanvas() {
           store.loadSnapshot(data.snapshot);
           break;
         case 'presence':
-          handlePresence(store, editor, presenceMap, data.presence);
+          handlePresence(store, editorRef, presenceMap, data.presence);
           break;
         case 'update':
           handleUpdates(store, data, ws);
           break;
       }
     },
-    [store, editor, presenceMap, ws],
+    [store, editorRef, presenceMap, ws],
   );
 
   const handleClose = () => {
@@ -74,7 +73,6 @@ export function SyncedCanvas() {
     ws.addEventListener('message', handleWebSocketMessage);
     ws.addEventListener('close', handleClose);
 
-    // Listen for changes on our end, and send them to the server
     const unsubscribe = store.listen(
       (change: HistoryEntry<TLRecord>) => {
         if (change.source !== 'user') return;
@@ -100,7 +98,7 @@ export function SyncedCanvas() {
         assetUrls={assetUrls}
         store={storeWithStatus}
         onMount={(editor) => {
-          setEditor(editor);
+          editorRef.current = editor;
           editor.on('event', (event) => {
             sendPresence(event);
           });
@@ -132,17 +130,18 @@ const sendPresence = throttle((event: TLEventInfo) => {
 
 const handlePresence = (
   store: TLStore,
-  editor: Editor | null,
+  editorRef: React.RefObject<Editor | null>,
   presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
   data: { connectionId: string; presence: Presence },
 ) => {
   console.log(`[SyncedCanvas] handlePresence`);
+  const editor = editorRef.current;
   if (!editor) return;
   console.log(`[SyncedCanvas] editor exists`);
 
   const { connectionId, presence } = data;
   const { cursor } = presence;
-  console.log(`Recieved presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
+  console.log(`Received presence from ${connectionId}: cursor=${cursor?.x},${cursor?.y}`);
 
   let peerPresence = presenceMapRef.current!.get(connectionId);
   console.log(`peerPresence: ${peerPresence}`);
