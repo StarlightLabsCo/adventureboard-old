@@ -86,7 +86,7 @@ export function SyncedCanvas() {
         onMount={(editor) => {
           setEditor(editor);
           editor.on('event', (event) => {
-            sendPresence(editor, event);
+            sendPresence(event);
           });
         }}
       />
@@ -95,9 +95,9 @@ export function SyncedCanvas() {
 }
 
 // Handling functions
-const sendPresence = throttle((editor: Editor, event: TLEventInfo) => {
+const sendPresence = throttle((event: TLEventInfo) => {
   if (event.name === 'pointer_move' && event.target === 'canvas') {
-    const [_, updateMyPresence] = useWebsocketStore().useMyPresence();
+    const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
     const { x, y } = event.point;
     updateMyPresence({ cursor: { x, y } });
   }
