@@ -122,7 +122,7 @@ export function SyncedCanvas() {
           inferDarkMode
           assetUrls={assetUrls}
           store={storeWithStatus}
-          components={components}
+          // components={components}
           onMount={(editor) => {
             editorRef.current = editor;
             editor.updateInstanceState({ isReadonly: true });
