@@ -132,7 +132,8 @@ export class GameInstance extends DurableObject {
 	/* Connections */
 	// We only put in storage on add/remove because we don't want to hit the storage on every presence update
 	addConnection(connectionId: string) {
-		this.connections[connectionId] = { connectionId, presence: { cursor: null } };
+		const isHost = Object.keys(this.connections).length === 0;
+		this.connections[connectionId] = { connectionId, presence: { cursor: null }, isHost };
 		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }));
 		this.ctx.storage.put('connections', this.connections);
 	}

@@ -33,6 +33,7 @@ export function SyncedCanvas() {
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
   const ws = useWebsocketStore().ws;
+  const isHost = useWebsocketStore((state) => state.useSelf()?.isHost);
 
   const handleWebSocketMessage = useCallback(
     (event: MessageEvent) => {
@@ -75,7 +76,7 @@ export function SyncedCanvas() {
 
     const unsubscribe = store.listen(
       (change: HistoryEntry<TLRecord>) => {
-        if (change.source !== 'user') return;
+        if (change.source !== 'user' || !isHost) return;
         pendingChanges.push(change);
         sendChanges(pendingChanges);
       },
@@ -88,7 +89,7 @@ export function SyncedCanvas() {
 
       unsubscribe();
     };
-  }, [ws]);
+  }, [ws, isHost]);
 
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
@@ -99,9 +100,13 @@ export function SyncedCanvas() {
         store={storeWithStatus}
         onMount={(editor) => {
           editorRef.current = editor;
-          editor.on('event', (event) => {
-            sendPresence(editor, event);
-          });
+          if (isHost) {
+            editor.on('event', (event) => {
+              sendPresence(editor, event);
+            });
+          } else {
+            editor.updateInstanceState({ isReadonly: true });
+          }
         }}
       />
     </div>

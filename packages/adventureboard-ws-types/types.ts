@@ -4,6 +4,7 @@ interface Connections {
 
 interface Connection {
   connectionId: string;
+  isHost: boolean;
   presence: Presence;
 }
 
