@@ -17,6 +17,7 @@ import {
   createTLStore,
   defaultShapeUtils,
   InstancePresenceRecordType,
+  TLComponents,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -91,6 +92,11 @@ export function SyncedCanvas() {
     };
   }, [ws, isHost]);
 
+  // Non-host component override
+  const components: TLComponents = {
+    PageMenu: null, // null will hide the page menu instead
+  };
+
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
       <Tldraw
@@ -98,6 +104,7 @@ export function SyncedCanvas() {
         inferDarkMode
         assetUrls={assetUrls}
         store={storeWithStatus}
+        components={!isHost ? components : undefined}
         onMount={(editor) => {
           editorRef.current = editor;
           if (isHost) {
