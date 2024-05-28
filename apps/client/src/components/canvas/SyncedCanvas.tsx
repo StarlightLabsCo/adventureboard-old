@@ -244,8 +244,11 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
 
   const { url } = await response.json();
 
+  // Need to map for discord sandbox
+  const mappedUrl = url.replace(/^https:\/\/r2\.adventureboard\.gg\//, '/r2/');
+
   // Upload the file to the presigned URL
-  await fetch(url, {
+  await fetch(mappedUrl, {
     method: 'PUT',
     body: file,
   });
