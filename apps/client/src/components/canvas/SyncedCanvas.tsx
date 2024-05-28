@@ -34,6 +34,7 @@ export function SyncedCanvas() {
 
   const ws = useWebsocketStore().ws;
   const isHost = useWebsocketStore((state) => state.useSelf()?.isHost);
+  console.log(`[SyncedCanvas] isHost: ${isHost}`);
 
   const handleWebSocketMessage = useCallback(
     (event: MessageEvent) => {
@@ -91,7 +92,6 @@ export function SyncedCanvas() {
     };
   }, [ws, isHost]);
 
-  // Non-host component
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
       <Tldraw
