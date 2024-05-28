@@ -102,10 +102,12 @@ export function SyncedCanvas() {
         onMount={(editor) => {
           editorRef.current = editor;
           if (isHost) {
+            console.log('[SyncedCanvas] Mounted & isHost: true');
             editor.on('event', (event) => {
               sendPresence(editor, event);
             });
           } else {
+            console.log('[SyncedCanvas] Mounted & isHost: false');
             editor.updateInstanceState({ isReadonly: true });
           }
         }}
