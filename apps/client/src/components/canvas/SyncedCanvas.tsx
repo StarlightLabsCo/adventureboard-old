@@ -105,14 +105,12 @@ export function SyncedCanvas() {
         onMount={(editor) => {
           editorRef.current = editor;
 
+          editor.on('event', (event) => {
+            sendPresence(editor, event);
+          });
+
           const isHost = useWebsocketStore.getState().useSelf()!.isHost;
-          if (isHost) {
-            console.log('[SyncedCanvas] Mounted & isHost: true');
-            editor.on('event', (event) => {
-              sendPresence(editor, event);
-            });
-          } else {
-            console.log('[SyncedCanvas] Mounted & isHost: false');
+          if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
           }
         }}
