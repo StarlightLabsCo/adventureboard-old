@@ -29,6 +29,8 @@ export function SyncedCanvas() {
   const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
   const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
   const editorRef = useRef<Editor | null>(null);
+  const [components, setComponents] = useState({});
+
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
@@ -112,8 +114,10 @@ export function SyncedCanvas() {
           const isHost = useWebsocketStore.getState().useSelf()!.isHost;
           if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
+            setComponents({ PageMenu: null });
           }
         }}
+        components={components}
       />
     </div>
   );
