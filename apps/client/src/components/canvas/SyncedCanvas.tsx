@@ -236,6 +236,7 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+    body: JSON.stringify({ filename: file.name }),
   });
 
   if (!presignedUrlResponse.ok) {
