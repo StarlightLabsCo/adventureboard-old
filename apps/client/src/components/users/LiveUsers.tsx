@@ -25,7 +25,7 @@ function LiveUsersComponent() {
         />
       )}
       {users.slice(0, 3).map(({ connectionId }) => {
-        const connection = useWebsocketStore().useOther(connectionId);
+        const connection = useWebsocketStore.getState().useOther(connectionId);
         if (!connection) return null;
         return (
           <Avatar
