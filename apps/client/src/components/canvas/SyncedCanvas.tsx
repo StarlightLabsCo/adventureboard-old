@@ -175,7 +175,7 @@ const handlePresence = (
       id: InstancePresenceRecordType.createId(store.id),
       currentPageId: editorRef.current.getCurrentPageId(),
       userId: connectionId,
-      userName: connection.discordUser.global_name,
+      userName: connection.discordUser.global_name || connection.discordUser.username,
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
     });
 

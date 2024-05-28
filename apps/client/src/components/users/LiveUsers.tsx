@@ -30,7 +30,7 @@ function LiveUsersComponent() {
         return (
           <Avatar
             key={connectionId}
-            name={connection.discordUser.global_name}
+            name={connection.discordUser.global_name || connection.discordUser.username}
             src={
               connection.discordUser.avatar
                 ? `https://cdn.discordapp.com/avatars/${connection.discordUser.id}/${connection.discordUser.avatar}${connection.discordUser.avatar.startsWith('a_') ? '.gif' : '.png'}`

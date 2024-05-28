@@ -4,7 +4,7 @@ interface Connections {
 
 interface Connection {
   connectionId: string;
-  discordUser: { id: string; username: string; global_name: string; avatar: string | null; discriminator: string };
+  discordUser: { id: string; username: string; global_name: string | null; avatar: string | null; discriminator: string };
   isHost: boolean;
   presence: Presence;
 }
