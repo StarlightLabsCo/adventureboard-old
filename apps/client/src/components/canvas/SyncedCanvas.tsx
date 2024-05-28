@@ -17,11 +17,17 @@ import {
   createTLStore,
   defaultShapeUtils,
   InstancePresenceRecordType,
+  TLAsset,
+  TLAssetId,
+  AssetRecordType,
+  getHashForString,
+  MediaHelpers,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
 
 import dynamic from 'next/dynamic';
+import { useDiscordStore } from '@/lib/discord';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -116,6 +122,8 @@ export function SyncedCanvas() {
             editor.updateInstanceState({ isReadonly: true });
             setComponents({ PageMenu: null });
           }
+
+          editor.registerExternalAssetHandler('file', uploadFile);
         }}
         components={components}
       />
@@ -124,6 +132,8 @@ export function SyncedCanvas() {
 }
 
 // ----- Handling functions -----
+
+// Updates
 const sendChanges = throttle((pendingChanges: HistoryEntry<TLRecord>[]) => {
   if (pendingChanges.length === 0) return;
 
@@ -135,6 +145,26 @@ const sendChanges = throttle((pendingChanges: HistoryEntry<TLRecord>[]) => {
   pendingChanges.splice(0, pendingChanges.length);
 }, 32);
 
+const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket | null) => {
+  if (!ws) return;
+
+  const { updates } = data;
+  try {
+    updates.forEach((update) => {
+      store.mergeRemoteChanges(() => {
+        const { added, updated, removed } = update.changes;
+        store.put(Object.values(added));
+        store.put(Object.values(updated).map(([, to]) => to));
+        store.remove(Object.values(removed).map((record) => record.id));
+      });
+    });
+  } catch (e) {
+    console.error(e);
+    ws.send(JSON.stringify({ type: 'recovery' }));
+  }
+};
+
+// Presence
 const sendPresence = throttle((editor: Editor, event: TLEventInfo) => {
   if (event.name === 'pointer_move' && event.target === 'canvas') {
     const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
@@ -191,21 +221,64 @@ const handlePresence = (
   store.put([peerPresence]);
 };
 
-const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket | null) => {
-  if (!ws) return;
+// Asset upload
+const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> => {
+  const { file } = info;
+  const accessToken = useDiscordStore.getState().auth?.access_token;
 
-  const { updates } = data;
-  try {
-    updates.forEach((update) => {
-      store.mergeRemoteChanges(() => {
-        const { added, updated, removed } = update.changes;
-        store.put(Object.values(added));
-        store.put(Object.values(updated).map(([, to]) => to));
-        store.remove(Object.values(removed).map((record) => record.id));
-      });
-    });
-  } catch (e) {
-    console.error(e);
-    ws.send(JSON.stringify({ type: 'recovery' }));
+  if (!accessToken) {
+    throw new Error('Unauthorized');
   }
+
+  // Fetch presigned URL from /api/file
+  const response = await fetch('/api/file', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to get presigned URL');
+  }
+
+  const { url } = await response.json();
+
+  // Upload the file to the presigned URL
+  await fetch(url, {
+    method: 'PUT',
+    body: file,
+  });
+
+  // Create a TLAsset object
+  const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
+  let size: { w: number; h: number };
+  let isAnimated: boolean;
+  let shapeType: 'image' | 'video';
+
+  if (MediaHelpers.isImageType(file.type)) {
+    shapeType = 'image';
+    size = await MediaHelpers.getImageSize(file);
+    isAnimated = await MediaHelpers.isAnimated(file);
+  } else {
+    shapeType = 'video';
+    isAnimated = true;
+    size = await MediaHelpers.getVideoSize(file);
+  }
+
+  const asset: TLAsset = AssetRecordType.create({
+    id: assetId,
+    type: shapeType,
+    typeName: 'asset',
+    props: {
+      name: file.name,
+      src: url,
+      w: size.w,
+      h: size.h,
+      mimeType: file.type,
+      isAnimated,
+    },
+  });
+
+  return asset;
 };
