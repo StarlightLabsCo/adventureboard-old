@@ -29,9 +29,6 @@ export async function POST(req: NextRequest) {
   // Upload
   const user = await userResponse.json();
   const { filename } = await req.json();
-  if (!filename) {
-    return NextResponse.json({ error: 'Missing filename' }, { status: 400 });
-  }
 
   const r2 = new AwsClient({
     accessKeyId: process.env.R2_ACCESS_KEY_ID!,
@@ -39,7 +36,7 @@ export async function POST(req: NextRequest) {
   });
 
   const objectKey = `${user.id}/${Date.now()}_${filename}`;
-  const url = new URL(`https://${process.env.R2_BUCKET_NAME}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${objectKey}`);
+  const url = new URL(`https://${process.env.R2_PUBLIC_URL}/${objectKey}`);
   url.searchParams.set('X-Amz-Expires', '3600');
 
   const signedUrl = await r2.sign(new Request(url, { method: 'PUT' }), { aws: { signQuery: true } });
