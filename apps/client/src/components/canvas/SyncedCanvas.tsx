@@ -231,27 +231,32 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
   }
 
   // Fetch presigned URL from /api/file
-  const response = await fetch('/api/file', {
+  const presignedUrlResponse = await fetch('/api/file', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
 
-  if (!response.ok) {
+  if (!presignedUrlResponse.ok) {
     throw new Error('Failed to get presigned URL');
   }
 
-  const { url } = await response.json();
+  const { url } = await presignedUrlResponse.json();
 
   // Need to map for discord sandbox
-  const mappedUrl = url.replace(/^https:\/\/r2\.adventureboard\.gg\//, '/r2/');
+  const mappedUrl = url.replace(/^https:\/\/r2\.adventureboard\.gg/, '/r2');
 
   // Upload the file to the presigned URL
-  await fetch(mappedUrl, {
+  const uploadResponse = await fetch(mappedUrl, {
     method: 'PUT',
     body: file,
   });
+
+  if (!uploadResponse.ok) {
+    console.error(uploadResponse);
+    throw new Error('Failed to upload file');
+  }
 
   // Create a TLAsset object
   const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
@@ -275,7 +280,7 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
     typeName: 'asset',
     props: {
       name: file.name,
-      src: url,
+      src: mappedUrl,
       w: size.w,
       h: size.h,
       mimeType: file.type,
