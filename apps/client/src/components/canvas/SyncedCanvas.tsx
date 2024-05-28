@@ -250,7 +250,7 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
     new RegExp(
       `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
     ),
-    '/r2',
+    '/r2-upload',
   );
 
   // Upload the file to the presigned URL
@@ -280,13 +280,14 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
     size = await MediaHelpers.getVideoSize(file);
   }
 
+  const assetUrl = mappedUrl.replace('/r2-upload', '/r2-get').split('?')[0];
   const asset: TLAsset = AssetRecordType.create({
     id: assetId,
     type: shapeType,
     typeName: 'asset',
     props: {
       name: file.name,
-      src: mappedUrl,
+      src: assetUrl,
       w: size.w,
       h: size.h,
       mimeType: file.type,

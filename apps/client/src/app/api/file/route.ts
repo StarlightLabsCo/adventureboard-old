@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     Key: objectKey,
   });
 
-  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+  const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 10 });
 
   return NextResponse.json({ url: signedUrl });
 }
