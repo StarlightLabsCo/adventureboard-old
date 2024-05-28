@@ -245,8 +245,13 @@ const uploadFile = async (info: { file: File; type: 'file' }): Promise<TLAsset> 
 
   const { url } = await presignedUrlResponse.json();
 
-  // Need to map for discord sandbox
-  const mappedUrl = url.replace(/^https:\/\/r2\.adventureboard\.gg/, '/r2');
+  // Need to map for discord sandbox (need to update URL mapping if this changes anywhere cause it's hardcoded there)
+  const mappedUrl = url.replace(
+    new RegExp(
+      `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
+    ),
+    '/r2',
+  );
 
   // Upload the file to the presigned URL
   const uploadResponse = await fetch(mappedUrl, {

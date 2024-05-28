@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AwsClient } from 'aws4fetch';
 
-if (!process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
+if (!process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY || !process.env.R2_BUCKET_NAME || !process.env.R2_ACCOUNT_ID) {
   throw new Error('Missing R2 credentials');
 }
 
@@ -33,10 +33,13 @@ export async function POST(req: NextRequest) {
   const r2 = new AwsClient({
     accessKeyId: process.env.R2_ACCESS_KEY_ID!,
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    region: 'auto',
   });
 
   const objectKey = `${user.id}/${Date.now()}_${filename}`;
-  const url = new URL(`https://${process.env.R2_PUBLIC_URL}/${objectKey}`);
+  const url = new URL(
+    `https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${objectKey}`,
+  );
   url.searchParams.set('X-Amz-Expires', '3600');
 
   const signedUrl = await r2.sign(new Request(url, { method: 'PUT' }), { aws: { signQuery: true } });
