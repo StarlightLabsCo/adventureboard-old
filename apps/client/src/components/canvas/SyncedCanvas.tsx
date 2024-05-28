@@ -17,7 +17,6 @@ import {
   createTLStore,
   defaultShapeUtils,
   InstancePresenceRecordType,
-  TLComponents,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -92,45 +91,27 @@ export function SyncedCanvas() {
     };
   }, [ws, isHost]);
 
-  if (isHost) {
-    return (
-      <div className="fixed inset-0 w-[100vw] h-[100vh]">
-        <Tldraw
-          autoFocus
-          inferDarkMode
-          assetUrls={assetUrls}
-          store={storeWithStatus}
-          onMount={(editor) => {
-            editorRef.current = editor;
-
+  // Non-host component
+  return (
+    <div className="fixed inset-0 w-[100vw] h-[100vh]">
+      <Tldraw
+        autoFocus
+        inferDarkMode
+        assetUrls={assetUrls}
+        store={storeWithStatus}
+        onMount={(editor) => {
+          editorRef.current = editor;
+          if (isHost) {
             editor.on('event', (event) => {
               sendPresence(editor, event);
             });
-          }}
-        />
-      </div>
-    );
-  } else {
-    const components: TLComponents = {
-      PageMenu: null, // null will hide the page menu instead
-    };
-
-    return (
-      <div className="fixed inset-0 w-[100vw] h-[100vh]">
-        <Tldraw
-          autoFocus
-          inferDarkMode
-          assetUrls={assetUrls}
-          store={storeWithStatus}
-          // components={components}
-          onMount={(editor) => {
-            editorRef.current = editor;
+          } else {
             editor.updateInstanceState({ isReadonly: true });
-          }}
-        />
-      </div>
-    );
-  }
+          }
+        }}
+      />
+    </div>
+  );
 }
 
 // ----- Handling functions -----
