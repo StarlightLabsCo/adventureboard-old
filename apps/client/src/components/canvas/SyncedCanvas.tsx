@@ -150,37 +150,45 @@ const handlePresence = (
   presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
   data: { connectionId: string; presence: Presence },
 ) => {
-  const editor = editorRef.current;
-  if (!editor) return;
-
-  const { connectionId, presence } = data;
-  const { cursor } = presence;
+  if (!editorRef.current) {
+    console.log('[SyncedCanvas] Editor not initialized');
+    return;
+  }
 
   if (!presenceMapRef.current) {
     console.log('[SyncedCanvas] Presence map not initialized');
     return;
   }
-  let peerPresence = presenceMapRef.current.get(connectionId);
 
+  const { connectionId, presence } = data;
+  const { cursor } = presence;
+
+  let peerPresence = presenceMapRef.current.get(connectionId);
   if (!peerPresence) {
+    const connection = useWebsocketStore.getState().connections[connectionId];
+    if (!connection) {
+      console.log('[SyncedCanvas] Connection not found');
+      return;
+    }
+
     peerPresence = InstancePresenceRecordType.create({
       id: InstancePresenceRecordType.createId(store.id),
-      currentPageId: editor.getCurrentPageId(),
+      currentPageId: editorRef.current.getCurrentPageId(),
       userId: connectionId,
-      userName: 'Placeholder',
+      userName: connection.discordUser.global_name,
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
     });
-    presenceMapRef.current!.set(connectionId, peerPresence);
-    store.put([peerPresence]);
+
+    presenceMapRef.current.set(connectionId, peerPresence);
   } else {
-    store.put([
-      {
-        ...peerPresence,
-        cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
-        lastActivityTimestamp: Date.now(),
-      },
-    ]);
+    peerPresence = {
+      ...peerPresence,
+      cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
+      lastActivityTimestamp: Date.now(),
+    };
   }
+
+  store.put([peerPresence]);
 };
 
 const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[] }, ws: WebSocket | null) => {
