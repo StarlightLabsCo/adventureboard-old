@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/tailwind/utils';
 
