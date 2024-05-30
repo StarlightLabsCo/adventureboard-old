@@ -27,11 +27,15 @@ export class GameInstance extends DurableObject {
 		this.env = env;
 
 		this.ctx.blockConcurrencyWhile(async () => {
-			await this.loadConnections();
+			try {
+				await this.loadConnections();
 
-			await this.loadHost();
-			await this.loadCampaign();
-			await this.loadSnapshot();
+				await this.loadHost();
+				await this.loadCampaign();
+				await this.loadSnapshot();
+			} catch (e) {
+				console.error(e);
+			}
 		});
 	}
 
@@ -65,6 +69,7 @@ export class GameInstance extends DurableObject {
 		const snapshot = await this.env.ADVENTUREBOARD_KV.get<TLStoreSnapshot>(snapshotKey, 'json');
 		if (!snapshot) {
 			// TODO: load default snapshot
+			console.log(`No snapshot found. Instead found: ${typeof snapshot}`);
 			return;
 		}
 
