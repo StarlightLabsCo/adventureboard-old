@@ -6,21 +6,32 @@ import { APIUser } from 'discord-api-types/v10';
 
 export interface Env {
 	GAME_INSTANCES: DurableObjectNamespace<GameInstance>;
+	ADVENTUREBOARD_KV: KVNamespace; // KV keys: hostId-campaigns, hostId-selectedCampaignId, hostId-campaignId-snapshot
 	DISCORD_API_BASE: string;
 }
 
 export class GameInstance extends DurableObject {
+	env: Env;
+
 	private connections: Connections = {};
 	private schema = createTLSchema();
 	private records: Record<string, TLRecord> = {};
+
 	private host: string | null = null;
+	private campaignId: string | null = null;
 
 	// ------ Init ------
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
 
+		this.env = env;
+
 		this.ctx.blockConcurrencyWhile(async () => {
-			await Promise.all([this.loadConnections(), this.loadSnapshot()]);
+			await this.loadConnections();
+
+			await this.loadHost();
+			await this.loadCampaign();
+			await this.loadSnapshot();
 		});
 	}
 
@@ -29,9 +40,33 @@ export class GameInstance extends DurableObject {
 		this.connections = storedConnections || {};
 	}
 
+	async loadHost() {
+		const storedHost = await this.ctx.storage.get<string | null>('host');
+		this.host = storedHost || null;
+	}
+
+	async loadCampaign() {
+		if (!this.host) return;
+
+		const selectedCampaignId = await this.env.ADVENTUREBOARD_KV.get<string | null>(`${this.host}-selectedCampaignId`);
+		if (selectedCampaignId) {
+			this.campaignId = selectedCampaignId;
+		} else {
+			this.campaignId = crypto.randomUUID();
+			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-campaigns`, JSON.stringify([this.campaignId]));
+			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-selectedCampaignId`, this.campaignId);
+		}
+	}
+
 	async loadSnapshot() {
-		const snapshot = (await this.ctx.storage.get('snapshot')) as TLStoreSnapshot | undefined;
-		if (!snapshot) return;
+		if (!this.host || !this.campaignId) return;
+
+		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
+		const snapshot = await this.env.ADVENTUREBOARD_KV.get<TLStoreSnapshot>(snapshotKey, 'json');
+		if (!snapshot) {
+			// TODO: load default snapshot
+			return;
+		}
 
 		const migrationResult = this.schema.migrateStoreSnapshot(snapshot);
 		if (migrationResult.type === 'error') {
@@ -121,6 +156,9 @@ export class GameInstance extends DurableObject {
 	addConnection(connectionId: string, discordUser: APIUser) {
 		if (!this.host) {
 			this.host = discordUser.id;
+			this.ctx.storage.put('host', this.host);
+			this.loadCampaign();
+			this.loadSnapshot();
 		}
 
 		this.connections[connectionId] = {
@@ -147,7 +185,10 @@ export class GameInstance extends DurableObject {
 
 	/* Records */
 	saveSnapshot = throttle(async () => {
-		await this.ctx.storage.put('snapshot', { store: this.records, schema: this.schema.serialize() });
+		if (!this.host || !this.campaignId) return;
+
+		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
+		await this.env.ADVENTUREBOARD_KV.put(snapshotKey, JSON.stringify({ store: this.records, schema: this.schema.serialize() }));
 	}, 1000);
 
 	updateRecords(connectionId: string, updates: HistoryEntry<TLRecord>[], ws: WebSocket) {
