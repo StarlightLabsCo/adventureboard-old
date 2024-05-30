@@ -57,8 +57,12 @@ export class GameInstance extends DurableObject {
 			this.campaignId = selectedCampaignId;
 		} else {
 			this.campaignId = crypto.randomUUID();
-			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-campaigns`, JSON.stringify([this.campaignId]));
-			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-selectedCampaignId`, this.campaignId);
+			try {
+				await this.env.ADVENTUREBOARD_KV.put(`${this.host}-campaigns`, JSON.stringify([this.campaignId]));
+				await this.env.ADVENTUREBOARD_KV.put(`${this.host}-selectedCampaignId`, this.campaignId);
+			} catch (e) {
+				console.error(e);
+			}
 		}
 	}
 
