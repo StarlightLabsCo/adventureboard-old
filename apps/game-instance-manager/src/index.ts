@@ -57,12 +57,8 @@ export class GameInstance extends DurableObject {
 			this.campaignId = selectedCampaignId;
 		} else {
 			this.campaignId = crypto.randomUUID();
-			try {
-				await this.env.ADVENTUREBOARD_KV.put(`${this.host}-campaigns`, JSON.stringify([this.campaignId]));
-				await this.env.ADVENTUREBOARD_KV.put(`${this.host}-selectedCampaignId`, this.campaignId);
-			} catch (e) {
-				console.error(e);
-			}
+			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-campaigns`, JSON.stringify([this.campaignId]));
+			await this.env.ADVENTUREBOARD_KV.put(`${this.host}-selectedCampaignId`, this.campaignId);
 		}
 	}
 
@@ -70,13 +66,14 @@ export class GameInstance extends DurableObject {
 		if (!this.host || !this.campaignId) return;
 
 		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
-		const snapshot = await this.env.ADVENTUREBOARD_KV.get<TLStoreSnapshot>(snapshotKey, 'json');
-		if (!snapshot) {
+		const snapshotJSON = await this.env.ADVENTUREBOARD_KV.get<string>(snapshotKey);
+		if (!snapshotJSON) {
 			// TODO: load default snapshot
-			console.log(`No snapshot found. Instead found: ${typeof snapshot}`);
+			console.log(`No snapshot found. Instead found: ${typeof snapshotJSON}`);
 			return;
 		}
 
+		const snapshot = JSON.parse(snapshotJSON);
 		const migrationResult = this.schema.migrateStoreSnapshot(snapshot);
 		if (migrationResult.type === 'error') {
 			throw new Error(migrationResult.reason);
