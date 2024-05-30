@@ -62,7 +62,7 @@ export class GameInstance extends DurableObject {
 		if (!this.host || !this.campaignId) return;
 
 		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
-		const snapshot = await this.env.ADVENTUREBOARD_KV.get<TLStoreSnapshot>(snapshotKey);
+		const snapshot = await this.env.ADVENTUREBOARD_KV.get<TLStoreSnapshot>(snapshotKey, 'json');
 		if (!snapshot) {
 			// TODO: load default snapshot
 			return;
