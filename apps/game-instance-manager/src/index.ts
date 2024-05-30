@@ -36,19 +36,16 @@ export class GameInstance extends DurableObject {
 	}
 
 	async loadConnections() {
-		console.log(`Loading connections`);
 		const storedConnections = await this.ctx.storage.get<Connections>('connections');
 		this.connections = storedConnections || {};
 	}
 
 	async loadHost() {
-		console.log(`Loading host`);
 		const storedHost = await this.ctx.storage.get<string | null>('host');
 		this.host = storedHost || null;
 	}
 
 	async loadCampaign() {
-		console.log(`Loading campaign`);
 		if (!this.host) return;
 
 		const selectedCampaignId = await this.env.ADVENTUREBOARD_KV.get<string | null>(`${this.host}-selectedCampaignId`);
@@ -62,7 +59,6 @@ export class GameInstance extends DurableObject {
 	}
 
 	async loadSnapshot() {
-		console.log(`Loading snapshot`);
 		if (!this.host || !this.campaignId) return;
 
 		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
@@ -78,27 +74,35 @@ export class GameInstance extends DurableObject {
 		}
 
 		this.records = migrationResult.value;
-		this.broadcast(JSON.stringify({ type: 'init', snapshot: { store: this.records, schema: this.schema.serialize() } }));
 	}
 
 	// ------ New Connection ------
 	async fetch(request: Request) {
+		// Validation
+		if (request.headers.get('Upgrade') !== 'websocket') {
+			return new Response('Expected websocket', { status: 426 });
+		}
+
 		const discordUser = JSON.parse(request.headers.get('X-Discord-User') || '{}') as APIUser;
 		if (!discordUser.id) {
 			return new Response('Unauthorized', { status: 401 });
 		}
 
-		if (request.headers.get('Upgrade') !== 'websocket') {
-			return new Response('Expected websocket', { status: 426 });
+		// Init GameInstance if brand new
+		if (!this.host) {
+			this.host = discordUser.id;
+			await this.loadCampaign();
+			await this.loadSnapshot();
+
+			this.ctx.waitUntil(this.ctx.storage.put('host', this.host));
 		}
 
+		// Init WebSocket
 		const webSocketPair = new WebSocketPair();
 		const [client, server] = Object.values(webSocketPair);
 
 		const connectionId = crypto.randomUUID();
 		this.ctx.acceptWebSocket(server, [connectionId]);
-
-		this.addConnection(connectionId, discordUser);
 
 		server.send(JSON.stringify({ type: 'connectionId', connectionId }));
 		server.send(
@@ -107,6 +111,8 @@ export class GameInstance extends DurableObject {
 				snapshot: { store: this.records, schema: this.schema.serialize() },
 			}),
 		);
+
+		this.addConnection(connectionId, discordUser);
 
 		return new Response(null, { status: 101, webSocket: client });
 	}
@@ -159,14 +165,6 @@ export class GameInstance extends DurableObject {
 	/* Connections */
 	// We only put in storage on add/remove because we don't want to hit the storage on every presence update
 	addConnection(connectionId: string, discordUser: APIUser) {
-		if (!this.host) {
-			console.log(`Setting host to ${discordUser.id}`);
-			this.host = discordUser.id;
-			this.ctx.storage.put('host', this.host);
-			this.loadCampaign();
-			this.loadSnapshot();
-		}
-
 		this.connections[connectionId] = {
 			connectionId,
 			discordUser: stripPrivateInfo(discordUser),
