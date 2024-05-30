@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
 import { Presence } from 'adventureboard-ws-types';
 
@@ -99,12 +99,8 @@ export function SyncedCanvas() {
     };
   }, [ws]);
 
-  if (!self) {
-    return <div>Not connected</div>;
-  }
-
-  return (
-    <div className="fixed inset-0 w-[100vw] h-[100vh]">
+  const TldrawMemoized = useMemo(() => {
+    return (
       <Tldraw
         autoFocus
         inferDarkMode
@@ -127,8 +123,14 @@ export function SyncedCanvas() {
         }}
         components={components}
       />
-    </div>
-  );
+    );
+  }, [storeWithStatus, components]);
+
+  if (!self) {
+    return <div>Not connected</div>;
+  }
+
+  return <div className="fixed inset-0 w-[100vw] h-[100vh]">{TldrawMemoized}</div>;
 }
 
 // ----- Handling functions -----
