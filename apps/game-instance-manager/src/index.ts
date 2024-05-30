@@ -78,6 +78,7 @@ export class GameInstance extends DurableObject {
 		}
 
 		this.records = migrationResult.value;
+		this.broadcast(JSON.stringify({ type: 'init', snapshot: { store: this.records, schema: this.schema.serialize() } }));
 	}
 
 	// ------ New Connection ------
