@@ -91,10 +91,10 @@ export class GameInstance extends DurableObject {
 		// Init GameInstance if brand new
 		if (!this.host) {
 			this.host = discordUser.id;
+			await this.ctx.storage.put('host', this.host);
+
 			await this.loadCampaign();
 			await this.loadSnapshot();
-
-			this.ctx.waitUntil(this.ctx.storage.put('host', this.host));
 		}
 
 		// Init WebSocket
