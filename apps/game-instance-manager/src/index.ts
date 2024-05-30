@@ -36,16 +36,19 @@ export class GameInstance extends DurableObject {
 	}
 
 	async loadConnections() {
+		console.log(`Loading connections`);
 		const storedConnections = await this.ctx.storage.get<Connections>('connections');
 		this.connections = storedConnections || {};
 	}
 
 	async loadHost() {
+		console.log(`Loading host`);
 		const storedHost = await this.ctx.storage.get<string | null>('host');
 		this.host = storedHost || null;
 	}
 
 	async loadCampaign() {
+		console.log(`Loading campaign`);
 		if (!this.host) return;
 
 		const selectedCampaignId = await this.env.ADVENTUREBOARD_KV.get<string | null>(`${this.host}-selectedCampaignId`);
@@ -59,6 +62,7 @@ export class GameInstance extends DurableObject {
 	}
 
 	async loadSnapshot() {
+		console.log(`Loading snapshot`);
 		if (!this.host || !this.campaignId) return;
 
 		const snapshotKey = `${this.host}-${this.campaignId}-snapshot`;
@@ -155,6 +159,7 @@ export class GameInstance extends DurableObject {
 	// We only put in storage on add/remove because we don't want to hit the storage on every presence update
 	addConnection(connectionId: string, discordUser: APIUser) {
 		if (!this.host) {
+			console.log(`Setting host to ${discordUser.id}`);
 			this.host = discordUser.id;
 			this.ctx.storage.put('host', this.host);
 			this.loadCampaign();
