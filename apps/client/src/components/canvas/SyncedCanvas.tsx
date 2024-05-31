@@ -50,7 +50,10 @@ export function SyncedCanvas() {
         case 'init':
         case 'recovery':
           console.log(`[SyncedCanvas] Received ${data.type} message. Loading snapshot`);
+          console.log(`[SyncedCanvas] Store:`, JSON.stringify(store, null, 2));
+          console.log(`[SyncedCanvas] Snapshot:`, data.snapshot);
           store.loadSnapshot(data.snapshot);
+          console.log(`[SyncedCanvas] Snapshot loaded. Store:`, JSON.stringify(store, null, 2));
           break;
         case 'presence':
           handlePresence(store, editorRef, presenceMap, data);
