@@ -17,6 +17,6 @@
   "dependencies": {
     "discord-api-types": "^0.37.86",
     "lodash": "^4.17.21",
-    "tldraw": "^2.1.4"
+    "tldraw": "^2.2.0-canary.aba77fd08974"
   }
 }

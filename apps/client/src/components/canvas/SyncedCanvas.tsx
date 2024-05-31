@@ -49,10 +49,7 @@ export function SyncedCanvas() {
       switch (data.type) {
         case 'init':
         case 'recovery':
-          console.log(`[SyncedCanvas] Received ${data.type} message. Loading snapshot`);
-          console.log(`[SyncedCanvas] Snapshot:`, data.snapshot);
           store.loadSnapshot(data.snapshot);
-          console.log(`[SyncedCanvas] Snapshot loaded.`);
           break;
         case 'presence':
           handlePresence(store, editorRef, presenceMap, data);
