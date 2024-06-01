@@ -10,7 +10,7 @@ export function DMShare() {
       }}
     >
       <LiveUsers />
-      <button className="btn btn-primary">Share</button>
+      <button className="bg-primary text-foreground rounded-sm">Share</button>
     </div>
   );
 }
