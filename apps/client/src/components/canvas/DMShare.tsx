@@ -1,10 +1,11 @@
 import { LiveUsers } from '@/components/users/LiveUsers';
+import { Button } from '@/components/ui/button';
 
 export function DMShare() {
   return (
     <div className="w-full flex items-centers gap-x-2 text-center">
       <LiveUsers />
-      <button className="bg-primary text-foreground rounded-sm">Share</button>
+      <Button>Share</Button>
     </div>
   );
 }
