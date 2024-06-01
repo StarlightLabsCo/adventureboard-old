@@ -28,6 +28,7 @@ import 'tldraw/tldraw.css';
 
 import dynamic from 'next/dynamic';
 import { useDiscordStore } from '@/lib/discord';
+import { DMToolbar } from './DMToolbar';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -117,6 +118,10 @@ export function SyncedCanvas() {
           if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
             setComponents({ PageMenu: null });
+          } else {
+            setComponents({
+              Toolbar: DMToolbar,
+            });
           }
 
           editor.registerExternalAssetHandler('file', uploadFile);
