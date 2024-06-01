@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 
 export function DMShare() {
   return (
-    <div className="w-full flex items-centers justify-end gap-x-2 m-1 z-20">
+    <div className="w-full flex items-centers justify-end gap-x-2 p-2 h-10">
       <LiveUsers />
-      <Button className="bg-blue-500">Share</Button>
+      <Button className="bg-blue-500 h-full">Share</Button>
     </div>
   );
 }
