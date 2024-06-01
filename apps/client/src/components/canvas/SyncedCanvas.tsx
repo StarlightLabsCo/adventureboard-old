@@ -29,6 +29,7 @@ import 'tldraw/tldraw.css';
 import dynamic from 'next/dynamic';
 import { useDiscordStore } from '@/lib/discord';
 import { DMToolbar } from './DMToolbar';
+import { DMShare } from './DMShare';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -121,6 +122,7 @@ export function SyncedCanvas() {
           } else {
             setComponents({
               Toolbar: DMToolbar,
+              SharePanel: DMShare,
             });
           }
 
