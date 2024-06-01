@@ -7,7 +7,7 @@ export function DMShare() {
       <LiveUsers />
       <button
         onClick={() => discordSdk.commands.openInviteDialog()}
-        className="bg-blue-500 h-full pointer-events-auto cursor-pointer font-bold text-sm px-2 py-1 hover:bg-blue-600 text-foreground rounded-md"
+        className="bg-blue-500 h-full pointer-events-auto cursor-pointer font-semibold text-xs px-2 py-1 hover:bg-blue-600 text-white rounded-md"
       >
         Share
       </button>
