@@ -29,7 +29,7 @@ import 'tldraw/tldraw.css';
 import dynamic from 'next/dynamic';
 import { useDiscordStore } from '@/lib/discord';
 import { DMToolbar } from './DMToolbar';
-import { DMShare } from './DMShare';
+import { SharePanel } from './SharePanel';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -118,11 +118,11 @@ export function SyncedCanvas() {
           const isHost = useWebsocketStore.getState().useSelf()!.isHost;
           if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
-            setComponents({ PageMenu: null });
+            setComponents({ PageMenu: null, SharePanel: SharePanel });
           } else {
             setComponents({
               Toolbar: DMToolbar,
-              SharePanel: DMShare,
+              SharePanel: SharePanel,
             });
           }
 
