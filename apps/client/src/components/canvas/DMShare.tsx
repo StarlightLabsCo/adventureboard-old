@@ -5,7 +5,7 @@ export function DMShare() {
   return (
     <div className="w-full flex items-centers justify-end gap-x-2 p-1 mr-1 h-10 z-[var(--layer-panels)]">
       <LiveUsers />
-      <Button className="bg-blue-500 h-full">Share</Button>
+      <Button className="bg-blue-500 h-full pointer-events-auto">Share</Button>
     </div>
   );
 }
