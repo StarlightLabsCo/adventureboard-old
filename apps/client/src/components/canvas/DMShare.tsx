@@ -1,14 +1,16 @@
+import { LiveUsers } from '@/components/users/LiveUsers';
+
 export function DMShare() {
   return (
     <div
       style={{
-        backgroundColor: 'thistle',
         width: '100%',
         textAlign: 'center',
         minWidth: '80px',
       }}
     >
-      <p>Share Zone</p>
+      <LiveUsers />
+      <button className="btn btn-primary">Share</button>
     </div>
   );
 }

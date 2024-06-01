@@ -5,7 +5,6 @@ import { setupDiscordSDK, useDiscordStore } from '@/lib/discord';
 import { useWebsocketStore } from '@/lib/websocket';
 
 import { SyncedCanvas } from '@/components/canvas/SyncedCanvas';
-import { LiveUIElements } from '@/components/LiveUIElements';
 import { CommandMenu } from '@/components/menu/command';
 import { Loading } from '@/components/Loading';
 
@@ -30,7 +29,6 @@ export default function Page() {
   return (
     <>
       <SyncedCanvas />
-      <LiveUIElements />
       <CommandMenu />
     </>
   );

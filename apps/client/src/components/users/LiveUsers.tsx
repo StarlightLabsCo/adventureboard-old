@@ -13,7 +13,7 @@ function LiveUsersComponent() {
   };
 
   return (
-    <div className="absolute top-1 right-1 flex gap-x-1 z-10 items-center ">
+    <div className="flex gap-x-1 z-10 items-center">
       {currentUser && (
         <Avatar
           name="You"

@@ -12,7 +12,7 @@ export function Avatar({ name, src, className }: Props) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <img src={src} height={100} width={100} className={cn('h-9 w-9 rounded-full', className)} alt={name} />
+        <img src={src} height={100} width={100} className={cn('h-4 w-4 rounded-full', className)} alt={name} />
       </TooltipTrigger>
       <TooltipContent>{name}</TooltipContent>
     </Tooltip>
