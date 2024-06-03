@@ -22,7 +22,6 @@ import {
   AssetRecordType,
   getHashForString,
   MediaHelpers,
-  DefaultStylePanel,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';

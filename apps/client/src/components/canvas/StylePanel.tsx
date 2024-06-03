@@ -4,7 +4,7 @@ export function StylePanel() {
   const editor = useEditor();
   const styles = useRelevantStyles();
 
-  if (!styles || editor.getCurrentToolId() === 'select') return null;
+  if (!styles || (editor.getCurrentToolId() === 'select' && editor.getSelectedShapes().length == 0)) return null;
 
   return (
     <DefaultStylePanel>
