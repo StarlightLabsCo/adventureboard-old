@@ -22,6 +22,7 @@ import {
   AssetRecordType,
   getHashForString,
   MediaHelpers,
+  DefaultStylePanel,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -100,6 +101,17 @@ export function SyncedCanvas() {
       unsubscribe();
     };
   }, [ws]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    const currentToolId = editorRef.current.getCurrentToolId();
+    if (currentToolId === 'select') {
+      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: null }));
+    } else {
+      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: undefined }));
+    }
+  }, [editorRef.current?.getCurrentToolId()]);
 
   const TldrawMemoized = useMemo(() => {
     return (
