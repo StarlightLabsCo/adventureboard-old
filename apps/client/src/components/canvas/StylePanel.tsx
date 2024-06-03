@@ -1,6 +1,6 @@
-import { useEditor, useRelevantStyles, DefaultStylePanel, DefaultStylePanelContent } from 'tldraw';
+import { track, useEditor, useRelevantStyles, DefaultStylePanel, DefaultStylePanelContent } from 'tldraw';
 
-export function StylePanel() {
+export const StylePanel = track(() => {
   const editor = useEditor();
   const styles = useRelevantStyles();
 
@@ -11,4 +11,4 @@ export function StylePanel() {
       <DefaultStylePanelContent styles={styles} />
     </DefaultStylePanel>
   );
-}
+});
