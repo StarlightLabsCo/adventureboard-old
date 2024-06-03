@@ -31,6 +31,7 @@ import dynamic from 'next/dynamic';
 import { useDiscordStore } from '@/lib/discord';
 import { DMToolbar } from './DMToolbar';
 import { SharePanel } from './SharePanel';
+import { StylePanel } from './StylePanel';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -102,17 +103,6 @@ export function SyncedCanvas() {
     };
   }, [ws]);
 
-  useEffect(() => {
-    if (!editorRef.current) return;
-
-    const currentToolId = editorRef.current.getCurrentToolId();
-    if (currentToolId === 'select') {
-      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: null }));
-    } else {
-      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: DefaultStylePanel }));
-    }
-  }, [editorRef.current?.getCurrentToolId()]);
-
   const TldrawMemoized = useMemo(() => {
     return (
       <Tldraw
@@ -130,11 +120,12 @@ export function SyncedCanvas() {
           const isHost = useWebsocketStore.getState().useSelf()!.isHost;
           if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
-            setComponents({ PageMenu: null, SharePanel: SharePanel });
+            setComponents({ PageMenu: null, SharePanel: SharePanel, StylePanel: StylePanel });
           } else {
             setComponents({
               Toolbar: DMToolbar,
               SharePanel: SharePanel,
+              StylePanel: StylePanel,
             });
           }
 
