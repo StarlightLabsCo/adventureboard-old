@@ -109,7 +109,7 @@ export function SyncedCanvas() {
     if (currentToolId === 'select') {
       setComponents((prevComponents) => ({ ...prevComponents, StylePanel: null }));
     } else {
-      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: undefined }));
+      setComponents((prevComponents) => ({ ...prevComponents, StylePanel: DefaultStylePanel }));
     }
   }, [editorRef.current?.getCurrentToolId()]);
 
