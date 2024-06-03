@@ -22,6 +22,8 @@ import {
   AssetRecordType,
   getHashForString,
   MediaHelpers,
+  TLPointerEvent,
+  TLPointerEventInfo,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -113,7 +115,17 @@ export function SyncedCanvas() {
           editorRef.current = editor;
 
           editor.on('event', (event) => {
-            sendPresence(editor, event);
+            if (event.name === 'pointer_move' && event.target === 'canvas') {
+              sendPresence(editor, event);
+            }
+          });
+
+          editor.store.listen((change: HistoryEntry<TLRecord>) => {
+            for (const [from, to] of Object.values(change.changes.updated)) {
+              if (from.typeName === 'instance' && to.typeName === 'instance' && from.currentPageId !== to.currentPageId) {
+                console.log('Instance moved to a different page');
+              }
+            }
           });
 
           const isHost = useWebsocketStore.getState().useSelf()!.isHost;
@@ -176,13 +188,11 @@ const handleUpdates = (store: TLStore, data: { updates: HistoryEntry<TLRecord>[]
 };
 
 // Presence
-const sendPresence = throttle((editor: Editor, event: TLEventInfo) => {
-  if (event.name === 'pointer_move' && event.target === 'canvas') {
-    const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
-    const { x, y } = editor.screenToPage(event.point);
+const sendPresence = throttle((editor: Editor, event: TLPointerEventInfo) => {
+  const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
+  const { x, y } = editor.screenToPage(event.point);
 
-    updateMyPresence({ cursor: { x, y } });
-  }
+  updateMyPresence({ cursor: { x, y } });
 }, 1000 / 120);
 
 const handlePresence = (
