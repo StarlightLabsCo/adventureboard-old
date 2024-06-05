@@ -11,7 +11,6 @@ export const MovePlayersPanel = track(() => {
 
   const handleTransition = () => {
     if (!ws) return;
-    console.log(`Transitioning to ${editor.getCurrentPageId()}`);
 
     const newGameState = {
       currentPageId: editor.getCurrentPageId(),
@@ -27,7 +26,7 @@ export const MovePlayersPanel = track(() => {
     );
   };
 
-  if (editor.getCurrentPageId() !== useTldrawStore.getState().gameState.currentPageId) {
+  if (editor.getCurrentPageId().toString() !== useTldrawStore.getState().gameState.currentPageId) {
     return (
       <div className="flex flex-col items-center">
         <div className="text-foreground">Players are currently viewing {playersPage?.name}</div>
