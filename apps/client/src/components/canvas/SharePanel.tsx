@@ -7,7 +7,7 @@ export function SharePanel() {
       <LiveUsers />
       <button
         onClick={() => discordSdk.commands.openInviteDialog()}
-        className="bg-blue-500 h-full pointer-events-auto cursor-pointer font-semibold text-xs px-3 py-1 hover:bg-blue-600 text-white rounded-[--radius-3]"
+        className="shrink-0 bg-blue-500 h-full pointer-events-auto cursor-pointer font-semibold text-xs px-3 py-1 hover:bg-blue-600 text-white rounded-[--radius-3]"
       >
         Invite
       </button>
