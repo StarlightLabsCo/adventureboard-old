@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/tailwind/utils';
 
 type Props = {
@@ -9,12 +8,5 @@ type Props = {
 };
 
 export function Avatar({ name, src, className }: Props) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <img src={src} className={cn('h-[25px] w-[25px] aspect-square z-10 rounded-full pointer-events-auto', className)} alt={name} />
-      </TooltipTrigger>
-      <TooltipContent>{name}</TooltipContent>
-    </Tooltip>
-  );
+  return <img src={src} className={cn('h-[25px] w-[25px] aspect-square z-10 rounded-full pointer-events-auto', className)} alt={name} />;
 }
