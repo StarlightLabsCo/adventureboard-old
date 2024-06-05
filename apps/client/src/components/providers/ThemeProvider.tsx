@@ -10,7 +10,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 
   const theme = useTheme();
 
-  console.log(`[ThemeProvider] theme: ${theme}`);
+  console.log(`[ThemeProvider] theme: ${JSON.stringify(theme)}`);
   const userPreferences = getUserPreferences();
 
   console.log(`[ThemeProvider] userPreferences: ${JSON.stringify(userPreferences)}`);
