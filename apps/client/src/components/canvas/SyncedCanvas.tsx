@@ -33,6 +33,7 @@ import { useDiscordStore } from '@/lib/discord';
 import { DMToolbar } from './DMToolbar';
 import { SharePanel } from './SharePanel';
 import { StylePanel } from './StylePanel';
+import { MovePlayersPanel } from './MovePlayersPanel';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -117,6 +118,23 @@ export function SyncedCanvas() {
   }, [ws]);
 
   useEffect(() => {
+    const isHost = useWebsocketStore.getState().useSelf()!.isHost;
+    if (!editorRef.current || !isHost) return;
+
+    if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
+      setComponents({
+        ...components,
+        TopPanel: MovePlayersPanel,
+      });
+    } else {
+      setComponents({
+        ...components,
+        TopPanel: null,
+      });
+    }
+  }, [editorRef.current, gameState]);
+
+  useEffect(() => {
     if (!editorRef.current) return;
 
     if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
@@ -138,29 +156,6 @@ export function SyncedCanvas() {
           editor.on('event', (event) => {
             if (event.name === 'pointer_move' && event.target === 'canvas') {
               sendPresence(editor, event);
-            }
-          });
-
-          editor.store.listen((change: HistoryEntry<TLRecord>) => {
-            for (const [from, to] of Object.values(change.changes.updated)) {
-              if (from.typeName === 'instance' && to.typeName === 'instance' && from.currentPageId !== to.currentPageId) {
-                // TODO: don't immediately switch party to this page, this current setup is just for testing
-                // TODO: the behavior we want is to show a little button that says "Move party to this page" so the DM can edit it in the background of other stuff potentially
-                if (!ws) return;
-
-                let gameState = {
-                  currentPageId: to.currentPageId,
-                };
-
-                setGameState(gameState);
-
-                ws.send(
-                  JSON.stringify({
-                    type: 'gameState',
-                    gameState,
-                  }),
-                );
-              }
             }
           });
 
