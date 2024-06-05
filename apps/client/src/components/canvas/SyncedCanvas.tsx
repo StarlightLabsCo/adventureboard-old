@@ -41,6 +41,7 @@ const overrides: TLUiOverrides = {
   translations: {
     en: {
       'page-menu.title': 'Scenes',
+      'page-menu.new-page-initial-name': 'Scene',
     },
   },
 };
