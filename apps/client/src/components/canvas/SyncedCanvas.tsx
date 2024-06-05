@@ -34,7 +34,6 @@ import { DMToolbar } from './DMToolbar';
 import { SharePanel } from './SharePanel';
 import { StylePanel } from './StylePanel';
 import { MovePlayersPanel } from './MovePlayersPanel';
-import { useTldrawStore } from '@/lib/tldraw';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -55,7 +54,7 @@ export function SyncedCanvas() {
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
-  const gameState = useTldrawStore().gameState;
+  const [gameState, setGameState] = useState<GameState>({ currentPageId: 'page:page' });
 
   const ws = useWebsocketStore().ws;
   const self = useWebsocketStore().useSelf();
@@ -75,7 +74,7 @@ export function SyncedCanvas() {
           handleUpdates(store, data, ws);
           break;
         case 'gameState':
-          useTldrawStore.setState({ gameState: data.gameState });
+          setGameState(data.gameState);
       }
     },
     [store, editorRef, presenceMap, ws],
