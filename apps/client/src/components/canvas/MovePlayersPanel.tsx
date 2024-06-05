@@ -28,7 +28,7 @@ export const MovePlayersPanel = track(() => {
 
   if (editor.getCurrentPageId() !== playersPageId) {
     return (
-      <div className="flex flex-col items-center -translate-x-1/2">
+      <div className="flex flex-col items-center">
         <div
           className="font-medium drop-shadow-md"
           style={{
@@ -39,7 +39,7 @@ export const MovePlayersPanel = track(() => {
         </div>
         <div
           onClick={handleTransition}
-          className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-md cursor-pointer hover:bg-red-400"
+          className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-[var(--radius-4)] cursor-pointer hover:bg-red-400"
         >
           Summon
         </div>
