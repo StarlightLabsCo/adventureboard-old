@@ -19,7 +19,7 @@
     --secondary: #3182ed;
     --secondary-foreground: #fff;
 
-    --muted: rgba(0,0,0,.1);
+    --muted: rgba(0, 0, 0, 0.1);
     --muted-foreground: #2e2e2e;
 
     --accent: #e74b4b;
@@ -64,6 +64,7 @@
     --input: #33333d;
     --ring: #a5c3f3;
   }
+}
 
 @layer base {
   * {
