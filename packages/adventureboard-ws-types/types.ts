@@ -14,4 +14,8 @@ interface Presence {
   // Add other presence-related fields here
 }
 
-export type { Connections, Connection, Presence };
+interface GameState {
+  currentPageId: string;
+}
+
+export type { Connections, Connection, Presence, GameState };

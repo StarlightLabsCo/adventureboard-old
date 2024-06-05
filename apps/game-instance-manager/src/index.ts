@@ -1,12 +1,12 @@
 import { DurableObject } from 'cloudflare:workers';
-import { Connections, Presence } from 'adventureboard-ws-types';
-import { HistoryEntry, TLRecord, TLStoreSnapshot, createTLSchema, throttle } from 'tldraw';
+import { Connections, Presence, GameState } from 'adventureboard-ws-types';
+import { HistoryEntry, TLRecord, createTLSchema, throttle } from 'tldraw';
 import { fetchDiscordUser, stripPrivateInfo } from '@/discord';
 import { APIUser } from 'discord-api-types/v10';
 
 export interface Env {
 	GAME_INSTANCES: DurableObjectNamespace<GameInstance>;
-	ADVENTUREBOARD_KV: KVNamespace; // KV keys: hostId-campaigns, hostId-selectedCampaignId, hostId-campaignId-snapshot
+	ADVENTUREBOARD_KV: KVNamespace; // KV keys: hostId-campaigns, hostId-selectedCampaignId, hostId-campaignId-snapshot, hostId-campaignId-gameState
 	DISCORD_API_BASE: string;
 }
 
@@ -19,6 +19,7 @@ export class GameInstance extends DurableObject {
 
 	private host: string | null = null;
 	private campaignId: string | null = null;
+	private gameState: GameState | null = null;
 
 	// ------ Init ------
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -28,11 +29,13 @@ export class GameInstance extends DurableObject {
 
 		this.ctx.blockConcurrencyWhile(async () => {
 			try {
+				// TODO: loading connections and loading other info could be in parallel
 				await this.loadConnections();
 
 				await this.loadHost();
 				await this.loadCampaign();
 				await this.loadSnapshot();
+				await this.loadGameState();
 			} catch (e) {
 				console.error(e);
 			}
@@ -82,6 +85,18 @@ export class GameInstance extends DurableObject {
 		this.records = migrationResult.value;
 	}
 
+	async loadGameState() {
+		if (!this.host || !this.campaignId) return;
+
+		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
+		const gameStateJSON = await this.env.ADVENTUREBOARD_KV.get<string>(gameStateKey);
+		if (!gameStateJSON) {
+			this.gameState = {
+				currentPageId: 'page:page',
+			};
+		}
+	}
+
 	// ------ New Connection ------
 	async fetch(request: Request) {
 		// Validation
@@ -117,6 +132,12 @@ export class GameInstance extends DurableObject {
 				snapshot: { store: this.records, schema: this.schema.serialize() },
 			}),
 		);
+		server.send(
+			JSON.stringify({
+				type: 'gameState',
+				gameState: this.gameState,
+			}),
+		);
 
 		this.addConnection(connectionId, discordUser);
 
@@ -137,6 +158,9 @@ export class GameInstance extends DurableObject {
 				break;
 			case 'recovery':
 				this.sendRecovery(ws);
+				break;
+			case 'gameState':
+				this.updateGameState(connectionId, data.gameState);
 				break;
 			default:
 				break;
@@ -214,6 +238,13 @@ export class GameInstance extends DurableObject {
 		} catch (e) {
 			this.sendRecovery(ws);
 		}
+	}
+
+	/* Game State */
+	updateGameState(connectionId: string, gameState: GameState) {
+		this.gameState = gameState;
+		this.broadcast(JSON.stringify({ type: 'gameState', gameState }), [connectionId]);
+		this.ctx.storage.put('gameState', this.gameState);
 	}
 
 	/* Recovery */

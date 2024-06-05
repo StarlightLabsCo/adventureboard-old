@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
-import { Presence } from 'adventureboard-ws-types';
+import { GameState, Presence } from 'adventureboard-ws-types';
 
 // Tl draw
 import {
@@ -23,6 +23,7 @@ import {
   MediaHelpers,
   TLPointerEventInfo,
   TLUiOverrides,
+  TLPageId,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -52,6 +53,8 @@ export function SyncedCanvas() {
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
+  const [gameState, setGameState] = useState<GameState>({ currentPageId: 'page:page' });
+
   const ws = useWebsocketStore().ws;
   const self = useWebsocketStore().useSelf();
 
@@ -69,6 +72,8 @@ export function SyncedCanvas() {
         case 'update':
           handleUpdates(store, data, ws);
           break;
+        case 'gameState':
+          setGameState(data.gameState);
       }
     },
     [store, editorRef, presenceMap, ws],
@@ -111,6 +116,14 @@ export function SyncedCanvas() {
     };
   }, [ws]);
 
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
+      editorRef.current.setCurrentPage(gameState.currentPageId as TLPageId);
+    }
+  }, [gameState]);
+
   const TldrawMemoized = useMemo(() => {
     return (
       <Tldraw
@@ -131,7 +144,22 @@ export function SyncedCanvas() {
           editor.store.listen((change: HistoryEntry<TLRecord>) => {
             for (const [from, to] of Object.values(change.changes.updated)) {
               if (from.typeName === 'instance' && to.typeName === 'instance' && from.currentPageId !== to.currentPageId) {
-                console.log('Instance moved to a different page');
+                // TODO: don't immediately switch party to this page, this current setup is just for testing
+                // TODO: the behavior we want is to show a little button that says "Move party to this page" so the DM can edit it in the background of other stuff potentially
+                if (!ws) return;
+
+                let gameState = {
+                  currentPageId: to.currentPageId,
+                };
+
+                setGameState(gameState);
+
+                ws.send(
+                  JSON.stringify({
+                    type: 'gameState',
+                    gameState,
+                  }),
+                );
               }
             }
           });

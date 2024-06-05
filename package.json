@@ -20,5 +20,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@tldraw/assets": "^2.2.0-canary.7071b5fee24e",
+    "tldraw": "^2.2.0-canary.7071b5fee24e"
+  }
 }

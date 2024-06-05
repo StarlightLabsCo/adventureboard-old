@@ -17,7 +17,6 @@
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@tldraw/assets": "^2.2.0-canary.aba77fd08974",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -30,7 +29,6 @@
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "tldraw": "^2.2.0-canary.aba77fd08974",
     "uuid": "^9.0.1",
     "zustand": "^4.5.2"
   },
