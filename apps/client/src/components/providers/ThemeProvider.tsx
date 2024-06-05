@@ -9,12 +9,10 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const theme = useTheme();
   const userPreferences = getUserPreferences();
   useEffect(() => {
-    console.log('Theme provider useEffect');
+    console.log(`Setting theme to ${userPreferences.isDarkMode ? 'dark' : 'light'}`);
     if (userPreferences.isDarkMode) {
-      console.log('Setting theme to dark');
       theme.setTheme('dark');
     } else {
-      console.log('Setting theme to light');
       theme.setTheme('light');
     }
   }, [userPreferences.isDarkMode]);
