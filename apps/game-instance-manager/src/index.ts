@@ -19,7 +19,9 @@ export class GameInstance extends DurableObject {
 
 	private host: string | null = null;
 	private campaignId: string | null = null;
-	private gameState: GameState | null = null;
+	private gameState: GameState = {
+		currentPageId: 'page:page',
+	};
 
 	// ------ Init ------
 	constructor(ctx: DurableObjectState, env: Env) {
@@ -91,9 +93,6 @@ export class GameInstance extends DurableObject {
 		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
 		const gameStateJSON = await this.env.ADVENTUREBOARD_KV.get<string>(gameStateKey);
 		if (!gameStateJSON) {
-			this.gameState = {
-				currentPageId: 'page:page',
-			};
 			this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
 		} else {
 			this.gameState = JSON.parse(gameStateJSON);
