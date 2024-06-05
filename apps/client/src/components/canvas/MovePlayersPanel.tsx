@@ -29,10 +29,17 @@ export const MovePlayersPanel = track(() => {
   if (editor.getCurrentPageId() !== playersPageId) {
     return (
       <div className="flex flex-col items-center">
-        <div className="text-[color-text-0] font-medium drop-shadow-md">Players are currently viewing Scene: {playersPage?.name}</div>
+        <div
+          className="font-medium drop-shadow-md"
+          style={{
+            color: 'var(--color-text-0)',
+          }}
+        >
+          Players are currently viewing Scene: {playersPage?.name}
+        </div>
         <div
           onClick={handleTransition}
-          className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-md cursor-pointer hover:bg-red-400"
+          className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-lg cursor-pointer hover:bg-red-400"
         >
           Summon
         </div>
