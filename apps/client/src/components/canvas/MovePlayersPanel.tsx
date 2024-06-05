@@ -6,7 +6,7 @@ export const MovePlayersPanel = track(() => {
   const editor = useEditor();
   const { ws } = useWebsocketStore.getState();
 
-  const playersPageId = useTldrawStore.getState().gameState.currentPageId;
+  const playersPageId = useTldrawStore((state) => state.gameState.currentPageId);
   const playersPage = editor.getPage(playersPageId as TLPageId);
 
   const handleTransition = () => {
@@ -26,7 +26,7 @@ export const MovePlayersPanel = track(() => {
     );
   };
 
-  if (editor.getCurrentPageId().toString() !== useTldrawStore.getState().gameState.currentPageId) {
+  if (editor.getCurrentPageId() !== playersPageId) {
     return (
       <div className="flex flex-col items-center">
         <div className="text-foreground">Players are currently viewing {playersPage?.name}</div>
