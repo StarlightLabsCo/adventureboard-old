@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
 import './globals.css';
 
-import { Providers } from '@/components/providers';
 import { cn } from '@/lib/tailwind/utils';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -20,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className, 'bg-background')}>
-        <Providers>{children}</Providers>
+        <ThemeProvider attribute="class" forcedTheme="light" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
