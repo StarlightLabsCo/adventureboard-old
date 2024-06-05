@@ -8,7 +8,6 @@ import { Presence } from 'adventureboard-ws-types';
 import {
   TLStoreWithStatus,
   Editor,
-  TLEventInfo,
   throttle,
   TLStore,
   HistoryEntry,
@@ -22,8 +21,8 @@ import {
   AssetRecordType,
   getHashForString,
   MediaHelpers,
-  TLPointerEvent,
   TLPointerEventInfo,
+  TLUiOverrides,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -35,6 +34,14 @@ import { SharePanel } from './SharePanel';
 import { StylePanel } from './StylePanel';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
+
+const overrides: TLUiOverrides = {
+  translations: {
+    en: {
+      'page-menu.title': 'Scenes',
+    },
+  },
+};
 
 export function SyncedCanvas() {
   const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
@@ -109,6 +116,7 @@ export function SyncedCanvas() {
       <Tldraw
         autoFocus
         inferDarkMode
+        overrides={overrides}
         assetUrls={assetUrls}
         store={storeWithStatus}
         onMount={(editor) => {
