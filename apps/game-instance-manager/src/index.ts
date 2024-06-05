@@ -94,6 +94,9 @@ export class GameInstance extends DurableObject {
 			this.gameState = {
 				currentPageId: 'page:page',
 			};
+			this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
+		} else {
+			this.gameState = JSON.parse(gameStateJSON);
 		}
 	}
 
