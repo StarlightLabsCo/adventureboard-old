@@ -119,20 +119,29 @@ export function SyncedCanvas() {
 
   useEffect(() => {
     const isHost = useWebsocketStore.getState().useSelf()?.isHost;
-    if (!editorRef.current || !isHost) return;
+    console.log(`Checking if the current user is the host: ${isHost}`);
+    if (!editorRef.current || !isHost) {
+      console.log(`Early exit from useEffect, editorRef.current: ${editorRef.current}, isHost: ${isHost}`);
+      return;
+    }
 
+    console.log(
+      `Current page ID from editor: ${editorRef.current.getCurrentPageId()}, Current page ID from gameState: ${gameState.currentPageId}`,
+    );
     if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
+      console.log('Page IDs do not match, setting TopPanel to MovePlayersPanel');
       setComponents({
         ...components,
         TopPanel: MovePlayersPanel,
       });
     } else {
+      console.log('Page IDs match, setting TopPanel to null');
       setComponents({
         ...components,
         TopPanel: null,
       });
     }
-  }, [editorRef.current, gameState]);
+  }, [editorRef.current, gameState, useWebsocketStore.getState().useSelf()]);
 
   useEffect(() => {
     if (!editorRef.current) return;
