@@ -5,7 +5,7 @@ export const StylePanel = track(() => {
   const styles = useRelevantStyles();
 
   if (!styles || (editor.getCurrentToolId() === 'select' && editor.getSelectedShapes().length == 0))
-    return <div className="w-[148px] h-[1px] pointer-events-none" />;
+    return <div className="w-[164px] h-[1px] pointer-events-none" />;
 
   return (
     <DefaultStylePanel>
