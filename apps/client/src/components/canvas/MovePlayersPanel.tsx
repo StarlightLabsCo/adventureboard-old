@@ -6,6 +6,8 @@ export const MovePlayersPanel = track(() => {
   const editor = useEditor();
   const { ws } = useWebsocketStore.getState();
 
+  const connections = useWebsocketStore((state) => state.connections);
+
   const playersPageId = useTldrawStore((state) => state.gameState.currentPageId);
   const playersPage = editor.getPage(playersPageId as TLPageId);
 
@@ -26,7 +28,7 @@ export const MovePlayersPanel = track(() => {
     );
   };
 
-  if (editor.getCurrentPageId() !== playersPageId) {
+  if (editor.getCurrentPageId() !== playersPageId && Object.keys(connections).length > 1) {
     return (
       <div className="flex flex-col items-center">
         <div
