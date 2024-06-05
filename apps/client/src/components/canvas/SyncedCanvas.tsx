@@ -34,6 +34,7 @@ import { DMToolbar } from './DMToolbar';
 import { SharePanel } from './SharePanel';
 import { StylePanel } from './StylePanel';
 import { MovePlayersPanel } from './MovePlayersPanel';
+import { useTldrawStore } from '@/lib/tldraw';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -54,7 +55,7 @@ export function SyncedCanvas() {
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
-  const [gameState, setGameState] = useState<GameState>({ currentPageId: 'page:page' });
+  const gameState = useTldrawStore().gameState;
 
   const ws = useWebsocketStore().ws;
   const self = useWebsocketStore().useSelf();
@@ -74,7 +75,7 @@ export function SyncedCanvas() {
           handleUpdates(store, data, ws);
           break;
         case 'gameState':
-          setGameState(data.gameState);
+          useTldrawStore.setState({ gameState: data.gameState });
       }
     },
     [store, editorRef, presenceMap, ws],
@@ -118,32 +119,6 @@ export function SyncedCanvas() {
   }, [ws]);
 
   useEffect(() => {
-    const isHost = useWebsocketStore.getState().useSelf()?.isHost;
-    console.log(`[DEBUG] Checking if the current user is the host: ${isHost}`);
-    if (!editorRef.current || !isHost) {
-      console.log(`[DEBUG] Early exit from useEffect, editorRef.current: ${editorRef.current}, isHost: ${isHost}`);
-      return;
-    }
-
-    console.log(
-      `[DEBUG] Current page ID from editor: ${editorRef.current.getCurrentPageId()}, Current page ID from gameState: ${gameState.currentPageId}`,
-    );
-    if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
-      console.log('[DEBUG] Page IDs do not match, setting TopPanel to MovePlayersPanel');
-      setComponents({
-        ...components,
-        TopPanel: MovePlayersPanel,
-      });
-    } else {
-      console.log('[DEBUG] Page IDs match, setting TopPanel to null');
-      setComponents({
-        ...components,
-        TopPanel: null,
-      });
-    }
-  }, [editorRef.current?.getCurrentPageId(), gameState, useWebsocketStore.getState().useSelf()]);
-
-  useEffect(() => {
     if (!editorRef.current) return;
 
     if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
@@ -177,6 +152,7 @@ export function SyncedCanvas() {
               Toolbar: DMToolbar,
               SharePanel: SharePanel,
               StylePanel: StylePanel,
+              TopPanel: MovePlayersPanel,
             });
           }
 

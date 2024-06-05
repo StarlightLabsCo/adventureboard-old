@@ -1,23 +1,39 @@
-// if (!ws) return;
+import { TLPageId, track, useEditor } from 'tldraw';
+import { useWebsocketStore } from '@/lib/websocket';
+import { useTldrawStore } from '@/lib/tldraw';
 
-// let gameState = {
-//   currentPageId: to.currentPageId,
-// };
+export const MovePlayersPanel = track(() => {
+  const editor = useEditor();
+  const { ws } = useWebsocketStore.getState();
 
-// setGameState(gameState);
+  const playersPageId = useTldrawStore.getState().gameState.currentPageId;
+  const playersPage = editor.getPage(playersPageId as TLPageId);
 
-// ws.send(
-//   JSON.stringify({
-//     type: 'gameState',
-//     gameState,
-//   }),
-// );
+  const handleTransition = () => {
+    if (!ws) return;
 
-export function MovePlayersPanel() {
-  return (
-    <div>
-      <div>Players are current on Scene 1</div>
-      <div>Transition</div>
-    </div>
-  );
-}
+    const newGameState = {
+      currentPageId: editor.getCurrentPageId(),
+    };
+
+    useTldrawStore.setState({ gameState: newGameState });
+
+    ws.send(
+      JSON.stringify({
+        type: 'gameState',
+        gameState: newGameState,
+      }),
+    );
+  };
+
+  if (editor.getCurrentPageId() !== useTldrawStore.getState().gameState.currentPageId) {
+    return (
+      <div>
+        <div>Players are currently on {playersPage?.name}</div>
+        <button onClick={handleTransition}>Transition</button>
+      </div>
+    );
+  } else {
+    return null;
+  }
+});
