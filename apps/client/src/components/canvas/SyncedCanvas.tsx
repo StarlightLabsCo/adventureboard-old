@@ -141,7 +141,7 @@ export function SyncedCanvas() {
         TopPanel: null,
       });
     }
-  }, [editorRef.current, gameState, useWebsocketStore.getState().useSelf()]);
+  }, [editorRef.current?.getCurrentPageId(), gameState, useWebsocketStore.getState().useSelf()]);
 
   useEffect(() => {
     if (!editorRef.current) return;
