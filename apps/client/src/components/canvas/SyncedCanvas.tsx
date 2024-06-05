@@ -118,7 +118,7 @@ export function SyncedCanvas() {
   }, [ws]);
 
   useEffect(() => {
-    const isHost = useWebsocketStore.getState().useSelf()!.isHost;
+    const isHost = useWebsocketStore.getState().useSelf()?.isHost;
     if (!editorRef.current || !isHost) return;
 
     if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
@@ -159,7 +159,7 @@ export function SyncedCanvas() {
             }
           });
 
-          const isHost = useWebsocketStore.getState().useSelf()!.isHost;
+          const isHost = useWebsocketStore.getState().useSelf()?.isHost;
           if (!isHost) {
             editor.updateInstanceState({ isReadonly: true });
             setComponents({ PageMenu: null, SharePanel: SharePanel, StylePanel: StylePanel });
