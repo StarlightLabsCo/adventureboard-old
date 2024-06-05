@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  --radius: 0.5rem;
-
   .tl-theme__light {
     --color-accent: hsl(0, 76%, 60%);
     --color-background: hsl(210, 20%, 98%);
@@ -48,6 +46,8 @@
     --shadow-3: 0px 1px 2px hsl(0, 0%, 0%, 28%), 0px 2px 6px hsl(0, 0%, 0%, 14%), inset 0px 0px 0px 1px var(--color-panel-contrast);
     --shadow-4: 0px 0px 3px hsl(0, 0%, 0%, 19%), 0px 5px 4px hsl(0, 0%, 0%, 16%), 0px 2px 16px hsl(0, 0%, 0%, 6%),
       inset 0px 0px 0px 1px var(--color-panel-contrast);
+
+    --radius: 0.5rem;
   }
 
   .tl-theme__dark {
@@ -90,5 +90,7 @@
     --shadow-1: 0px 1px 2px hsl(0, 0%, 0%, 16.1%), 0px 1px 3px hsl(0, 0%, 0%, 22%), inset 0px 0px 0px 1px var(--color-panel-contrast);
     --shadow-2: 0px 1px 3px hsl(0, 0%, 0%, 66.6%), 0px 2px 6px hsl(0, 0%, 0%, 33%), inset 0px 0px 0px 1px var(--color-panel-contrast);
     --shadow-3: 0px 1px 3px hsl(0, 0%, 0%, 50%), 0px 2px 12px hsl(0, 0%, 0%, 50%), inset 0px 0px 0px 1px var(--color-panel-contrast);
+
+    --radius: 0.5rem;
   }
 }
