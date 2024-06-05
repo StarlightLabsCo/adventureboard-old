@@ -5,7 +5,6 @@ import { setupDiscordSDK, useDiscordStore } from '@/lib/discord';
 import { useWebsocketStore } from '@/lib/websocket';
 
 import { SyncedCanvas } from '@/components/canvas/SyncedCanvas';
-import { CommandMenu } from '@/components/menu/command';
 import { Loading } from '@/components/Loading';
 
 export default function Page() {
@@ -29,7 +28,6 @@ export default function Page() {
   return (
     <>
       <SyncedCanvas />
-      <CommandMenu />
     </>
   );
 }

@@ -3,74 +3,90 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
-
-    --radius: 0.5rem;
+  .tl-theme__light {
+    --color-accent: hsl(0, 76%, 60%);
+    --color-background: hsl(210, 20%, 98%);
+    --color-brush-fill: hsl(0, 0%, 56%, 10.2%);
+    --color-brush-stroke: hsl(0, 0%, 56%, 25.1%);
+    --color-grid: hsl(0, 0%, 43%);
+    --color-low: hsl(204, 16%, 94%);
+    --color-low-border: hsl(204, 16%, 92%);
+    --color-culled: hsl(204, 14%, 93%);
+    --color-muted-none: hsl(0, 0%, 0%, 0%);
+    --color-muted-0: hsl(0, 0%, 0%, 2%);
+    --color-muted-1: hsl(0, 0%, 0%, 10%);
+    --color-muted-2: hsl(0, 0%, 0%, 4.3%);
+    --color-hint: hsl(0, 0%, 0%, 5.5%);
+    --color-overlay: hsl(0, 0%, 0%, 20%);
+    --color-divider: hsl(0, 0%, 91%);
+    --color-panel-contrast: hsl(0, 0%, 100%);
+    --color-panel-overlay: hsl(0, 0%, 100%, 82%);
+    --color-panel: hsl(0, 0%, 99%);
+    --color-focus: hsl(214, 100%, 29%);
+    --color-selected: hsl(214, 84%, 56%);
+    --color-selected-contrast: hsl(0, 0%, 100%);
+    --color-selection-fill: hsl(210, 100%, 56%, 24%);
+    --color-selection-stroke: hsl(214, 84%, 56%);
+    --color-text-0: hsl(0, 0%, 11%);
+    --color-text-1: hsl(0, 0%, 18%);
+    --color-text-3: hsl(220, 2%, 65%);
+    --color-text-shadow: hsl(0, 0%, 100%);
+    --color-primary: hsl(214, 84%, 56%);
+    --color-success: hsl(123, 46%, 34%);
+    --color-info: hsl(201, 98%, 41%);
+    --color-warning: hsl(27, 98%, 47%);
+    --color-error: hsl(0, 65%, 51%);
+    --color-warn: hsl(0, 90%, 43%);
+    --color-text: hsl(0, 0%, 0%);
+    --color-laser: hsl(0, 100%, 50%);
+    /* Shadows */
+    --shadow-1: 0px 1px 2px hsl(0, 0%, 0%, 25%), 0px 1px 3px hsl(0, 0%, 0%, 9%);
+    --shadow-2: 0px 0px 2px hsl(0, 0%, 0%, 16%), 0px 2px 3px hsl(0, 0%, 0%, 24%), 0px 2px 6px hsl(0, 0%, 0%, 0.1),
+      inset 0px 0px 0px 1px var(--color-panel-contrast);
+    --shadow-3: 0px 1px 2px hsl(0, 0%, 0%, 28%), 0px 2px 6px hsl(0, 0%, 0%, 14%), inset 0px 0px 0px 1px var(--color-panel-contrast);
+    --shadow-4: 0px 0px 3px hsl(0, 0%, 0%, 19%), 0px 5px 4px hsl(0, 0%, 0%, 16%), 0px 2px 16px hsl(0, 0%, 0%, 6%),
+      inset 0px 0px 0px 1px var(--color-panel-contrast);
   }
 
-  .dark {
-    --background: 0 0% 0.4%;
-    --foreground: 0 0% 85.1%;
-
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-
-    --popover: 240 13.5% 14.5%;
-    --popover-foreground: 210 20% 98%;
-
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+  .tl-theme__dark {
+    --color-accent: hsl(0, 76%, 60%);
+    --color-background: hsl(240, 5%, 6.5%);
+    --color-brush-fill: hsl(0, 0%, 71%, 5.1%);
+    --color-brush-stroke: hsl(0, 0%, 71%, 25.1%);
+    --color-grid: hsl(0, 0%, 40%);
+    --color-low: hsl(260, 4.5%, 10.5%);
+    --color-low-border: hsl(207, 10%, 10%);
+    --color-culled: hsl(210, 11%, 19%);
+    --color-muted-none: hsl(0, 0%, 100%, 0%);
+    --color-muted-0: hsl(0, 0%, 100%, 2%);
+    --color-muted-1: hsl(0, 0%, 100%, 10%);
+    --color-muted-2: hsl(0, 0%, 100%, 5%);
+    --color-hint: hsl(0, 0%, 100%, 7%);
+    --color-overlay: hsl(0, 0%, 0%, 50%);
+    --color-divider: hsl(240, 9%, 22%);
+    --color-panel-contrast: hsl(245, 12%, 23%);
+    --color-panel: hsl(235, 6.8%, 13.5%);
+    --color-panel-overlay: hsl(210, 10%, 24%, 82%);
+    --color-focus: hsl(217, 76%, 80%);
+    --color-selected: hsl(217, 89%, 61%);
+    --color-selected-contrast: hsl(0, 0%, 100%);
+    --color-selection-fill: hsl(209, 100%, 57%, 20%);
+    --color-selection-stroke: hsl(214, 84%, 56%);
+    --color-text-0: hsl(0, 9%, 94%);
+    --color-text-1: hsl(0, 0%, 85%);
+    --color-text-3: hsl(210, 6%, 45%);
+    --color-text-shadow: hsl(210, 13%, 18%);
+    --color-primary: hsl(214, 84%, 56%);
+    --color-success: hsl(123, 38%, 57%);
+    --color-info: hsl(199, 92%, 56%);
+    --color-warning: hsl(36, 100%, 57%);
+    --color-error: hsl(4, 90%, 58%);
+    --color-warn: hsl(0, 81%, 66%);
+    --color-text: hsl(210, 17%, 98%);
+    --color-laser: hsl(0, 100%, 50%);
+    /* Shadows */
+    --shadow-1: 0px 1px 2px hsl(0, 0%, 0%, 16.1%), 0px 1px 3px hsl(0, 0%, 0%, 22%), inset 0px 0px 0px 1px var(--color-panel-contrast);
+    --shadow-2: 0px 1px 3px hsl(0, 0%, 0%, 66.6%), 0px 2px 6px hsl(0, 0%, 0%, 33%), inset 0px 0px 0px 1px var(--color-panel-contrast);
+    --shadow-3: 0px 1px 3px hsl(0, 0%, 0%, 50%), 0px 2px 12px hsl(0, 0%, 0%, 50%), inset 0px 0px 0px 1px var(--color-panel-contrast);
   }
 }
