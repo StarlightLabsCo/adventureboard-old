@@ -30,7 +30,7 @@ export const MovePlayersPanel = track(() => {
     return (
       <div className="flex flex-col items-center">
         <div className="text-foreground">Players are currently viewing {playersPage?.name}</div>
-        <div onClick={handleTransition} className="px-2 py-1 text-white pointer-events-auto bg-red-400 text-sm rounded-sm">
+        <div onClick={handleTransition} className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-sm">
           Transition
         </div>
       </div>
