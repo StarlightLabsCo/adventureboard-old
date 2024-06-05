@@ -16,7 +16,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
       console.log('Setting theme to light');
       theme.setTheme('light');
     }
-  }, [userPreferences]);
+  }, [userPreferences.isDarkMode]);
 
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }

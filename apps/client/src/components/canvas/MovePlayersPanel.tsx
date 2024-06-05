@@ -29,8 +29,11 @@ export const MovePlayersPanel = track(() => {
   if (editor.getCurrentPageId() !== playersPageId) {
     return (
       <div className="flex flex-col items-center">
-        <div className="text-foreground">Players are currently viewing {playersPage?.name}</div>
-        <div onClick={handleTransition} className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-sm">
+        <div className="text-primary-foreground">Players are currently viewing {playersPage?.name}</div>
+        <div
+          onClick={handleTransition}
+          className="px-4 py-2 text-white pointer-events-auto bg-red-500 text-sm font-bold rounded-md cursor-pointer hover:bg-red-400"
+        >
           Transition
         </div>
       </div>
