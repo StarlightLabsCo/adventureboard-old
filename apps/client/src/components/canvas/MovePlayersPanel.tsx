@@ -11,6 +11,7 @@ export const MovePlayersPanel = track(() => {
 
   const handleTransition = () => {
     if (!ws) return;
+    console.log(`Transitioning to ${editor.getCurrentPageId()}`);
 
     const newGameState = {
       currentPageId: editor.getCurrentPageId(),
@@ -29,14 +30,10 @@ export const MovePlayersPanel = track(() => {
   if (editor.getCurrentPageId() !== useTldrawStore.getState().gameState.currentPageId) {
     return (
       <div className="flex flex-col items-center">
-        <div className="text-foreground">Players are currently on {playersPage?.name}</div>
-        <button
-          onClick={handleTransition}
-          className="tlui-button tlui-button__normal pointer-events-auto"
-          style={{ backgroundColor: 'red' }}
-        >
-          <span className="tlui-button__label">Transition</span>
-        </button>
+        <div className="text-foreground">Players are currently viewing {playersPage?.name}</div>
+        <div onClick={handleTransition} className="px-2 py-1 text-white pointer-events-auto bg-red-400 text-sm rounded-sm">
+          Transition
+        </div>
       </div>
     );
   } else {
