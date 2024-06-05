@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+  --radius: 0.5rem;
+
   .tl-theme__light {
     --color-accent: hsl(0, 76%, 60%);
     --color-background: hsl(210, 20%, 98%);
