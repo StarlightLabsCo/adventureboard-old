@@ -208,7 +208,7 @@ const sendPresence = throttle((editor: Editor, event: TLPointerEventInfo) => {
   const [_, updateMyPresence] = useWebsocketStore.getState().useMyPresence();
   const { x, y } = editor.screenToPage(event.point);
 
-  updateMyPresence({ cursor: { x, y } });
+  updateMyPresence({ cursor: { x, y }, pageId: editor.getCurrentPageId() });
 }, 1000 / 120);
 
 const handlePresence = (
@@ -228,7 +228,7 @@ const handlePresence = (
   }
 
   const { connectionId, presence } = data;
-  const { cursor } = presence;
+  const { cursor, pageId } = presence;
 
   let peerPresence = presenceMapRef.current.get(connectionId);
   if (!peerPresence) {
@@ -240,7 +240,7 @@ const handlePresence = (
 
     peerPresence = InstancePresenceRecordType.create({
       id: InstancePresenceRecordType.createId(store.id),
-      currentPageId: editorRef.current.getCurrentPageId(),
+      currentPageId: pageId as TLPageId,
       userId: connectionId,
       userName: connection.discordUser.global_name || connection.discordUser.username,
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
@@ -250,6 +250,7 @@ const handlePresence = (
   } else {
     peerPresence = {
       ...peerPresence,
+      currentPageId: pageId as TLPageId,
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
       lastActivityTimestamp: Date.now(),
     };

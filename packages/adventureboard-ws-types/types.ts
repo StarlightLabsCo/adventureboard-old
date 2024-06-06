@@ -10,6 +10,7 @@ interface Connection {
 }
 
 interface Presence {
+  pageId: string;
   cursor: { x: number; y: number } | null;
   // Add other presence-related fields here
 }
