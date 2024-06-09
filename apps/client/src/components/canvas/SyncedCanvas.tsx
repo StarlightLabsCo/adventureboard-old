@@ -35,6 +35,7 @@ import { SharePanel } from './panels/SharePanel';
 import { StylePanel } from './panels/StylePanel';
 import { MovePlayersPanel } from './panels/MovePlayersPanel';
 import { ImageGenTool } from './tools/ImageGenTool';
+import { DMKeyboardShortcutDialog } from './tools/DMKeyboardShortcutDialog';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -154,6 +155,7 @@ export function SyncedCanvas() {
           editorRef.current = editor;
 
           editor.on('event', (event) => {
+            // TODO: handle laser pointer and stuff so it's visible
             if (event.name === 'pointer_move' && event.target === 'canvas') {
               sendPresence(editor, event);
             }
@@ -166,8 +168,9 @@ export function SyncedCanvas() {
           } else {
             setComponents({
               Toolbar: DMToolbar,
+              KeyboardShortcutsDialog: DMKeyboardShortcutDialog,
               SharePanel: SharePanel,
-              StylePanel: StylePanel,
+              StylePanel: StylePanel, // TODO: create custom style panel for ImageGenTool
               TopPanel: MovePlayersPanel,
             });
           }
