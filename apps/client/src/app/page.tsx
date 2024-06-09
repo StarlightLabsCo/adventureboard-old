@@ -10,6 +10,7 @@ import { Loading } from '@/components/Loading';
 export default function Page() {
   const auth = useDiscordStore((state) => state.auth);
   const connect = useWebsocketStore((state) => state.connect);
+  const ws = useWebsocketStore((state) => state.ws);
 
   useEffect(() => {
     setupDiscordSDK();
@@ -21,7 +22,7 @@ export default function Page() {
     }
   }, [connect, auth]);
 
-  if (auth == null) {
+  if (auth == null || ws == null) {
     return <Loading />;
   }
 

@@ -7,9 +7,15 @@ import {
   TextToolbarItem,
   AssetToolbarItem,
   DefaultToolbar,
+  TldrawUiMenuItem,
+  useTools,
+  useIsToolSelected,
 } from 'tldraw';
 
 export function DMToolbarContent() {
+  const tools = useTools();
+  const isImageGenSelected = useIsToolSelected(tools['imageGen']);
+
   return (
     <>
       <SelectToolbarItem />
@@ -19,6 +25,7 @@ export function DMToolbarContent() {
       <ArrowToolbarItem />
       <TextToolbarItem />
       <AssetToolbarItem />
+      <TldrawUiMenuItem {...tools['imageGen']} isSelected={isImageGenSelected} />
     </>
   );
 }

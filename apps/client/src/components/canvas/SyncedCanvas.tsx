@@ -30,10 +30,11 @@ import 'tldraw/tldraw.css';
 
 import dynamic from 'next/dynamic';
 import { useDiscordStore } from '@/lib/discord';
-import { DMToolbar } from './DMToolbar';
-import { SharePanel } from './SharePanel';
-import { StylePanel } from './StylePanel';
-import { MovePlayersPanel } from './MovePlayersPanel';
+import { DMToolbar } from './tools/DMToolbar';
+import { SharePanel } from './panels/SharePanel';
+import { StylePanel } from './panels/StylePanel';
+import { MovePlayersPanel } from './panels/MovePlayersPanel';
+import { ImageGenTool } from './tools/ImageGenTool';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -43,6 +44,18 @@ const overrides: TLUiOverrides = {
       'page-menu.title': 'Scenes',
       'page-menu.new-page-initial-name': 'Scene',
     },
+  },
+  tools(editor, tools) {
+    tools.imageGen = {
+      id: 'imageGen',
+      icon: 'tool-media',
+      label: 'Image Gen',
+      kbd: 'g',
+      onSelect: () => {
+        editor.setCurrentTool('imageGen');
+      },
+    };
+    return tools;
   },
 };
 
@@ -127,10 +140,13 @@ export function SyncedCanvas() {
   }, [gameState]);
 
   const TldrawMemoized = useMemo(() => {
+    const customTools = [ImageGenTool];
+
     return (
       <Tldraw
         autoFocus
         inferDarkMode
+        tools={customTools}
         overrides={overrides}
         assetUrls={assetUrls}
         store={storeWithStatus}
