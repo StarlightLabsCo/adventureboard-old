@@ -4,15 +4,34 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "NEXT_PUBLIC_DISCORD_CLIENT_ID",
+        "DISCORD_CLIENT_SECRET",
+        "DISCORD_API_BASE",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "NEXT_PUBLIC_R2_BUCKET_NAME",
+        "NEXT_PUBLIC_R2_ACCOUNT_ID"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "env": ["NEXT_PUBLIC_DISCORD_CLIENT_ID"]
     },
     "dev": {
       "dependsOn": ["db:generate"],
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "NEXT_PUBLIC_DISCORD_CLIENT_ID",
+        "DISCORD_CLIENT_SECRET",
+        "DISCORD_API_BASE",
+        "R2_ACCESS_KEY_ID",
+        "R2_SECRET_ACCESS_KEY",
+        "NEXT_PUBLIC_R2_BUCKET_NAME",
+        "NEXT_PUBLIC_R2_ACCOUNT_ID"
+      ]
     }
   }
 }

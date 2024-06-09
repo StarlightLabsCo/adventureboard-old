@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-if (
-  !process.env.R2_ACCESS_KEY_ID ||
-  !process.env.R2_SECRET_ACCESS_KEY ||
-  !process.env.NEXT_PUBLIC_R2_BUCKET_NAME ||
-  !process.env.NEXT_PUBLIC_R2_ACCOUNT_ID
-) {
-  throw new Error('Missing R2 credentials');
+if (!process.env.R2_ACCESS_KEY_ID) {
+  throw new Error('Missing R2_ACCESS_KEY_ID');
+}
+if (!process.env.R2_SECRET_ACCESS_KEY) {
+  throw new Error('Missing R2_SECRET_ACCESS_KEY');
+}
+if (!process.env.NEXT_PUBLIC_R2_BUCKET_NAME) {
+  throw new Error('Missing NEXT_PUBLIC_R2_BUCKET_NAME');
+}
+if (!process.env.NEXT_PUBLIC_R2_ACCOUNT_ID) {
+  throw new Error('Missing NEXT_PUBLIC_R2_ACCOUNT_ID');
 }
 
 if (!process.env.DISCORD_API_BASE) {
