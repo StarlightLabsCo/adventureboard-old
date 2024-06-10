@@ -22,6 +22,18 @@ export function ImageGenPanel() {
   const inverseRatio = getInverseRatio(aspectRatio);
   const showInverse = aspectRatio !== '1:1';
 
+  // Determine if the aspect ratio is portrait based on the ratio values
+  const isPortrait = (() => {
+    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+    return heightRatio > widthRatio;
+  })();
+
+  const isSquare = aspectRatio === '1:1';
+  const isLandscape = (() => {
+    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+    return widthRatio > heightRatio;
+  })();
+
   useEffect(() => {
     const debugStepThroughRatios = async () => {
       while (true) {
@@ -39,7 +51,7 @@ export function ImageGenPanel() {
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
-        <div className="h-[100px]  w-full flex gap-x-4">
+        <div className="h-[100px] w-full flex gap-x-4">
           <div className="relative h-[100px] w-[100px] shrink-0 flex items-center justify-center">
             <div
               style={{ width: `${width}px`, height: `${height}px` }}
@@ -62,9 +74,24 @@ export function ImageGenPanel() {
           </div>
           <div className="flex flex-col w-full">
             <div className="w-full rounded-full bg-slate-500 flex items-center justify-evenly px-1 py-[2px]">
-              <div className="w-1/3 text-white flex items-center justify-center text-xs font-light">Portrait</div>
-              <div className="w-1/3 text-white flex items-center justify-center text-xs font-light">Square</div>
-              <div className="w-1/3 text-white flex items-center justify-center text-xs font-light">Landscape</div>
+              <div
+                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                onClick={() => setAspectRatio('9:16')}
+              >
+                Portrait
+              </div>
+              <div
+                className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                onClick={() => setAspectRatio('1:1')}
+              >
+                Square
+              </div>
+              <div
+                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                onClick={() => setAspectRatio('16:9')}
+              >
+                Landscape
+              </div>
             </div>
             <div className=""></div>
           </div>
