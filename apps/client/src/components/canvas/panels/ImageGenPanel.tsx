@@ -1,6 +1,6 @@
 export function ImageGenPanel() {
   return (
-    <div className="tlui-style-panel__wrapper w-[350px] h-[300px] flex flex-col gap-y-3 py-2 px-3">
+    <div className="tlui-style-panel__wrapper w-[350px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
         <div className="h-[100px]"></div>
