@@ -12,7 +12,15 @@ export function ImageGenPanel() {
     return { width, height };
   };
 
+  const getInverseRatio = (ratio: string): string => {
+    const [widthRatio, heightRatio] = ratio.split(':');
+    return `${heightRatio}:${widthRatio}`;
+  };
+
   const { width, height } = calculateDimensions(aspectRatio);
+
+  const inverseRatio = getInverseRatio(aspectRatio);
+  const showInverse = aspectRatio !== '1:1';
 
   useEffect(() => {
     const debugStepThroughRatios = async () => {
@@ -39,6 +47,11 @@ export function ImageGenPanel() {
             >
               {aspectRatio}
             </div>
+            {showInverse && (
+              <div className="underline decoration-dashed cursor-pointer" onClick={() => setAspectRatio(inverseRatio)}>
+                {inverseRatio}
+              </div>
+            )}
           </div>
           <div className="flex flex-col w-full">
             <div></div>
