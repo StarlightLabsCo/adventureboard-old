@@ -200,7 +200,7 @@ export class GameInstance extends DurableObject {
 		this.connections[connectionId] = {
 			connectionId,
 			discordUser: stripPrivateInfo(discordUser),
-			presence: { cursor: null },
+			presence: { cursor: null, pageId: 'page:page' },
 			isHost: this.host === discordUser.id,
 		};
 		this.broadcast(JSON.stringify({ type: 'connections', connections: this.connections }));
