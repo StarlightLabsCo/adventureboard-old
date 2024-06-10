@@ -60,21 +60,21 @@ export function ImageGenPanel() {
             )}
           </div>
           <div className="flex flex-col w-full">
-            <div className="w-full bg-slate-500 flex items-center justify-evenly">
+            <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500 rounded-l-full' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500 rounded-l-full hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatio('9:16')}
               >
                 Portrait
               </div>
               <div
-                className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500 hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatio('1:1')}
               >
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500 rounded-r-full' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500 rounded-r-full hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatio('16:9')}
               >
                 Landscape
