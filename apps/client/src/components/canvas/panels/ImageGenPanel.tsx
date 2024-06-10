@@ -49,7 +49,7 @@ export function ImageGenPanel() {
             </div>
             {showInverse && (
               <div
-                className="absolute border border-dashed border-white/50 rounded-[var(--radius-2)]"
+                className="absolute border border-dashed border-white/50 rounded-[var(--radius-2)] cursor-pointer"
                 style={{
                   width: `${height}px`,
                   height: `${width}px`,
@@ -61,8 +61,8 @@ export function ImageGenPanel() {
             )}
           </div>
           <div className="flex flex-col w-full">
-            <div></div>
-            <div className="w-full"></div>
+            <div className="w-full h-3 rounded-full bg-slate-500"></div>
+            <div className=""></div>
           </div>
         </div>
       </div>
