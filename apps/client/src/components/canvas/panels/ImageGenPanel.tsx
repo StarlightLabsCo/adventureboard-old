@@ -36,7 +36,7 @@ export function ImageGenPanel() {
   }, []);
 
   return (
-    <div className="tlui-style-panel__wrapper w-[350px] flex flex-col gap-y-3 py-2 px-3">
+    <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
         <div className="h-[100px] flex w-full gap-x-2">
@@ -61,7 +61,11 @@ export function ImageGenPanel() {
             )}
           </div>
           <div className="flex flex-col w-full">
-            <div className="w-full h-3 rounded-full bg-slate-500"></div>
+            <div className="w-full rounded-full bg-slate-500 flex items-center justify-evenly px-2 py-1">
+              <div className="w-1/3 text-white flex items-center justify-center">Portrait</div>
+              <div className="w-1/3 text-white flex items-center justify-center">Square</div>
+              <div className="w-1/3 text-white flex items-center justify-center">Landscape</div>
+            </div>
             <div className=""></div>
           </div>
         </div>
