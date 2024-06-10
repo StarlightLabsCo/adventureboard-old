@@ -52,9 +52,7 @@ export function ImageGenPanel() {
                 className="absolute top-0 left-0 underline decoration-dashed cursor-pointer"
                 style={{ width: `${height}px`, height: `${width}px` }}
                 onClick={() => setAspectRatio(inverseRatio)}
-              >
-                {inverseRatio}
-              </div>
+              />
             )}
           </div>
           <div className="flex flex-col w-full">
