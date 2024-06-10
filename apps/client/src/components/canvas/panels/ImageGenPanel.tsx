@@ -34,19 +34,6 @@ export function ImageGenPanel() {
     return widthRatio > heightRatio;
   })();
 
-  useEffect(() => {
-    const debugStepThroughRatios = async () => {
-      while (true) {
-        for (const ratio of aspectRatios) {
-          setAspectRatio(ratio);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      }
-    };
-
-    debugStepThroughRatios();
-  }, []);
-
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
@@ -73,9 +60,9 @@ export function ImageGenPanel() {
             )}
           </div>
           <div className="flex flex-col w-full">
-            <div className="w-full rounded-full bg-slate-500 flex items-center justify-evenly px-1 py-[2px]">
+            <div className="w-full bg-slate-500 flex items-center justify-evenly">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500 rounded-l-full' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
                 onClick={() => setAspectRatio('9:16')}
               >
                 Portrait
@@ -87,7 +74,7 @@ export function ImageGenPanel() {
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
+                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500 rounded-r-full' : 'text-white'} flex items-center justify-center text-xs cursor-pointer hover:bg-slate-400`}
                 onClick={() => setAspectRatio('16:9')}
               >
                 Landscape
