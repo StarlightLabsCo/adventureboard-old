@@ -42,13 +42,13 @@ export function ImageGenPanel() {
           <div className="relative h-[100px] w-[100px] shrink-0 flex items-center justify-center">
             <div
               style={{ width: `${width}px`, height: `${height}px` }}
-              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center z-10"
+              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center transition-all z-10"
             >
               {aspectRatio}
             </div>
             {showInverse && (
               <div
-                className="absolute border border-dashed border-white/50 rounded-[var(--radius-2)] cursor-pointer"
+                className="absolute border border-dashed border-white/50 hover:border-white transition-all rounded-[var(--radius-2)] cursor-pointer"
                 style={{
                   width: `${height}px`,
                   height: `${width}px`,
