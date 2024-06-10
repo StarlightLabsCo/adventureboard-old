@@ -49,7 +49,7 @@ export function ImageGenPanel() {
             </div>
             {showInverse && (
               <div
-                className="absolute top-0 left-0 underline decoration-dashed cursor-pointer"
+                className="absolute top-0 left-0 rounded-[var(--radius-2)] border border-white border-dashed"
                 style={{ width: `${height}px`, height: `${width}px` }}
                 onClick={() => setAspectRatio(inverseRatio)}
               />
