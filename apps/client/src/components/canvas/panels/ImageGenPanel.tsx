@@ -62,7 +62,7 @@ export function ImageGenPanel() {
           <div className="flex flex-col w-full">
             <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500 rounded-l-full hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatio('9:16')}
               >
                 Portrait
@@ -74,7 +74,7 @@ export function ImageGenPanel() {
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500 rounded-r-full hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatio('16:9')}
               >
                 Landscape
