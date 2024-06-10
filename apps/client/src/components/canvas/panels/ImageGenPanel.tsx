@@ -49,7 +49,7 @@ export function ImageGenPanel() {
             </div>
             {showInverse && (
               <div
-                className="absolute border-dashed border-white/50 rounded-[var(--radius-2)]"
+                className="absolut border border-dashed border-white/50 rounded-[var(--radius-2)]"
                 style={{
                   width: `${height}px`,
                   height: `${width}px`,
