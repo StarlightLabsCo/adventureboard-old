@@ -9,7 +9,7 @@ export function ImageGenPanel() {
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
         <div className="h-[100px] flex w-full gap-x-2">
-          <div className="h-[100px] w-[100px] rounded-[var(--radius-2)] border border-white flex items-center justify-center">
+          <div className="h-[100px] w-[100px] shrink-0 rounded-[var(--radius-2)] border border-white flex items-center justify-center">
             {aspectRatio}
           </div>
           <div className="flex flex-col w-full">
