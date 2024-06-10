@@ -12,7 +12,7 @@ export const StylePanel = track(() => {
         </div>
         <div className="flex flex-col items-center gap-y-3">
           <div className="text-white">Prompt</div>
-          <textarea className="w-[300px] h-[100px] border border-white rounded-md p-2" />
+          <textarea className="w-[300px] h-[100px] border border-white rounded-md p-2 bg-[var(--color-panel)] text-white" />
         </div>
         <div className="flex items-center justify-center">
           <div className="bg-blue-500 text-white rounded-md px-4 py-2">Generate</div>
