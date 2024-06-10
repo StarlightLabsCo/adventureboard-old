@@ -40,15 +40,19 @@ export function ImageGenPanel() {
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
         <div className="h-[100px] flex w-full gap-x-2">
-          <div className="h-[100px] w-[100px] shrink-0 rounded-[var(--radius-2)] flex items-center justify-center">
+          <div className="relative h-[100px] w-[100px] shrink-0 rounded-[var(--radius-2)] flex items-center justify-center">
             <div
               style={{ width: `${width}px`, height: `${height}px` }}
-              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center"
+              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center z-10"
             >
               {aspectRatio}
             </div>
             {showInverse && (
-              <div className="underline decoration-dashed cursor-pointer" onClick={() => setAspectRatio(inverseRatio)}>
+              <div
+                className="absolute top-0 left-0 underline decoration-dashed cursor-pointer"
+                style={{ width: `${height}px`, height: `${width}px` }}
+                onClick={() => setAspectRatio(inverseRatio)}
+              >
                 {inverseRatio}
               </div>
             )}
