@@ -1,16 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function ImageGenPanel() {
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
   const [aspectRatio, setAspectRatio] = useState<string>(aspectRatios[4]);
+
+  const calculateDimensions = (ratio: string) => {
+    const [widthRatio, heightRatio] = ratio.split(':').map(Number);
+    const isWidthDominant = widthRatio > heightRatio;
+    const width = isWidthDominant ? 100 : (100 * widthRatio) / heightRatio;
+    const height = isWidthDominant ? (100 * heightRatio) / widthRatio : 100;
+    return { width, height };
+  };
+
+  const { width, height } = calculateDimensions(aspectRatio);
+
+  useEffect(() => {
+    const debugStepThroughRatios = async () => {
+      while (true) {
+        for (const ratio of aspectRatios) {
+          setAspectRatio(ratio);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    };
+
+    debugStepThroughRatios();
+  }, []);
 
   return (
     <div className="tlui-style-panel__wrapper w-[350px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-white">Image Size</div>
         <div className="h-[100px] flex w-full gap-x-2">
-          <div className="h-[100px] w-[100px] shrink-0 rounded-[var(--radius-2)] border border-white flex items-center justify-center">
-            {aspectRatio}
+          <div className="h-[100px] w-[100px] shrink-0 rounded-[var(--radius-2)] flex items-center justify-center">
+            <div
+              style={{ width: `${width}px`, height: `${height}px` }}
+              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center"
+            >
+              {aspectRatio}
+            </div>
           </div>
           <div className="flex flex-col w-full">
             <div></div>
