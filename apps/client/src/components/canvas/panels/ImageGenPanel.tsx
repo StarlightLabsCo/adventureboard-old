@@ -1,14 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 
 export function ImageGenPanel() {
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
-  const [aspectRatio, setAspectRatio] = useState<string>(aspectRatios[4]);
-  const [sliderValue, setSliderValue] = useState<number>(4); // Index of '1:1' in aspectRatios
-
-  useEffect(() => {
-    setAspectRatio(aspectRatios[sliderValue]);
-  }, [sliderValue]);
+  const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
 
   const calculateDimensions = (ratio: string) => {
     const [widthRatio, heightRatio] = ratio.split(':').map(Number);
@@ -18,25 +13,27 @@ export function ImageGenPanel() {
     return { width, height };
   };
 
-  const getInverseRatio = (ratio: string): string => {
+  const getInverseRatioIndex = (index: number): number => {
+    const ratio = aspectRatios[index];
     const [widthRatio, heightRatio] = ratio.split(':');
-    return `${heightRatio}:${widthRatio}`;
+    const inverseRatio = `${heightRatio}:${widthRatio}`;
+    return aspectRatios.indexOf(inverseRatio);
   };
 
-  const { width, height } = calculateDimensions(aspectRatio);
+  const currentAspectRatio = aspectRatios[aspectRatioIndex];
+  const { width, height } = calculateDimensions(currentAspectRatio);
 
-  const inverseRatio = getInverseRatio(aspectRatio);
-  const showInverse = aspectRatio !== '1:1';
+  const inverseRatioIndex = getInverseRatioIndex(aspectRatioIndex);
+  const showInverse = currentAspectRatio !== '1:1';
 
-  // Determine if the aspect ratio is portrait based on the ratio values
   const isPortrait = (() => {
-    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+    const [widthRatio, heightRatio] = currentAspectRatio.split(':').map(Number);
     return heightRatio > widthRatio;
   })();
 
-  const isSquare = aspectRatio === '1:1';
+  const isSquare = currentAspectRatio === '1:1';
   const isLandscape = (() => {
-    const [widthRatio, heightRatio] = aspectRatio.split(':').map(Number);
+    const [widthRatio, heightRatio] = currentAspectRatio.split(':').map(Number);
     return widthRatio > heightRatio;
   })();
 
@@ -50,7 +47,7 @@ export function ImageGenPanel() {
               style={{ width: `${width}px`, height: `${height}px` }}
               className="rounded-[var(--radius-2)] border border-white flex items-center justify-center transition-all z-10"
             >
-              {aspectRatio}
+              {currentAspectRatio}
             </div>
             {showInverse && (
               <div
@@ -61,38 +58,37 @@ export function ImageGenPanel() {
                   top: `calc(50% - ${width / 2}px)`,
                   left: `calc(50% - ${height / 2}px)`,
                 }}
-                onClick={() => setAspectRatio(inverseRatio)}
+                onClick={() => setAspectRatioIndex(inverseRatioIndex)}
               />
             )}
           </div>
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col h-full justify-center">
             <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
                 className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatio('9:16')}
+                onClick={() => setAspectRatioIndex(0)} // Set to index of '9:16'
               >
                 Portrait
               </div>
               <div
                 className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500 hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatio('1:1')}
+                onClick={() => setAspectRatioIndex(4)} // Set to index of '1:1'
               >
                 Square
               </div>
               <div
                 className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatio('16:9')}
+                onClick={() => setAspectRatioIndex(7)} // Set to index of '16:9'
               >
                 Landscape
               </div>
             </div>
             <Slider
-              value={[sliderValue]}
+              value={[aspectRatioIndex]}
               min={0}
               max={aspectRatios.length - 1}
               step={1}
-              onValueChange={(value) => setSliderValue(value[0])}
-              className="relative before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-1.5 before:bg-primary before:transition-all"
+              onValueChange={(value) => setAspectRatioIndex(value[0])}
             />
           </div>
         </div>
