@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
+import { Slider } from '@/components/ui/slider';
 
 export function ImageGenPanel() {
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
   const [aspectRatio, setAspectRatio] = useState<string>(aspectRatios[4]);
+  const [sliderValue, setSliderValue] = useState<number>(4); // Index of '1:1' in aspectRatios
+
+  useEffect(() => {
+    setAspectRatio(aspectRatios[sliderValue]);
+  }, [sliderValue]);
 
   const calculateDimensions = (ratio: string) => {
     const [widthRatio, heightRatio] = ratio.split(':').map(Number);
@@ -80,7 +86,14 @@ export function ImageGenPanel() {
                 Landscape
               </div>
             </div>
-            <div className=""></div>
+            <Slider
+              value={[sliderValue]}
+              min={0}
+              max={aspectRatios.length - 1}
+              step={1}
+              onValueChange={(value) => setSliderValue(value[0])}
+              className="relative before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:w-0 before:h-1.5 before:bg-primary before:transition-all"
+            />
           </div>
         </div>
       </div>
