@@ -62,7 +62,7 @@ export function ImageGenPanel() {
               />
             )}
           </div>
-          <div className="flex flex-col h-full justify-center">
+          <div className="flex flex-col h-full justify-center w-full">
             <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
                 className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
