@@ -130,7 +130,6 @@ export function ImageGenPanel() {
         w: size.w,
         h: size.h,
         playing: true,
-        url: assetUrl,
         assetId: assetId,
       },
     };
