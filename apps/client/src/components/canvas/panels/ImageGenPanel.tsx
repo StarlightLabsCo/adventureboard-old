@@ -193,8 +193,8 @@ export function ImageGenPanel() {
       </div>
       <div className="flex items-center justify-center">
         <div
-          className={`bg-blue-500 text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-          onClick={generateImage}
+          className={`bg-blue-500 text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt && !isGenerating ? 'hover:bg-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+          onClick={prompt && !isGenerating ? generateImage : undefined}
         >
           {generateText}
         </div>
