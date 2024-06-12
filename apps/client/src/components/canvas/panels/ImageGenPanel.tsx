@@ -60,8 +60,8 @@ export function ImageGenPanel() {
     const placeholderImageShape = {
       id: shapeId,
       type: 'image',
-      x: editor.inputs.currentPagePoint.x,
-      y: editor.inputs.currentPagePoint.x,
+      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2,
+      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2,
       props: {
         w: dimensions.get(aspectRatios[aspectRatioIndex])!.width,
         h: dimensions.get(aspectRatios[aspectRatioIndex])!.height,
