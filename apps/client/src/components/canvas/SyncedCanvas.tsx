@@ -49,7 +49,7 @@ const overrides: TLUiOverrides = {
   tools(editor, tools) {
     tools.imageGen = {
       id: 'imageGen',
-      icon: 'tool-media',
+      icon: 'magic-wand',
       label: 'Image Gen',
       kbd: 'g',
       onSelect: () => {
