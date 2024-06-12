@@ -49,8 +49,9 @@ export async function POST(req: NextRequest) {
   formData.append('prompt', prompt);
   formData.append('aspect_ratio', aspect_ratio);
   formData.append('output_format', 'webp');
+  formData.append('model', 'sd3-large-turbo');
 
-  const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', {
+  const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/sd3', {
     method: 'POST',
     headers: {
       Accept: 'image/*',
