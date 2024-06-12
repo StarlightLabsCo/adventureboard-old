@@ -129,7 +129,7 @@ export function ImageGenPanel() {
       props: {
         w: size.w,
         h: size.h,
-        playing: false,
+        playing: true,
         url: assetUrl,
         assetId: assetId,
       },
