@@ -24,6 +24,7 @@ import {
   TLPointerEventInfo,
   TLUiOverrides,
   TLPageId,
+  TLUiAssetUrlOverrides,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -57,6 +58,15 @@ const overrides: TLUiOverrides = {
       },
     };
     return tools;
+  },
+};
+
+const assetOverrides: TLUiAssetUrlOverrides = {
+  ...assetUrls,
+  icons: {
+    ...assetUrls.icons,
+    'magic-wand': '/icons/icon/magic-wand.svg',
+    upload: '/icons/icon/upload.svg',
   },
 };
 
@@ -149,7 +159,7 @@ export function SyncedCanvas() {
         inferDarkMode
         tools={customTools}
         overrides={overrides}
-        assetUrls={assetUrls}
+        assetUrls={assetOverrides}
         store={storeWithStatus}
         onMount={(editor) => {
           editorRef.current = editor;
