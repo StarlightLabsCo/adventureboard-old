@@ -43,17 +43,18 @@ export async function POST(req: NextRequest) {
   const { prompt, aspect_ratio } = await req.json();
   console.log(`Generating image in ${aspect_ratio} aspect ratio with prompt: ${prompt}`);
 
+  const formData = new FormData();
+  formData.append('prompt', prompt);
+  formData.append('aspect_ratio', aspect_ratio);
+  formData.append('output_format', 'webp');
+
   const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      Accept: 'image/webp',
       Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
     },
-    body: JSON.stringify({
-      prompt,
-      aspect_ratio,
-      output_format: 'webp',
-    }),
+    body: formData,
   });
 
   if (!stabilityResponse.ok) {
