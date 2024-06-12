@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!stabilityResponse.ok) {
+    console.error(stabilityResponse);
     return NextResponse.json({ error: 'Failed to generate image' }, { status: 500 });
   }
 
