@@ -104,7 +104,7 @@ export function ImageGenPanel() {
     const blob = await fetch(assetUrl).then((res) => res.blob());
     const size = await MediaHelpers.getImageSize(blob);
 
-    AssetRecordType.create({
+    const asset = AssetRecordType.create({
       id: assetId,
       type: 'image',
       typeName: 'asset',
@@ -117,6 +117,8 @@ export function ImageGenPanel() {
         isAnimated: false,
       },
     });
+
+    editor.store.put([asset]);
 
     // Create and position the image shape at the center of the camera
     const camera = editor.getCamera();
