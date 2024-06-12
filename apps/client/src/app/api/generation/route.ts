@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
 
   // Generate image
   const { prompt, aspect_ratio } = await req.json();
+  console.log(`Generating image in ${aspect_ratio} aspect ratio with prompt: ${prompt}`);
 
   const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', {
     method: 'POST',
@@ -57,6 +58,8 @@ export async function POST(req: NextRequest) {
 
   if (!stabilityResponse.ok) {
     console.error(stabilityResponse);
+    const data = await stabilityResponse.json();
+    console.error(data);
     return NextResponse.json({ error: 'Failed to generate image' }, { status: 500 });
   }
 
