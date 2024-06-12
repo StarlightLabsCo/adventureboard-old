@@ -89,7 +89,15 @@ export function ImageGenPanel() {
               min={0}
               max={aspectRatios.length - 1}
               step={1}
-              onValueChange={(value) => setAspectRatioIndex(aspectRatioIndex > 4 ? value[1] : value[0])}
+              onValueChange={(value) => {
+                if (value[0] !== 4) {
+                  setAspectRatioIndex(value[0]);
+                } else if (value[1] !== 4) {
+                  setAspectRatioIndex(value[1]);
+                } else {
+                  setAspectRatioIndex(4);
+                }
+              }}
             />
           </div>
         </div>
