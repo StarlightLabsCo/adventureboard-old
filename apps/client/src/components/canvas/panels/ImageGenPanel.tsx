@@ -1,10 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { useDiscordStore } from '@/lib/discord';
+import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, getHashForString, useEditor } from 'tldraw';
 
 export function ImageGenPanel() {
+  const editor = useEditor();
+
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
   const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
+  const [prompt, setPrompt] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [generateText, setGenerateText] = useState<string>('Generate');
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isGenerating) {
+      let count = 0;
+      intervalId = setInterval(() => {
+        count = (count + 1) % 4;
+        setGenerateText(`Generating${'.'.repeat(count)}`);
+      }, 500);
+    }
+    return () => clearInterval(intervalId);
+  }, [isGenerating]);
 
   const calculateDimensions = (ratio: string) => {
     const [widthRatio, heightRatio] = ratio.split(':').map(Number);
@@ -23,7 +42,6 @@ export function ImageGenPanel() {
 
   const currentAspectRatio = aspectRatios[aspectRatioIndex];
   const { width, height } = calculateDimensions(currentAspectRatio);
-
   const inverseRatioIndex = getInverseRatioIndex(aspectRatioIndex);
   const showInverse = currentAspectRatio !== '1:1';
 
@@ -37,6 +55,66 @@ export function ImageGenPanel() {
     const [widthRatio, heightRatio] = currentAspectRatio.split(':').map(Number);
     return widthRatio > heightRatio;
   })();
+
+  const generateImage = async () => {
+    if (!prompt || isGenerating) {
+      return;
+    }
+    setIsGenerating(true);
+
+    const accessToken = useDiscordStore.getState().auth?.access_token;
+    if (!accessToken) {
+      setIsGenerating(false);
+      throw new Error('Unauthorized');
+    }
+
+    const response = await fetch('/api/generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex] }),
+    });
+
+    setIsGenerating(false);
+    if (!response.ok) {
+      throw new Error('Failed to generate image');
+    }
+
+    const data = await response.json();
+    const { url } = data;
+
+    const assetUrl = url.replace(
+      new RegExp(
+        `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
+      ),
+      '/r2-get',
+    );
+
+    // Create a TLAsset object
+    const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
+    const assetName = assetUrl.split('/').pop();
+
+    const blob = await fetch(assetUrl).then((res) => res.blob());
+    const size = await MediaHelpers.getImageSize(blob);
+
+    const asset: TLAsset = AssetRecordType.create({
+      id: assetId,
+      type: 'image',
+      typeName: 'asset',
+      props: {
+        name: assetName,
+        src: assetUrl,
+        w: size.w,
+        h: size.h,
+        mimeType: 'image/webp',
+        isAnimated: false,
+      },
+    });
+
+    editor.store.put([asset]);
+  };
 
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
@@ -67,19 +145,19 @@ export function ImageGenPanel() {
             <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
                 className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatioIndex(1)} // Set to index of '9:16'
+                onClick={() => setAspectRatioIndex(1)}
               >
                 Portrait
               </div>
               <div
                 className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500 hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatioIndex(4)} // Set to index of '1:1'
+                onClick={() => setAspectRatioIndex(4)}
               >
                 Square
               </div>
               <div
                 className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
-                onClick={() => setAspectRatioIndex(7)} // Set to index of '16:9'
+                onClick={() => setAspectRatioIndex(7)}
               >
                 Landscape
               </div>
@@ -109,10 +187,17 @@ export function ImageGenPanel() {
         <textarea
           className="w-full h-[100px] border border-white rounded-[var(--radius-2)] p-2 bg-[var(--color-panel)] text-white"
           placeholder="Describe the image you want to generate"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
         />
       </div>
       <div className="flex items-center justify-center">
-        <div className="bg-blue-500 text-white rounded-[var(--radius-2)] px-4 py-2 hover:bg-blue-400 cursor-pointer">Generate</div>
+        <div
+          className={`bg-blue-500 text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+          onClick={generateImage}
+        >
+          {generateText}
+        </div>
       </div>
     </div>
   );
