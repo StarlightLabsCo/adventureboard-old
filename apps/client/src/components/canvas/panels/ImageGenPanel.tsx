@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { useDiscordStore } from '@/lib/discord';
-import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, createShapeId, getHashForString, useEditor } from 'tldraw';
+import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, createShapeId, getHashForString, throttle, useEditor } from 'tldraw';
 
 export function ImageGenPanel() {
   const editor = useEditor();
@@ -10,23 +10,6 @@ export function ImageGenPanel() {
   const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
   const [prompt, setPrompt] = useState<string>('');
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [generateText, setGenerateText] = useState<string>('Generate');
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if (isGenerating) {
-      let count = 0;
-      intervalId = setInterval(() => {
-        count = (count + 1) % 4;
-        setGenerateText(`Generating${'.'.repeat(count)}`);
-      }, 500);
-    }
-    return () => {
-      clearInterval(intervalId);
-      setGenerateText('Generate');
-    };
-  }, [isGenerating]);
 
   const calculateDimensions = (ratio: string) => {
     const [widthRatio, heightRatio] = ratio.split(':').map(Number);
@@ -59,17 +42,32 @@ export function ImageGenPanel() {
     return widthRatio > heightRatio;
   })();
 
-  const generateImage = async () => {
-    if (!prompt || isGenerating) {
+  const generateImage = throttle(async () => {
+    if (!prompt) {
       return;
     }
-    setIsGenerating(true);
 
     const accessToken = useDiscordStore.getState().auth?.access_token;
     if (!accessToken) {
-      setIsGenerating(false);
       throw new Error('Unauthorized');
     }
+
+    // // Create placeholder object
+    // const shapeId = createShapeId();
+    // editor.createShapes([
+    //   {
+    //     id: shapeId,
+    //     type: 'image',
+    //     x: 0,
+    //     y: 0,
+    //     props: {
+    //       w: 100,
+    //       h: 100,
+    //     },
+    //   },
+    // ]);
+
+    // Send Request
 
     const response = await fetch('/api/generation', {
       method: 'POST',
@@ -79,9 +77,6 @@ export function ImageGenPanel() {
       },
       body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex] }),
     });
-
-    setIsGenerating(false);
-    setGenerateText('Generate');
 
     if (!response.ok) {
       throw new Error('Failed to generate image');
@@ -104,6 +99,8 @@ export function ImageGenPanel() {
     const blob = await fetch(assetUrl).then((res) => res.blob());
     const size = await MediaHelpers.getImageSize(blob);
 
+    console.log(`Size: ${size.w}px x ${size.h}px`);
+
     const asset = AssetRecordType.create({
       id: assetId,
       type: 'image',
@@ -121,23 +118,23 @@ export function ImageGenPanel() {
     editor.store.put([asset]);
 
     // Create and position the image shape at the center of the camera
-    const camera = editor.getCamera();
+    const { currentPagePoint } = editor.inputs;
 
     const imageShape = {
       id: createShapeId(),
       type: 'image',
-      x: camera.x,
-      y: camera.y,
+      x: currentPagePoint.x,
+      y: currentPagePoint.y,
       props: {
         w: size.w,
         h: size.h,
         playing: true,
-        assetId: assetId,
+        assetId,
       },
     };
 
     editor.createShapes([imageShape]);
-  };
+  }, 1000);
 
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
