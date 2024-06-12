@@ -7,6 +7,9 @@ export function ImageGenPanel() {
   const editor = useEditor();
 
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
+  const dimensions: Map<string, { width: number; height: number }> = new Map();
+  dimensions.set('1:1', { width: 1024, height: 1024 });
+
   const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
   const [prompt, setPrompt] = useState<string>('');
@@ -52,23 +55,22 @@ export function ImageGenPanel() {
       throw new Error('Unauthorized');
     }
 
-    // // Create placeholder object
-    // const shapeId = createShapeId();
-    // editor.createShapes([
-    //   {
-    //     id: shapeId,
-    //     type: 'image',
-    //     x: 0,
-    //     y: 0,
-    //     props: {
-    //       w: 100,
-    //       h: 100,
-    //     },
-    //   },
-    // ]);
+    // Create placeholder object
+    const shapeId = createShapeId();
+    const placeholderImageShape = {
+      id: shapeId,
+      type: 'image',
+      x: editor.inputs.currentPagePoint.x,
+      y: editor.inputs.currentPagePoint.x,
+      props: {
+        w: dimensions.get(aspectRatios[aspectRatioIndex])!.width,
+        h: dimensions.get(aspectRatios[aspectRatioIndex])!.height,
+      },
+    };
+
+    editor.createShapes([placeholderImageShape]);
 
     // Send Request
-
     const response = await fetch('/api/generation', {
       method: 'POST',
       headers: {
@@ -117,23 +119,16 @@ export function ImageGenPanel() {
 
     editor.store.put([asset]);
 
-    // Create and position the image shape at the center of the camera
-    const { currentPagePoint } = editor.inputs;
-
-    const imageShape = {
-      id: createShapeId(),
-      type: 'image',
-      x: currentPagePoint.x,
-      y: currentPagePoint.y,
-      props: {
-        w: size.w,
-        h: size.h,
-        playing: true,
-        assetId,
+    // Update shape
+    editor.updateShapes([
+      {
+        ...placeholderImageShape,
+        props: {
+          ...placeholderImageShape.props,
+          assetId,
+        },
       },
-    };
-
-    editor.createShapes([imageShape]);
+    ]);
   }, 1000);
 
   return (
