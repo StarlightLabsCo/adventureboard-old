@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { useDiscordStore } from '@/lib/discord';
-import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, getHashForString, useEditor } from 'tldraw';
+import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, createShapeId, getHashForString, useEditor } from 'tldraw';
 
 export function ImageGenPanel() {
   const editor = useEditor();
@@ -118,7 +118,20 @@ export function ImageGenPanel() {
       },
     });
 
-    editor.store.put([asset]);
+    // Create and position the image shape at the center of the camera
+    const camera = editor.getCamera();
+
+    const imageShape = {
+      id: createShapeId(),
+      type: 'image',
+      parentId: editor.getCurrentPageId(),
+      childIndex: 1,
+      point: [camera.x, camera.y],
+      size: [size.w, size.h],
+      assetId: assetId,
+    };
+
+    editor.createShapes([imageShape]);
   };
 
   return (
