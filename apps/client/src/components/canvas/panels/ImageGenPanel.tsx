@@ -3,6 +3,7 @@ import { Slider } from '@/components/ui/slider';
 
 export function ImageGenPanel() {
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
+  const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
 
   const calculateDimensions = (ratio: string) => {
@@ -85,17 +86,18 @@ export function ImageGenPanel() {
             </div>
             <div className="w-full h-[0.5px] bg-white/10 rounded-full" />
             <Slider
-              value={[4, aspectRatioIndex]}
+              value={[centerIndex, aspectRatioIndex]}
               min={0}
               max={aspectRatios.length - 1}
               step={1}
+              center={centerIndex}
               onValueChange={(value) => {
-                if (value[0] !== 4) {
+                if (value[0] !== centerIndex) {
                   setAspectRatioIndex(value[0]);
-                } else if (value[1] !== 4) {
+                } else if (value[1] !== centerIndex) {
                   setAspectRatioIndex(value[1]);
                 } else {
-                  setAspectRatioIndex(4);
+                  setAspectRatioIndex(centerIndex);
                 }
               }}
             />
