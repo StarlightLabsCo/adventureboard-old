@@ -22,7 +22,10 @@ export function ImageGenPanel() {
         setGenerateText(`Generating${'.'.repeat(count)}`);
       }, 500);
     }
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      setGenerateText('Generate');
+    };
   }, [isGenerating]);
 
   const calculateDimensions = (ratio: string) => {
@@ -78,6 +81,8 @@ export function ImageGenPanel() {
     });
 
     setIsGenerating(false);
+    setGenerateText('Generate');
+
     if (!response.ok) {
       throw new Error('Failed to generate image');
     }
