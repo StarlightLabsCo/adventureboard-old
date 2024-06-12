@@ -57,14 +57,16 @@ export function ImageGenPanel() {
 
     // Create placeholder object
     const shapeId = createShapeId();
+    const width = dimensions.get(aspectRatios[aspectRatioIndex])!.width;
+    const height = dimensions.get(aspectRatios[aspectRatioIndex])!.height;
     const placeholderImageShape = {
       id: shapeId,
       type: 'image',
-      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2,
-      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2,
+      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
+      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
       props: {
-        w: dimensions.get(aspectRatios[aspectRatioIndex])!.width,
-        h: dimensions.get(aspectRatios[aspectRatioIndex])!.height,
+        w: width,
+        h: height,
       },
     };
 
