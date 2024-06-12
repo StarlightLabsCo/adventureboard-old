@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   const formData = new FormData();
   formData.append('prompt', prompt);
   formData.append('aspect_ratio', aspect_ratio);
-  formData.append('output_format', 'webp');
+  formData.append('output_format', 'png');
   formData.append('model', 'sd3-large-turbo');
 
   const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/sd3', {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   // Upload to Cloudflare S3
   const imageBuffer = await stabilityResponse.arrayBuffer();
   const shortPrompt = prompt.split(' ').slice(0, 3).join('_');
-  const filename = `${user.id}/${Date.now()}_${shortPrompt}.webp`;
+  const filename = `${user.id}/${Date.now()}_${shortPrompt}.png`;
 
   const objectKey = `images/${filename}`;
   const uploadCommand = new PutObjectCommand({
