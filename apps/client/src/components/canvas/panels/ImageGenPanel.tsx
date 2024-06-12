@@ -85,7 +85,7 @@ export function ImageGenPanel() {
             </div>
             <div className="w-full h-[0.5px] bg-white/10 rounded-full" />
             <Slider
-              value={[aspectRatioIndex, 4]}
+              value={aspectRatioIndex === 4 ? [4] : aspectRatioIndex > 4 ? [4, aspectRatioIndex] : [aspectRatioIndex, 4]}
               min={0}
               max={aspectRatios.length - 1}
               step={1}
