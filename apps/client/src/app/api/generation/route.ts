@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', {
     method: 'POST',
     headers: {
-      Accept: 'image/webp',
+      Accept: 'image/*',
       Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
     },
     body: formData,
