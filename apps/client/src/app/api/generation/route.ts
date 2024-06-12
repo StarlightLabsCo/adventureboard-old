@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
   const objectKey = `images/${filename}`;
   const uploadCommand = new PutObjectCommand({
-    Bucket: process.env.S3_ASSETS_BUCKET,
+    Bucket: process.env.NEXT_PUBLIC_R2_BUCKET_NAME,
     Key: objectKey,
     Body: Buffer.from(imageBuffer),
     ContentType: 'image/webp',
