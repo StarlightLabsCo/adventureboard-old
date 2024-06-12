@@ -104,7 +104,7 @@ export function ImageGenPanel() {
     const blob = await fetch(assetUrl).then((res) => res.blob());
     const size = await MediaHelpers.getImageSize(blob);
 
-    const asset: TLAsset = AssetRecordType.create({
+    AssetRecordType.create({
       id: assetId,
       type: 'image',
       typeName: 'asset',
@@ -124,11 +124,15 @@ export function ImageGenPanel() {
     const imageShape = {
       id: createShapeId(),
       type: 'image',
-      parentId: editor.getCurrentPageId(),
-      childIndex: 1,
-      point: [camera.x, camera.y],
-      size: [size.w, size.h],
-      assetId: assetId,
+      x: camera.x,
+      y: camera.y,
+      props: {
+        w: size.w,
+        h: size.h,
+        playing: false,
+        url: assetUrl,
+        assetId: assetId,
+      },
     };
 
     editor.createShapes([imageShape]);
