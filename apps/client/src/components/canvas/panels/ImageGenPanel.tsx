@@ -6,7 +6,17 @@ import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, createShapeId, getHa
 export function ImageGenPanel() {
   const editor = useEditor();
 
-  const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
+  const aspectRatios = [
+    { ratio: '9:21', size: { width: 640, height: 1536 } },
+    { ratio: '9:16', size: { width: 768, height: 1344 } },
+    { ratio: '2:3', size: { width: 832, height: 1216 } },
+    { ratio: '4:5', size: { width: 896, height: 1088 } },
+    { ratio: '1:1', size: { width: 1024, height: 1024 } },
+    { ratio: '5:4', size: { width: 1088, height: 896 } },
+    { ratio: '3:2', size: { width: 1216, height: 832 } },
+    { ratio: '16:9', size: { width: 1344, height: 768 } },
+    { ratio: '21:9', size: { width: 1536, height: 640 } },
+  ];
 
   const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
@@ -21,13 +31,13 @@ export function ImageGenPanel() {
   };
 
   const getInverseRatioIndex = (index: number): number => {
-    const ratio = aspectRatios[index];
+    const ratio = aspectRatios[index].ratio;
     const [widthRatio, heightRatio] = ratio.split(':');
     const inverseRatio = `${heightRatio}:${widthRatio}`;
-    return aspectRatios.indexOf(inverseRatio);
+    return aspectRatios.findIndex((ar) => ar.ratio === inverseRatio);
   };
 
-  const currentAspectRatio = aspectRatios[aspectRatioIndex];
+  const currentAspectRatio = aspectRatios[aspectRatioIndex].ratio;
   const { width, height } = calculateDimensions(currentAspectRatio);
   const inverseRatioIndex = getInverseRatioIndex(aspectRatioIndex);
   const showInverse = currentAspectRatio !== '1:1';
@@ -54,85 +64,79 @@ export function ImageGenPanel() {
     }
 
     // Create placeholder object
-    // TODO: start for loop
-    for (const ratio of aspectRatios) {
-      const shapeId = createShapeId();
-      const width = 100;
-      const height = 100;
-      const placeholderImageShape = {
-        id: shapeId,
-        type: 'image',
-        x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
-        y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
-        props: {
-          w: width,
-          h: height,
-        },
-      };
+    const shapeId = createShapeId();
+    const width = aspectRatios[aspectRatioIndex].size.width;
+    const height = aspectRatios[aspectRatioIndex].size.height;
+    const placeholderImageShape = {
+      id: shapeId,
+      type: 'image',
+      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
+      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
+      props: {
+        w: width,
+        h: height,
+      },
+    };
 
-      editor.createShapes([placeholderImageShape]);
+    editor.createShapes([placeholderImageShape]);
 
-      // Send Request
-      const response = await fetch('/api/generation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ prompt, aspect_ratio: ratio }),
-      });
+    // Send Request
+    const response = await fetch('/api/generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex].ratio }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate image');
-      }
-
-      const data = await response.json();
-      const { url } = data;
-
-      const assetUrl = url.replace(
-        new RegExp(
-          `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
-        ),
-        '/r2-get',
-      );
-
-      // Create a TLAsset object
-      const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
-      const assetName = assetUrl.split('/').pop();
-
-      const blob = await fetch(assetUrl).then((res) => res.blob());
-      const size = await MediaHelpers.getImageSize(blob);
-
-      console.log(`Aspect Ratio: ${ratio}, Size: ${size.w}px x ${size.h}px`);
-
-      const asset = AssetRecordType.create({
-        id: assetId,
-        type: 'image',
-        typeName: 'asset',
-        props: {
-          name: assetName,
-          src: assetUrl,
-          w: size.w,
-          h: size.h,
-          mimeType: 'image/webp',
-          isAnimated: false,
-        },
-      });
-
-      editor.store.put([asset]);
-
-      // Update shape
-      editor.updateShapes([
-        {
-          ...placeholderImageShape,
-          props: {
-            ...placeholderImageShape.props,
-            assetId,
-          },
-        },
-      ]);
+    if (!response.ok) {
+      throw new Error('Failed to generate image');
     }
-    // TODO: end for loop
+
+    const data = await response.json();
+    const { url } = data;
+
+    const assetUrl = url.replace(
+      new RegExp(
+        `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
+      ),
+      '/r2-get',
+    );
+
+    // Create a TLAsset object
+    const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
+    const assetName = assetUrl.split('/').pop();
+
+    const blob = await fetch(assetUrl).then((res) => res.blob());
+    const size = await MediaHelpers.getImageSize(blob);
+
+    const asset = AssetRecordType.create({
+      id: assetId,
+      type: 'image',
+      typeName: 'asset',
+      props: {
+        name: assetName,
+        src: assetUrl,
+        w: size.w,
+        h: size.h,
+        mimeType: 'image/webp',
+        isAnimated: false,
+      },
+    });
+
+    editor.store.put([asset]);
+
+    // Update shape
+    editor.updateShapes([
+      {
+        ...placeholderImageShape,
+        props: {
+          ...placeholderImageShape.props,
+          assetId,
+        },
+      },
+    ]);
   }, 1000);
 
   return (
