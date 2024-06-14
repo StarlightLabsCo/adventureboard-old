@@ -7,8 +7,6 @@ export function ImageGenPanel() {
   const editor = useEditor();
 
   const aspectRatios: string[] = ['9:21', '9:16', '2:3', '4:5', '1:1', '5:4', '3:2', '16:9', '21:9'];
-  const dimensions: Map<string, { width: number; height: number }> = new Map();
-  dimensions.set('1:1', { width: 1024, height: 1024 });
 
   const centerIndex: number = 4;
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
@@ -56,81 +54,85 @@ export function ImageGenPanel() {
     }
 
     // Create placeholder object
-    const shapeId = createShapeId();
-    const width = dimensions.get(aspectRatios[aspectRatioIndex])!.width;
-    const height = dimensions.get(aspectRatios[aspectRatioIndex])!.height;
-    const placeholderImageShape = {
-      id: shapeId,
-      type: 'image',
-      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
-      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
-      props: {
-        w: width,
-        h: height,
-      },
-    };
-
-    editor.createShapes([placeholderImageShape]);
-
-    // Send Request
-    const response = await fetch('/api/generation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex] }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to generate image');
-    }
-
-    const data = await response.json();
-    const { url } = data;
-
-    const assetUrl = url.replace(
-      new RegExp(
-        `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
-      ),
-      '/r2-get',
-    );
-
-    // Create a TLAsset object
-    const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
-    const assetName = assetUrl.split('/').pop();
-
-    const blob = await fetch(assetUrl).then((res) => res.blob());
-    const size = await MediaHelpers.getImageSize(blob);
-
-    console.log(`Size: ${size.w}px x ${size.h}px`);
-
-    const asset = AssetRecordType.create({
-      id: assetId,
-      type: 'image',
-      typeName: 'asset',
-      props: {
-        name: assetName,
-        src: assetUrl,
-        w: size.w,
-        h: size.h,
-        mimeType: 'image/webp',
-        isAnimated: false,
-      },
-    });
-
-    editor.store.put([asset]);
-
-    // Update shape
-    editor.updateShapes([
-      {
-        ...placeholderImageShape,
+    // TODO: start for loop
+    for (const ratio of aspectRatios) {
+      const shapeId = createShapeId();
+      const width = 100;
+      const height = 100;
+      const placeholderImageShape = {
+        id: shapeId,
+        type: 'image',
+        x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
+        y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
         props: {
-          ...placeholderImageShape.props,
-          assetId,
+          w: width,
+          h: height,
         },
-      },
-    ]);
+      };
+
+      editor.createShapes([placeholderImageShape]);
+
+      // Send Request
+      const response = await fetch('/api/generation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ prompt, aspect_ratio: ratio }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate image');
+      }
+
+      const data = await response.json();
+      const { url } = data;
+
+      const assetUrl = url.replace(
+        new RegExp(
+          `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
+        ),
+        '/r2-get',
+      );
+
+      // Create a TLAsset object
+      const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
+      const assetName = assetUrl.split('/').pop();
+
+      const blob = await fetch(assetUrl).then((res) => res.blob());
+      const size = await MediaHelpers.getImageSize(blob);
+
+      console.log(`Aspect Ratio: ${ratio}, Size: ${size.w}px x ${size.h}px`);
+
+      const asset = AssetRecordType.create({
+        id: assetId,
+        type: 'image',
+        typeName: 'asset',
+        props: {
+          name: assetName,
+          src: assetUrl,
+          w: size.w,
+          h: size.h,
+          mimeType: 'image/webp',
+          isAnimated: false,
+        },
+      });
+
+      editor.store.put([asset]);
+
+      // Update shape
+      editor.updateShapes([
+        {
+          ...placeholderImageShape,
+          props: {
+            ...placeholderImageShape.props,
+            assetId,
+          },
+        },
+      ]);
+    }
+    // TODO: end for loop
   }, 1000);
 
   return (
