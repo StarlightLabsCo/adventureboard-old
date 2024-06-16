@@ -81,7 +81,6 @@ export function ImageGenPanel() {
         w: initialWidth,
         h: initialHeight,
         fill: 'solid',
-        color: 'blue',
       },
     };
 
