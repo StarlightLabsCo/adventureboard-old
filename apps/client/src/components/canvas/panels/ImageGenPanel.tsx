@@ -180,6 +180,8 @@ export function ImageGenPanel() {
     ]);
 
     cancelAnimationFrame(animationFrameId);
+    
+    editor.select(shapeId);
   }, 1000);
 
   return (
