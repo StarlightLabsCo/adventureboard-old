@@ -65,16 +65,19 @@ export function ImageGenPanel() {
 
     // Create placeholder object
     const shapeId = createShapeId();
-    const width = aspectRatios[aspectRatioIndex].size.width;
-    const height = aspectRatios[aspectRatioIndex].size.height;
+    const initialWidth = aspectRatios[aspectRatioIndex].size.width;
+    const initialHeight = aspectRatios[aspectRatioIndex].size.height;
+    const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2;
+    const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2;
+
     const placeholderImageShape = {
       id: shapeId,
       type: 'image',
-      x: editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - width / 2,
-      y: editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - height / 2,
+      x: initialX,
+      y: initialY,
       props: {
-        w: width,
-        h: height,
+        w: initialWidth,
+        h: initialHeight,
       },
     };
 
@@ -86,26 +89,27 @@ export function ImageGenPanel() {
 
     const animate = (time: number) => {
       const elapsed = time - start;
-      const progress = elapsed / duration;
+      const progress = (elapsed / duration) % 1; // Use modulus to loop the progress
       const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
       const scale = 1 + 0.05 * Math.sin(easeInOut * Math.PI); // oscillate between 1 and 1.05
+
+      const scaledWidth = initialWidth * scale;
+      const scaledHeight = initialHeight * scale;
 
       editor.updateShapes([
         {
           ...placeholderImageShape,
+          x: initialX + initialWidth / 2 - scaledWidth / 2,
+          y: initialY + initialHeight / 2 - scaledHeight / 2,
           props: {
             ...placeholderImageShape.props,
-            w: width * scale,
-            h: height * scale,
+            w: scaledWidth,
+            h: scaledHeight,
           },
         },
       ]);
 
-      if (elapsed < duration) {
-        animationFrameId = requestAnimationFrame(animate);
-      } else {
-        cancelAnimationFrame(animationFrameId);
-      }
+      animationFrameId = requestAnimationFrame(animate);
     };
 
     animationFrameId = requestAnimationFrame(animate);
@@ -123,8 +127,6 @@ export function ImageGenPanel() {
     if (!response.ok) {
       throw new Error('Failed to generate image');
     }
-
-    cancelAnimationFrame(animationFrameId); // Stop the animation when the image is generated
 
     const data = await response.json();
     const { url } = data;
@@ -169,6 +171,9 @@ export function ImageGenPanel() {
         },
       },
     ]);
+
+    // Stop the animation when the image is updated
+    cancelAnimationFrame(animationFrameId);
   }, 1000);
 
   return (
