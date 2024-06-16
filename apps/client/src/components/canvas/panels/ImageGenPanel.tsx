@@ -184,6 +184,10 @@ export const ImageGenPanel = track(() => {
           h: initialHeight,
           assetId,
         },
+        meta: {
+          prompt,
+          aspectRatio: aspectRatios[aspectRatioIndex],
+        },
       },
     ]);
 
