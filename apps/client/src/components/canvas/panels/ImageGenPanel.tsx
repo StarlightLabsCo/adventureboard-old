@@ -82,7 +82,7 @@ export function ImageGenPanel() {
         h: initialHeight,
         fill: 'solid',
         color: 'blue',
-        labelColor: 'none',
+        labelColor: 'blue',
       },
     };
 
