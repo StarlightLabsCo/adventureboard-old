@@ -72,13 +72,15 @@ export function ImageGenPanel() {
 
     const placeholderRectangleShape = {
       id: shapeId,
-      type: 'rectangle',
+      type: 'geo',
       x: initialX,
       y: initialY,
+      opacity: 0.5,
       props: {
+        geo: 'rectangle',
         w: initialWidth,
         h: initialHeight,
-        fill: 'rgba(225, 225, 225, 0.5)',
+        fill: 'blue',
       },
     };
 
