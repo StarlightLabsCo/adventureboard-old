@@ -63,46 +63,47 @@ export function ImageGenPanel() {
       throw new Error('Unauthorized');
     }
 
-    // Create placeholder object
+    // Create placeholder rectangle object
     const shapeId = createShapeId();
-    const initialWidth = aspectRatios[aspectRatioIndex].size.width / 2; // half the width to make it smaller in viewport (resolution will be 2x the image size)
+    const initialWidth = aspectRatios[aspectRatioIndex].size.width / 2;
     const initialHeight = aspectRatios[aspectRatioIndex].size.height / 2;
     const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2;
     const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2;
 
-    const placeholderImageShape = {
+    const placeholderRectangleShape = {
       id: shapeId,
-      type: 'image',
+      type: 'rect',
       x: initialX,
       y: initialY,
       props: {
         w: initialWidth,
         h: initialHeight,
+        fill: 'rgba(225, 225, 225, 0.5)',
       },
     };
 
-    editor.createShapes([placeholderImageShape]);
+    editor.createShapes([placeholderRectangleShape]);
 
     let animationFrameId: number;
-    const duration = 1000; // duration of the animation in milliseconds
+    const duration = 1000;
     const start = performance.now();
 
     const animate = (time: number) => {
       const elapsed = time - start;
-      const progress = (elapsed / duration) % 1; // Use modulus to loop the progress
+      const progress = (elapsed / duration) % 1;
       const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
-      const scale = 1 + 0.05 * Math.sin(easeInOut * Math.PI); // oscillate between 1 and 1.05
+      const scale = 1 + 0.05 * Math.sin(easeInOut * Math.PI);
 
       const scaledWidth = initialWidth * scale;
       const scaledHeight = initialHeight * scale;
 
       editor.updateShapes([
         {
-          ...placeholderImageShape,
+          ...placeholderRectangleShape,
           x: initialX + initialWidth / 2 - scaledWidth / 2,
           y: initialY + initialHeight / 2 - scaledHeight / 2,
           props: {
-            ...placeholderImageShape.props,
+            ...placeholderRectangleShape.props,
             w: scaledWidth,
             h: scaledHeight,
           },
@@ -114,7 +115,6 @@ export function ImageGenPanel() {
 
     animationFrameId = requestAnimationFrame(animate);
 
-    // Send Request
     const response = await fetch('/api/generation', {
       method: 'POST',
       headers: {
@@ -138,7 +138,6 @@ export function ImageGenPanel() {
       '/r2-get',
     );
 
-    // Create a TLAsset object
     const assetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
     const assetName = assetUrl.split('/').pop();
 
@@ -161,18 +160,21 @@ export function ImageGenPanel() {
 
     editor.store.put([asset]);
 
-    // Update shape
-    editor.updateShapes([
+    editor.deleteShapes([shapeId]);
+    editor.createShapes([
       {
-        ...placeholderImageShape,
+        id: createShapeId(),
+        type: 'image',
+        x: initialX,
+        y: initialY,
         props: {
-          ...placeholderImageShape.props,
+          w: initialWidth,
+          h: initialHeight,
           assetId,
         },
       },
     ]);
 
-    // Stop the animation when the image is updated
     cancelAnimationFrame(animationFrameId);
   }, 1000);
 
