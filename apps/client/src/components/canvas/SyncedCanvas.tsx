@@ -37,6 +37,7 @@ import { StylePanel } from './panels/StylePanel';
 import { MovePlayersPanel } from './panels/MovePlayersPanel';
 import { ImageGenTool } from './tools/ImageGenTool';
 import { DMKeyboardShortcutDialog } from './tools/DMKeyboardShortcutDialog';
+import { OutpaintSelectionUI } from './OutpaintSelectionUI';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -182,6 +183,7 @@ export function SyncedCanvas() {
               SharePanel: SharePanel,
               StylePanel: StylePanel, // TODO: create custom style panel for ImageGenTool
               TopPanel: MovePlayersPanel,
+              InFrontOfTheCanvas: OutpaintSelectionUI,
             });
           }
 
