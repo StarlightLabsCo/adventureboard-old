@@ -187,17 +187,7 @@ export const ImageGenPanel = track(() => {
   }, 1000);
 
   if (editor.getSelectedShapes().length > 0) {
-    return (
-      <div className="text-white flex flex-col">
-        <div>Selected Shapes:</div>
-        <div>
-          {editor
-            .getSelectedShapes()
-            .map((shape) => shape.id)
-            .join(', ')}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
