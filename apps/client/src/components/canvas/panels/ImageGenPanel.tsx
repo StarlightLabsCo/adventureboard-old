@@ -214,19 +214,19 @@ export function ImageGenPanel() {
           <div className="flex flex-col h-full justify-center w-full gap-y-4">
             <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isPortrait ? 'bg-blue-300  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(1)}
               >
                 Portrait
               </div>
               <div
-                className={`w-1/3 ${isSquare ? 'bg-red-300 text-red-500 hover:bg-red-400' : 'text-white hover:bg-slate-400'} flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isSquare ? 'bg-blue-300  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(4)}
               >
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-red-300 text-red-500  hover:bg-red-400' : 'text-white hover:bg-slate-400'} rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isLandscape ? 'bg-blue-300  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(7)}
               >
                 Landscape
