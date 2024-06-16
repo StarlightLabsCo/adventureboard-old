@@ -5,12 +5,6 @@ import { track } from 'tldraw';
 export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
 
-  const selectedShapes = editor.getSelectedShapes();
-  if (selectedShapes.length !== 1) return null;
-
-  const selectedShape = selectedShapes[0];
-  if (selectedShape.type !== 'image' || !selectedShape.meta.prompt) return null;
-
   const info = useValue(
     'selection bounds',
     () => {
@@ -29,6 +23,10 @@ export const OutpaintSelectionUI = track(() => {
     [editor],
   );
 
+  const selectedShapes = editor.getSelectedShapes();
+  const selectedShape = selectedShapes[0];
+
+  if (selectedShapes.length !== 1 || selectedShape.type !== 'image' || !selectedShape.meta.prompt) return null;
   if (!info) return null;
 
   return (
