@@ -87,6 +87,7 @@ export const ImageGenPanel = track(() => {
     };
 
     editor.createShapes([placeholderRectangleShape]);
+    editor.setCurrentTool('select');
 
     let animationFrameId: number;
     const duration = 1000;
@@ -185,10 +186,6 @@ export const ImageGenPanel = track(() => {
 
     editor.select(imageShapeId);
   }, 1000);
-
-  if (editor.getSelectedShapes().length > 0) {
-    return null;
-  }
 
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
