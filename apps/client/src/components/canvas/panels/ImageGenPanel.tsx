@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { useDiscordStore } from '@/lib/discord';
-import { AssetRecordType, MediaHelpers, TLAsset, TLAssetId, createShapeId, getHashForString, throttle, useEditor } from 'tldraw';
+import { AssetRecordType, MediaHelpers, TLAssetId, createShapeId, getHashForString, throttle, useEditor, track } from 'tldraw';
 
-export function ImageGenPanel() {
+export const ImageGenPanel = track(() => {
   const editor = useEditor();
 
   const aspectRatios = [
@@ -285,4 +285,4 @@ export function ImageGenPanel() {
       </div>
     </div>
   );
-}
+});
