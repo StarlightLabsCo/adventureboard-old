@@ -64,14 +64,14 @@ export function ImageGenPanel() {
     }
 
     // Create placeholder rectangle object
-    const shapeId = createShapeId();
+    const placeholderShapeId = createShapeId();
     const initialWidth = aspectRatios[aspectRatioIndex].size.width / 2;
     const initialHeight = aspectRatios[aspectRatioIndex].size.height / 2;
     const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2;
     const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2;
 
     const placeholderRectangleShape = {
-      id: shapeId,
+      id: placeholderShapeId,
       type: 'geo',
       x: initialX,
       y: initialY,
@@ -164,10 +164,12 @@ export function ImageGenPanel() {
 
     editor.store.put([asset]);
 
-    editor.deleteShapes([shapeId]);
+    editor.deleteShapes([placeholderShapeId]);
+
+    const imageShapeId = createShapeId();
     editor.createShapes([
       {
-        id: createShapeId(),
+        id: imageShapeId,
         type: 'image',
         x: initialX,
         y: initialY,
@@ -180,8 +182,8 @@ export function ImageGenPanel() {
     ]);
 
     cancelAnimationFrame(animationFrameId);
-    
-    editor.select(shapeId);
+
+    editor.select(imageShapeId);
   }, 1000);
 
   return (
