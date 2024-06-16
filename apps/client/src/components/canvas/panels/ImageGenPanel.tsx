@@ -186,6 +186,20 @@ export function ImageGenPanel() {
     editor.select(imageShapeId);
   }, 1000);
 
+  if (editor.getSelectedShapes().length > 0) {
+    return (
+      <div className="text-white flex flex-col">
+        <div>Selected Shapes:</div>
+        <div>
+          {editor
+            .getSelectedShapes()
+            .map((shape) => shape.id)
+            .join(', ')}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
