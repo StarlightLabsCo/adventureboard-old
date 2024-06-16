@@ -80,6 +80,36 @@ export function ImageGenPanel() {
 
     editor.createShapes([placeholderImageShape]);
 
+    let animationFrameId: number;
+    const duration = 1000; // duration of the animation in milliseconds
+    const start = performance.now();
+
+    const animate = (time: number) => {
+      const elapsed = time - start;
+      const progress = elapsed / duration;
+      const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+      const scale = 1 + 0.05 * Math.sin(easeInOut * Math.PI); // oscillate between 1 and 1.05
+
+      editor.updateShapes([
+        {
+          ...placeholderImageShape,
+          props: {
+            ...placeholderImageShape.props,
+            w: width * scale,
+            h: height * scale,
+          },
+        },
+      ]);
+
+      if (elapsed < duration) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
     // Send Request
     const response = await fetch('/api/generation', {
       method: 'POST',
@@ -93,6 +123,8 @@ export function ImageGenPanel() {
     if (!response.ok) {
       throw new Error('Failed to generate image');
     }
+
+    cancelAnimationFrame(animationFrameId); // Stop the animation when the image is generated
 
     const data = await response.json();
     const { url } = data;
