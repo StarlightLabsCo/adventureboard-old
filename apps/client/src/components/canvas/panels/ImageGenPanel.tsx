@@ -80,7 +80,8 @@ export function ImageGenPanel() {
         geo: 'rectangle',
         w: initialWidth,
         h: initialHeight,
-        fill: 'blue',
+        fill: 'solid',
+        color: 'blue',
       },
     };
 
