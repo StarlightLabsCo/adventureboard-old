@@ -94,7 +94,7 @@ export function ImageGenPanel() {
       const elapsed = time - start;
       const progress = (elapsed / duration) % 1;
       const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
-      const scale = 1 + 0.05 * Math.sin(easeInOut * Math.PI);
+      const scale = 1 + 0.005 * Math.sin(easeInOut * Math.PI);
 
       const scaledWidth = initialWidth * scale;
       const scaledHeight = initialHeight * scale;
