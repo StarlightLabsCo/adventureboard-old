@@ -65,8 +65,8 @@ export function ImageGenPanel() {
 
     // Create placeholder object
     const shapeId = createShapeId();
-    const initialWidth = aspectRatios[aspectRatioIndex].size.width;
-    const initialHeight = aspectRatios[aspectRatioIndex].size.height;
+    const initialWidth = aspectRatios[aspectRatioIndex].size.width / 2; // half the width to make it smaller in viewport (resolution will be 2x the image size)
+    const initialHeight = aspectRatios[aspectRatioIndex].size.height / 2;
     const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2;
     const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2;
 
