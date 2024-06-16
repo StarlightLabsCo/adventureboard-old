@@ -63,6 +63,11 @@ export const ImageGenPanel = track(() => {
       throw new Error('Unauthorized');
     }
 
+    const selectedShapeIds = editor.getSelectedShapes();
+    for (const shapeId of selectedShapeIds) {
+      editor.deselect(shapeId);
+    }
+
     // Create placeholder rectangle object
     const placeholderShapeId = createShapeId();
     const initialWidth = aspectRatios[aspectRatioIndex].size.width / 2;
