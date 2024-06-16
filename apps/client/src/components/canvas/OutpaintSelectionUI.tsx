@@ -1,14 +1,15 @@
 import { useEditor, useValue } from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
+import { track } from 'tldraw';
 
-export function OutpaintSelectionUI() {
+export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
 
   const selectedShapes = editor.getSelectedShapes();
-  if (selectedShapes.length !== 1) return;
+  if (selectedShapes.length !== 1) return null;
 
   const selectedShape = selectedShapes[0];
-  if (selectedShape.type !== 'image' || !selectedShape.meta.prompt) return;
+  if (selectedShape.type !== 'image' || !selectedShape.meta.prompt) return null;
 
   const info = useValue(
     'selection bounds',
@@ -16,7 +17,7 @@ export function OutpaintSelectionUI() {
       const screenBounds = editor.getViewportScreenBounds();
       const rotation = editor.getSelectionRotation();
       const rotatedScreenBounds = editor.getSelectionRotatedScreenBounds();
-      if (!rotatedScreenBounds) return;
+      if (!rotatedScreenBounds) return null;
       return {
         x: rotatedScreenBounds.x - screenBounds.x,
         y: rotatedScreenBounds.y - screenBounds.y,
@@ -28,7 +29,7 @@ export function OutpaintSelectionUI() {
     [editor],
   );
 
-  if (!info) return;
+  if (!info) return null;
 
   return (
     <div
@@ -47,4 +48,4 @@ export function OutpaintSelectionUI() {
       <OutpaintInDirectionButton y={info.height / 2 - 16} x={-40} rotation={-Math.PI / 2} />
     </div>
   );
-}
+});
