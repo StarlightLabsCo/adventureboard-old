@@ -139,6 +139,11 @@ export const OutpaintSelectionUI = track(() => {
     }
 
     const image = await fetch(imageUrl);
+    if (!image.ok) {
+      console.error(image);
+      throw new Error('Failed to fetch image');
+    }
+
     const imageBlob = await image.blob();
 
     const response = await fetch('/api/outpaint', {
@@ -148,7 +153,7 @@ export const OutpaintSelectionUI = track(() => {
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        image: imageBlob,
+        image: imageBlob, // TODO turn to base64 string
         up: direction === 'up' ? initialHeight : undefined,
         right: direction === 'right' ? initialWidth : undefined,
         down: direction === 'down' ? initialHeight : undefined,

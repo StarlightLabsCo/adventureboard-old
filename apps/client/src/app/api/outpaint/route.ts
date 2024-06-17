@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
 
   // Parse request body
   const { image, up, right, down, left } = await req.json();
+  console.log(image, up, right, down, left);
+
   if (!image) {
     return NextResponse.json({ error: 'No image data' }, { status: 400 });
   }
@@ -69,6 +71,7 @@ export async function POST(req: NextRequest) {
 
   if (!stabilityResponse.ok) {
     const errorData = await stabilityResponse.json();
+    console.error(errorData);
     return NextResponse.json({ error: 'Failed to outpaint image', details: errorData }, { status: 500 });
   }
 
