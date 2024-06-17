@@ -70,6 +70,7 @@ export const OutpaintSelectionUI = track(() => {
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
+    console.log(`handleHover ${direction}`);
     const { width, height } = aspectRatio.size;
     let x = info.x;
     let y = info.y;

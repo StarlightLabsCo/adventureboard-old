@@ -1,6 +1,4 @@
 import { cn } from '@/lib/tailwind/utils';
-import { useDiscordStore } from '@/lib/discord';
-import { createShapeId, useEditor } from 'tldraw';
 
 type OutpaintInDirectionButtonProps = {
   x: number;
