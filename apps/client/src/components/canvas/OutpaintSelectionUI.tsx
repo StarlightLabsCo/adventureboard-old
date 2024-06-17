@@ -80,10 +80,10 @@ export const OutpaintSelectionUI = track(() => {
         y -= h;
         break;
       case 'right':
-        x += info.width;
+        x += w;
         break;
       case 'down':
-        y += info.height;
+        y += h;
         break;
       case 'left':
         x -= w;
@@ -111,7 +111,6 @@ export const OutpaintSelectionUI = track(() => {
       {previewRect && (
         <div
           style={{
-            position: 'absolute',
             left: `${previewRect.x}px`,
             top: `${previewRect.y}px`,
             width: `${previewRect.width}px`,
