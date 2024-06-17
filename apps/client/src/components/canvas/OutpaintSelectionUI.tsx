@@ -156,6 +156,7 @@ export const OutpaintSelectionUI = track(() => {
     }
 
     const imageBlob = await image.blob();
+    const imageBase64 = await blobToBase64(imageBlob);
 
     const response = await fetch('/api/outpaint', {
       method: 'POST',
@@ -164,7 +165,7 @@ export const OutpaintSelectionUI = track(() => {
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        image: await blobToBase64(imageBlob),
+        image: imageBase64,
         up: direction === 'up' ? Math.round(initialHeight) : undefined,
         right: direction === 'right' ? Math.round(initialWidth) : undefined,
         down: direction === 'down' ? Math.round(initialHeight) : undefined,

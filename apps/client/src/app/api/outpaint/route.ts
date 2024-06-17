@@ -55,8 +55,11 @@ export async function POST(req: NextRequest) {
 
   // Prepare request to Stability API for outpainting
   const formData = new FormData();
-  const imageBuffer = Buffer.from(image, 'base64');
+
+  const base64Image = image.replace(/^data:image\/\w+;base64,/, '');
+  const imageBuffer = Buffer.from(base64Image, 'base64');
   formData.append('image', new Blob([imageBuffer], { type: 'image/png' }));
+
   if (up) formData.append('up', up);
   if (right) formData.append('right', right);
   if (down) formData.append('down', down);
