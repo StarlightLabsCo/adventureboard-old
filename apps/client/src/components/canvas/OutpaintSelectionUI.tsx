@@ -147,6 +147,12 @@ export const OutpaintSelectionUI = track(() => {
 
     const imageBlob = await image.blob();
     const imageBase64 = await blobToBase64(imageBlob);
+    const imageSize = await MediaHelpers.getImageSize(imageBlob);
+
+    const up = direction === 'up' ? Math.min(Math.round(initialHeight), 2000) : undefined;
+    const right = direction === 'right' ? Math.min(Math.round(initialWidth), 2000) : undefined;
+    const down = direction === 'down' ? Math.min(Math.round(initialHeight), 2000) : undefined;
+    const left = direction === 'left' ? Math.min(Math.round(initialWidth), 2000) : undefined;
 
     const response = await fetch('/api/outpaint', {
       method: 'POST',
@@ -156,10 +162,10 @@ export const OutpaintSelectionUI = track(() => {
       },
       body: JSON.stringify({
         image: imageBase64,
-        up: direction === 'up' ? Math.round(initialHeight) : undefined,
-        right: direction === 'right' ? Math.round(initialWidth) : undefined,
-        down: direction === 'down' ? Math.round(initialHeight) : undefined,
-        left: direction === 'left' ? Math.round(initialWidth) : undefined,
+        up: up,
+        right: right,
+        down: down,
+        left: left,
       }),
     });
 
@@ -201,28 +207,27 @@ export const OutpaintSelectionUI = track(() => {
     editor.store.put([newAsset]);
     editor.deleteShapes([placeholderShapeId]);
 
-    const imageShapeId = createShapeId();
-    editor.createShapes([
+    const scalingX = size.w / imageSize.w;
+    const scalingY = size.h / imageSize.h;
+
+    editor.updateShapes([
       {
-        id: imageShapeId,
-        type: 'image',
-        x: initialX,
-        y: initialY,
+        ...selectedShape,
         props: {
-          w: initialWidth,
-          h: initialHeight,
+          ...selectedShape.props,
+          w: selectedShape.props.w * scalingX,
+          h: selectedShape.props.h * scalingY,
           assetId: newAssetId,
-        },
-        meta: {
-          prompt: selectedShape.meta.prompt,
-          aspectRatio: selectedShape.meta.aspectRatio,
         },
       },
     ]);
 
     cancelAnimationFrame(animationFrameId);
 
-    editor.select(imageShapeId);
+    editor.select(selectedShape.id);
+
+    // Delete old asset
+    editor.deleteAssets([assetId]);
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
