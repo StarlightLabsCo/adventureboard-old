@@ -29,13 +29,22 @@ export async function POST(req: NextRequest) {
   }
 
   // Parse request body
-  const { image_data, direction, length } = await req.json();
+  const { image_data, up, right, down, left } = await req.json();
+  if (!image_data) {
+    return NextResponse.json({ error: 'No image data' }, { status: 400 });
+  }
+
+  if (!up && !right && !down && !left) {
+    return NextResponse.json({ error: 'No direction' }, { status: 400 });
+  }
 
   // Prepare request to Stability API for outpainting
   const formData = new FormData();
   formData.append('image', image_data);
-  formData.append('direction', direction);
-  formData.append('length', length.toString());
+  if (up) formData.append('up', up);
+  if (right) formData.append('right', right);
+  if (down) formData.append('down', down);
+  if (left) formData.append('left', left);
 
   const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/edit/outpaint', {
     method: 'POST',

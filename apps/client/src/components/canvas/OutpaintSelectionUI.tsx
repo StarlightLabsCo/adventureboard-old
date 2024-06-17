@@ -1,4 +1,14 @@
-import { TLImageShape, TLImageShapeProps, createShapeId, useEditor, useValue } from 'tldraw';
+import {
+  AssetRecordType,
+  MediaHelpers,
+  TLAssetId,
+  TLImageShape,
+  TLImageShapeProps,
+  createShapeId,
+  getHashForString,
+  useEditor,
+  useValue,
+} from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
 import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
@@ -32,18 +42,15 @@ export const OutpaintSelectionUI = track(() => {
   if (selectedShapes.length !== 1 || selectedShape.type !== 'image' || !selectedShape.meta.prompt) return null;
   if (!info) return null;
 
-  console.log(selectedShape);
-
-  const outpaintImage = (direction: 'up' | 'right' | 'down' | 'left') => {
+  const outpaintImage = async (direction: 'up' | 'right' | 'down' | 'left') => {
     // Auth
     const accessToken = useDiscordStore.getState().auth?.access_token;
     if (!accessToken) {
       throw new Error('Unauthorized');
     }
-    const selectedShapeIds = editor.getSelectedShapes();
-    for (const shapeId of selectedShapeIds) {
-      editor.deselect(shapeId);
-    }
+
+    const selectedShape = editor.getSelectedShapes()[0] as TLImageShape;
+
     // Create placeholder rectangle object
     const placeholderShapeId = createShapeId();
     const imageShape = selectedShape as TLImageShape;
@@ -84,7 +91,127 @@ export const OutpaintSelectionUI = track(() => {
     };
     editor.createShapes([placeholderRectangleShape]);
 
+    let animationFrameId: number;
+    const duration = 1000;
+    const start = performance.now();
+
+    const animate = (time: number) => {
+      const elapsed = time - start;
+      const progress = (elapsed / duration) % 1;
+      const easeInOut = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+      const scale = 1 + 0.01 * Math.sin(easeInOut * Math.PI);
+
+      const scaledWidth = initialWidth * scale;
+      const scaledHeight = initialHeight * scale;
+
+      editor.updateShapes([
+        {
+          ...placeholderRectangleShape,
+          x: initialX + initialWidth / 2 - scaledWidth / 2,
+          y: initialY + initialHeight / 2 - scaledHeight / 2,
+          props: {
+            ...placeholderRectangleShape.props,
+            w: scaledWidth,
+            h: scaledHeight,
+          },
+        },
+      ]);
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
     // Send request
+    const assetId = selectedShape.props.assetId;
+    if (!assetId) {
+      throw new Error('No asset ID');
+    }
+
+    const asset = editor.getAsset(assetId);
+    if (!asset) {
+      throw new Error('No asset');
+    }
+
+    const imageUrl = asset.props.src;
+    if (!imageUrl) {
+      throw new Error('No image URL');
+    }
+
+    const image = await fetch(imageUrl);
+    const imageBlob = await image.blob();
+
+    const response = await fetch('/api/outpaint', {
+      method: 'POST',
+      body: JSON.stringify({
+        image: imageBlob,
+        up: direction === 'up' ? initialHeight : undefined,
+        right: direction === 'right' ? initialWidth : undefined,
+        down: direction === 'down' ? initialHeight : undefined,
+        left: direction === 'left' ? initialWidth : undefined,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to generate image');
+    }
+
+    // Handle response
+    const data = await response.json();
+    const { url } = data;
+
+    const assetUrl = url.replace(
+      new RegExp(
+        `^https://${process.env.NEXT_PUBLIC_R2_BUCKET_NAME}\\.${process.env.NEXT_PUBLIC_R2_ACCOUNT_ID}\\.r2\\.cloudflarestorage\\.com`,
+      ),
+      '/r2-get',
+    );
+
+    const newAssetId: TLAssetId = AssetRecordType.createId(getHashForString(url));
+    const newAssetName = assetUrl.split('/').pop();
+
+    const blob = await fetch(assetUrl).then((res) => res.blob());
+    const size = await MediaHelpers.getImageSize(blob);
+
+    const newAsset = AssetRecordType.create({
+      id: newAssetId,
+      type: 'image',
+      typeName: 'asset',
+      props: {
+        name: newAssetName,
+        src: assetUrl,
+        w: size.w,
+        h: size.h,
+        mimeType: 'image/webp',
+        isAnimated: false,
+      },
+    });
+
+    editor.store.put([newAsset]);
+    editor.deleteShapes([placeholderShapeId]);
+
+    const imageShapeId = createShapeId();
+    editor.createShapes([
+      {
+        id: imageShapeId,
+        type: 'image',
+        x: initialX,
+        y: initialY,
+        props: {
+          w: initialWidth,
+          h: initialHeight,
+          assetId: newAssetId,
+        },
+        meta: {
+          prompt: selectedShape.meta.prompt,
+          aspectRatio: selectedShape.meta.aspectRatio,
+        },
+      },
+    ]);
+
+    cancelAnimationFrame(animationFrameId);
+
+    editor.select(imageShapeId);
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
