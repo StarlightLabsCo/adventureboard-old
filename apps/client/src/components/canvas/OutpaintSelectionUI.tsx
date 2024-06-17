@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 
 export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
-  const [previewRect, setPreviewRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const [previewRect, setPreviewRect] = useState<{ deltaX: number; deltaY: number; w: number; h: number } | null>(null);
 
   const info = useValue(
     'selection bounds',
@@ -90,7 +90,7 @@ export const OutpaintSelectionUI = track(() => {
         break;
     }
 
-    setPreviewRect({ x: info.x + deltaX, y: info.y + deltaY, width: w, height: h });
+    setPreviewRect({ deltaX, deltaY, w, h });
   };
 
   const handleMouseLeave = () => {
@@ -112,10 +112,10 @@ export const OutpaintSelectionUI = track(() => {
         <div
           style={{
             position: 'absolute',
-            left: `${previewRect.x}px`,
-            top: `${previewRect.y}px`,
-            width: `${previewRect.width}px`,
-            height: `${previewRect.height}px`,
+            left: `${previewRect.deltaX}px`,
+            top: `${previewRect.deltaY}px`,
+            width: `${previewRect.w}px`,
+            height: `${previewRect.h}px`,
             backgroundColor: 'rgba(0, 0, 255, 0.5)', // Semi-transparent blue
           }}
         />
