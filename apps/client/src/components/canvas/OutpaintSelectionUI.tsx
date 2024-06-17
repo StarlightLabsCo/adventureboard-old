@@ -71,24 +71,26 @@ export const OutpaintSelectionUI = track(() => {
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
-    let { x, y, height: h, width: w } = info;
+    let deltaX = 0;
+    let deltaY = 0;
+    const { height: h, width: w } = info;
 
     switch (direction) {
       case 'up':
-        y -= info.height;
+        deltaY = -h;
         break;
       case 'right':
-        x += info.width;
+        deltaX = w;
         break;
       case 'down':
-        y += info.height;
+        deltaY = h;
         break;
       case 'left':
-        x -= info.width;
+        deltaX = -w;
         break;
     }
 
-    setPreviewRect({ x, y, width: w, height: h });
+    setPreviewRect({ x: info.x + deltaX, y: info.y + deltaY, width: w, height: h });
   };
 
   const handleMouseLeave = () => {
