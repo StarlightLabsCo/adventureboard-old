@@ -117,7 +117,7 @@ export const OutpaintSelectionUI = track(() => {
             width: `${previewRect.w}px`,
             height: `${previewRect.h}px`,
           }}
-          className="bg-[#3182ed/50] border-[1px] border-[#3182ed]"
+          className="bg-[#3182ed/50] border-[3.5px] border-[#3182ed]"
         />
       )}
       <OutpaintInDirectionButton
