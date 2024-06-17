@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
 
   // Parse request body
   const { image, up, right, down, left } = await req.json();
-  console.log(image, up, right, down, left);
+  console.log(`Image? ${image.length}`);
+  console.log(`up: ${up}, right: ${right}, down: ${down}, left: ${left}`);
 
   if (!image) {
     return NextResponse.json({ error: 'No image data' }, { status: 400 });
@@ -54,7 +55,8 @@ export async function POST(req: NextRequest) {
 
   // Prepare request to Stability API for outpainting
   const formData = new FormData();
-  formData.append('image', image);
+  const imageBuffer = Buffer.from(image, 'base64');
+  formData.append('image', new Blob([imageBuffer], { type: 'image/webp' }));
   if (up) formData.append('up', up);
   if (right) formData.append('right', right);
   if (down) formData.append('down', down);
@@ -76,13 +78,13 @@ export async function POST(req: NextRequest) {
   }
 
   // Upload modified image to Cloudflare S3
-  const imageBuffer = await stabilityResponse.arrayBuffer();
+  const resultImageBuffer = await stabilityResponse.arrayBuffer();
   const filename = `${user.id}/${Date.now()}_outpaint.png`;
   const objectKey = `images/${filename}`;
   const uploadCommand = new PutObjectCommand({
     Bucket: process.env.NEXT_PUBLIC_R2_BUCKET_NAME,
     Key: objectKey,
-    Body: Buffer.from(imageBuffer),
+    Body: Buffer.from(resultImageBuffer),
     ContentType: 'image/png',
   });
 
