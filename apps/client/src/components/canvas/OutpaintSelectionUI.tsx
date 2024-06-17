@@ -14,6 +14,17 @@ import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
 import React, { useState } from 'react';
 
+async function blobToBase64(blob: Blob) {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.onerror = reject;
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
 export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
   const [previewRect, setPreviewRect] = useState<{ deltaX: number; deltaY: number; w: number; h: number } | null>(null);
@@ -153,7 +164,7 @@ export const OutpaintSelectionUI = track(() => {
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        image: imageBlob, // TODO turn to base64 string
+        image: await blobToBase64(imageBlob),
         up: direction === 'up' ? initialHeight : undefined,
         right: direction === 'right' ? initialWidth : undefined,
         down: direction === 'down' ? initialHeight : undefined,
