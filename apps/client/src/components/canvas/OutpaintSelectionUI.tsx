@@ -1,4 +1,4 @@
-import { createShapeId, useEditor, useValue } from 'tldraw';
+import { TLImageShapeProps, createShapeId, useEditor, useValue } from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
 import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
@@ -70,14 +70,14 @@ export const OutpaintSelectionUI = track(() => {
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
-    console.log(`handleHover ${direction}`);
-    const { width, height } = aspectRatio.size;
+    const { w, h } = selectedShape.props as TLImageShapeProps;
+
     let x = info.x;
     let y = info.y;
 
     switch (direction) {
       case 'up':
-        y -= height;
+        y -= h;
         break;
       case 'right':
         x += info.width;
@@ -86,11 +86,11 @@ export const OutpaintSelectionUI = track(() => {
         y += info.height;
         break;
       case 'left':
-        x -= width;
+        x -= w;
         break;
     }
 
-    setPreviewRect({ x, y, width, height });
+    setPreviewRect({ x, y, w, h });
   };
 
   const handleMouseLeave = () => {
