@@ -1,4 +1,4 @@
-import { TLImageShapeProps, createShapeId, useEditor, useValue } from 'tldraw';
+import { TLImageShape, TLImageShapeProps, createShapeId, useEditor, useValue } from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
 import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
@@ -34,40 +34,57 @@ export const OutpaintSelectionUI = track(() => {
 
   console.log(selectedShape);
 
-  // const aspectRatio = selectedShape.meta.aspectRatio as { ratio: string; size: { width: number; height: number } };
-
   const outpaintImage = (direction: 'up' | 'right' | 'down' | 'left') => {
-    // const { width, height } = aspectRatio.size;
-    // const accessToken = useDiscordStore.getState().auth?.access_token;
-    // if (!accessToken) {
-    //   throw new Error('Unauthorized');
-    // }
-    // const selectedShapeIds = editor.getSelectedShapes();
-    // for (const shapeId of selectedShapeIds) {
-    //   editor.deselect(shapeId);
-    // }
-    // // Create placeholder rectangle object
-    // const placeholderShapeId = createShapeId();
-    // const initialWidth = aspectRatio.size.width / 2;
-    // const initialHeight = aspectRatio.size.height / 2;
-    // const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2; // TODO change so it aligns with former image
-    // const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2; // TODO change so it aligns with former image
-    // const placeholderRectangleShape = {
-    //   id: placeholderShapeId,
-    //   type: 'geo',
-    //   x: initialX,
-    //   y: initialY,
-    //   opacity: 0.5,
-    //   props: {
-    //     geo: 'rectangle',
-    //     w: initialWidth,
-    //     h: initialHeight,
-    //     fill: 'solid',
-    //     color: 'blue',
-    //     labelColor: 'blue',
-    //   },
-    // };
-    // editor.createShapes([placeholderRectangleShape]);
+    // Auth
+    const accessToken = useDiscordStore.getState().auth?.access_token;
+    if (!accessToken) {
+      throw new Error('Unauthorized');
+    }
+    const selectedShapeIds = editor.getSelectedShapes();
+    for (const shapeId of selectedShapeIds) {
+      editor.deselect(shapeId);
+    }
+    // Create placeholder rectangle object
+    const placeholderShapeId = createShapeId();
+    const imageShape = selectedShape as TLImageShape;
+    const initialWidth = imageShape.props.w;
+    const initialHeight = imageShape.props.h;
+    let initialX = selectedShape.x;
+    let initialY = selectedShape.y;
+
+    switch (direction) {
+      case 'up':
+        initialY -= initialHeight;
+        break;
+      case 'right':
+        initialX += initialWidth;
+        break;
+      case 'down':
+        initialY += initialHeight;
+        break;
+      case 'left':
+        initialX -= initialWidth;
+        break;
+    }
+
+    const placeholderRectangleShape = {
+      id: placeholderShapeId,
+      type: 'geo',
+      x: initialX,
+      y: initialY,
+      opacity: 0.5,
+      props: {
+        geo: 'rectangle',
+        w: initialWidth,
+        h: initialHeight,
+        fill: 'solid',
+        color: 'blue',
+        labelColor: 'blue',
+      },
+    };
+    editor.createShapes([placeholderRectangleShape]);
+
+    // Send request
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
