@@ -40,10 +40,10 @@ export const OutpaintSelectionUI = track(() => {
         pointerEvents: 'all',
       }}
     >
-      <OutpaintInDirectionButton y={-40} x={info.width / 2 - 16} rotation={0} />
-      <OutpaintInDirectionButton y={info.height / 2 - 16} x={info.width + 8} rotation={Math.PI / 2} />
-      <OutpaintInDirectionButton y={info.height + 8} x={info.width / 2 - 16} rotation={Math.PI} />
-      <OutpaintInDirectionButton y={info.height / 2 - 16} x={-40} rotation={-Math.PI / 2} />
+      <OutpaintInDirectionButton className="h-4 w-4" y={0} x={info.width / 2} rotation={0} />
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={info.width} rotation={Math.PI / 2} />
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height} x={info.width / 2} rotation={Math.PI} />
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={0} rotation={-Math.PI / 2} />
     </div>
   );
 });
