@@ -165,10 +165,10 @@ export const OutpaintSelectionUI = track(() => {
       },
       body: JSON.stringify({
         image: await blobToBase64(imageBlob),
-        up: direction === 'up' ? initialHeight : undefined,
-        right: direction === 'right' ? initialWidth : undefined,
-        down: direction === 'down' ? initialHeight : undefined,
-        left: direction === 'left' ? initialWidth : undefined,
+        up: direction === 'up' ? Math.round(initialHeight) : undefined,
+        right: direction === 'right' ? Math.round(initialWidth) : undefined,
+        down: direction === 'down' ? Math.round(initialHeight) : undefined,
+        left: direction === 'left' ? Math.round(initialWidth) : undefined,
       }),
     });
 
