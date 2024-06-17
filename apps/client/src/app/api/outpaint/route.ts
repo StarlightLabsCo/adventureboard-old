@@ -28,6 +28,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const userResponse = await fetch(`${process.env.DISCORD_API_BASE}/users/@me`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!userResponse.ok) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const user = await userResponse.json();
+
   // Parse request body
   const { image_data, up, right, down, left } = await req.json();
   if (!image_data) {
@@ -62,8 +74,8 @@ export async function POST(req: NextRequest) {
 
   // Upload modified image to Cloudflare S3
   const imageBuffer = await stabilityResponse.arrayBuffer();
-  const filename = `outpaint_${Date.now()}.png`;
-  const objectKey = `outpainted_images/${filename}`;
+  const filename = `${user.id}/${Date.now()}_outpaint.png`;
+  const objectKey = `images/${filename}`;
   const uploadCommand = new PutObjectCommand({
     Bucket: process.env.NEXT_PUBLIC_R2_BUCKET_NAME,
     Key: objectKey,

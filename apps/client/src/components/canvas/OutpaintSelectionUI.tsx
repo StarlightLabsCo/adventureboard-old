@@ -143,6 +143,10 @@ export const OutpaintSelectionUI = track(() => {
 
     const response = await fetch('/api/outpaint', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({
         image: imageBlob,
         up: direction === 'up' ? initialHeight : undefined,
