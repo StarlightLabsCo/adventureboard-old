@@ -32,11 +32,12 @@ export const OutpaintSelectionUI = track(() => {
   if (selectedShapes.length !== 1 || selectedShape.type !== 'image' || !selectedShape.meta.prompt) return null;
   if (!info) return null;
 
-  const aspectRatio = selectedShape.meta.aspectRatio as { ratio: string; size: { width: number; height: number } };
+  console.log(selectedShape);
+
+  // const aspectRatio = selectedShape.meta.aspectRatio as { ratio: string; size: { width: number; height: number } };
 
   const outpaintImage = (direction: 'up' | 'right' | 'down' | 'left') => {
-    const { width, height } = aspectRatio.size;
-
+    // const { width, height } = aspectRatio.size;
     // const accessToken = useDiscordStore.getState().auth?.access_token;
     // if (!accessToken) {
     //   throw new Error('Unauthorized');
@@ -70,23 +71,20 @@ export const OutpaintSelectionUI = track(() => {
   };
 
   const handleHover = (direction: 'up' | 'right' | 'down' | 'left') => {
-    const { w, h } = selectedShape.props as TLImageShapeProps;
-
-    let x = info.x;
-    let y = info.y;
+    let { x, y, height: h, width: w } = info;
 
     switch (direction) {
       case 'up':
-        y -= h;
+        y -= info.height;
         break;
       case 'right':
-        x += w;
+        x += info.width;
         break;
       case 'down':
-        y += h;
+        y += info.height;
         break;
       case 'left':
-        x -= w;
+        x -= info.width;
         break;
     }
 
@@ -111,6 +109,7 @@ export const OutpaintSelectionUI = track(() => {
       {previewRect && (
         <div
           style={{
+            position: 'absolute',
             left: `${previewRect.x}px`,
             top: `${previewRect.y}px`,
             width: `${previewRect.width}px`,
