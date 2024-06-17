@@ -33,17 +33,17 @@ export const OutpaintSelectionUI = track(() => {
     <div
       style={{
         position: 'absolute',
-        top: 0,
-        left: 0,
+        top: `${info.y}px`,
+        left: `${info.x}px`,
         transformOrigin: 'top left',
-        transform: `translate(${info.x}px, ${info.y}px) rotate(${info.rotation}rad)`,
+        transform: `rotate(${info.rotation}rad)`,
         pointerEvents: 'all',
       }}
     >
-      <OutpaintInDirectionButton className="h-4 w-4" y={0} x={info.width / 2} rotation={0} />
-      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={info.width} rotation={Math.PI / 2} />
-      <OutpaintInDirectionButton className="h-4 w-4" y={info.height} x={info.width / 2} rotation={Math.PI} />
-      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={0} rotation={-Math.PI / 2} />
+      <OutpaintInDirectionButton className="h-4 w-4" y={-8} x={info.width / 2} rotation={0} /> {/* up */}
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={info.width + 8} rotation={Math.PI / 2} /> {/* right */}
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height + 8} x={info.width / 2} rotation={Math.PI} /> {/* down */}
+      <OutpaintInDirectionButton className="h-4 w-4" y={info.height / 2} x={0 - 8} rotation={-Math.PI / 2} /> {/* left */}
     </div>
   );
 });
