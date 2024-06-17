@@ -94,7 +94,7 @@ export const OutpaintSelectionUI = track(() => {
   };
 
   const handleMouseLeave = () => {
-    setPreviewRect(null);
+    // setPreviewRect(null);
   };
 
   return (
