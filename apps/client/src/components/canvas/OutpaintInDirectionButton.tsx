@@ -7,10 +7,20 @@ type OutpaintInDirectionButtonProps = {
   y: number;
   rotation: number;
   onClick: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
   className?: string;
 };
 
-export function OutpaintInDirectionButton({ x, y, rotation, onClick, className }: OutpaintInDirectionButtonProps) {
+export function OutpaintInDirectionButton({
+  x,
+  y,
+  rotation,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  className,
+}: OutpaintInDirectionButtonProps) {
   return (
     <div
       className={cn('absolute cursor-pointer text-white/50 hover:scale-110 hover:text-white transition-transform', className)}
@@ -20,6 +30,8 @@ export function OutpaintInDirectionButton({ x, y, rotation, onClick, className }
         transform: `rotate(${rotation}rad)`,
       }}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
