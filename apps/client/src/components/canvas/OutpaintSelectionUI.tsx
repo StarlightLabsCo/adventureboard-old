@@ -40,29 +40,25 @@ export const OutpaintSelectionUI = track(() => {
         pointerEvents: 'all',
       }}
     >
-      <OutpaintInDirectionButton className="h-4 w-4 translate-x-[-50%] translate-y-[-50%]" y={-8} x={info.width / 2} rotation={0} />{' '}
-      {/* up */}
+      <OutpaintInDirectionButton className="h-4 w-4 translate-x-[-50%] translate-y-[-50%]" y={-24} x={info.width / 2} rotation={0} />
       <OutpaintInDirectionButton
         className="h-4 w-4 translate-x-[-50%] translate-y-[-50%]"
         y={info.height / 2}
         x={info.width + 8}
         rotation={Math.PI / 2}
-      />{' '}
-      {/* right */}
+      />
       <OutpaintInDirectionButton
         className="h-4 w-4 translate-x-[-50%] translate-y-[-50%]"
         y={info.height + 8}
         x={info.width / 2}
         rotation={Math.PI}
-      />{' '}
-      {/* down */}
+      />
       <OutpaintInDirectionButton
         className="h-4 w-4 translate-x-[-50%] translate-y-[-50%]"
         y={info.height / 2}
-        x={0 - 8}
+        x={0 - 24}
         rotation={-Math.PI / 2}
-      />{' '}
-      {/* left */}
+      />
     </div>
   );
 });
