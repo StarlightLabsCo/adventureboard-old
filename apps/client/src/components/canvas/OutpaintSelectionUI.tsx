@@ -37,19 +37,16 @@ export const OutpaintSelectionUI = track(() => {
     // if (!accessToken) {
     //   throw new Error('Unauthorized');
     // }
-
     // const selectedShapeIds = editor.getSelectedShapes();
     // for (const shapeId of selectedShapeIds) {
     //   editor.deselect(shapeId);
     // }
-
     // // Create placeholder rectangle object
     // const placeholderShapeId = createShapeId();
     // const initialWidth = aspectRatio.size.width / 2;
     // const initialHeight = aspectRatio.size.height / 2;
     // const initialX = editor.getViewportPageBounds().x + editor.getViewportPageBounds().w / 2 - initialWidth / 2; // TODO change so it aligns with former image
     // const initialY = editor.getViewportPageBounds().y + editor.getViewportPageBounds().h / 2 - initialHeight / 2; // TODO change so it aligns with former image
-
     // const placeholderRectangleShape = {
     //   id: placeholderShapeId,
     //   type: 'geo',
@@ -65,7 +62,6 @@ export const OutpaintSelectionUI = track(() => {
     //     labelColor: 'blue',
     //   },
     // };
-
     // editor.createShapes([placeholderRectangleShape]);
   };
 
@@ -86,7 +82,7 @@ export const OutpaintSelectionUI = track(() => {
         }}
         className="h-4 w-4"
         y={-24}
-        x={info.width / 2 - 16}
+        x={info.width / 2 - 8}
         rotation={0}
       />
       <OutpaintInDirectionButton
@@ -94,7 +90,7 @@ export const OutpaintSelectionUI = track(() => {
           outpaintImage('right');
         }}
         className="h-4 w-4"
-        y={info.height / 2 - 16}
+        y={info.height / 2 - 8}
         x={info.width + 8}
         rotation={Math.PI / 2}
       />
@@ -104,7 +100,7 @@ export const OutpaintSelectionUI = track(() => {
         }}
         className="h-4 w-4"
         y={info.height + 8}
-        x={info.width / 2 - 16}
+        x={info.width / 2 - 8}
         rotation={Math.PI}
       />
       <OutpaintInDirectionButton
@@ -112,7 +108,7 @@ export const OutpaintSelectionUI = track(() => {
           outpaintImage('left');
         }}
         className="h-4 w-4"
-        y={info.height / 2 - 16}
+        y={info.height / 2 - 8}
         x={0 - 24}
         rotation={-Math.PI / 2}
       />
