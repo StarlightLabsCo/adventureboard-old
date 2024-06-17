@@ -41,8 +41,8 @@ export async function POST(req: NextRequest) {
   const user = await userResponse.json();
 
   // Parse request body
-  const { image_data, up, right, down, left } = await req.json();
-  if (!image_data) {
+  const { image, up, right, down, left } = await req.json();
+  if (!image) {
     return NextResponse.json({ error: 'No image data' }, { status: 400 });
   }
 
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   // Prepare request to Stability API for outpainting
   const formData = new FormData();
-  formData.append('image', image_data);
+  formData.append('image', image);
   if (up) formData.append('up', up);
   if (right) formData.append('right', right);
   if (down) formData.append('down', down);
