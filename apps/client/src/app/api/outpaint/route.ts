@@ -21,6 +21,8 @@ const s3 = new S3Client({
   },
 });
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   // Authentication
   const accessToken = req.headers.get('Authorization')?.split(' ')[1];

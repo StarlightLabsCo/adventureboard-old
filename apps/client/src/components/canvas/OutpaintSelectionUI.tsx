@@ -1,14 +1,4 @@
-import {
-  AssetRecordType,
-  MediaHelpers,
-  TLAssetId,
-  TLImageShape,
-  TLImageShapeProps,
-  createShapeId,
-  getHashForString,
-  useEditor,
-  useValue,
-} from 'tldraw';
+import { AssetRecordType, MediaHelpers, TLAssetId, TLImageShape, createShapeId, getHashForString, useEditor, useValue } from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
 import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
