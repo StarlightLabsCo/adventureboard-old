@@ -16,7 +16,7 @@ interface Presence {
 }
 
 interface GameState {
-  system: 'd&d5e' | 'pathfinder' | 'other' | null;
+  system: 'd&d5e' | 'pathfinder' | 'daggerheart' | 'other' | null;
   currentPageId: string;
 }
 
