@@ -20,7 +20,8 @@ export class GameInstance extends DurableObject {
 	private host: string | null = null;
 	private campaignId: string | null = null;
 	private gameState: GameState = {
-		currentPageId: 'page:page',
+		system: null,
+		currentPageId: 'page:page', // TODO: when a player connects, we should set their pageId to this pageId
 	};
 
 	// ------ Init ------

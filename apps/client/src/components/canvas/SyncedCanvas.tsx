@@ -38,6 +38,7 @@ import { MovePlayersPanel } from './panels/MovePlayersPanel';
 import { ImageGenTool } from './tools/ImageGenTool';
 import { DMKeyboardShortcutDialog } from './tools/DMKeyboardShortcutDialog';
 import { OutpaintSelectionUI } from './OutpaintSelectionUI';
+import { SystemSelectDialog } from '../ui/SystemSelectDialog';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -80,7 +81,10 @@ export function SyncedCanvas() {
   const presenceMap = useRef(new Map<string, TLInstancePresence>());
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
-  const [gameState, setGameState] = useState<GameState>({ currentPageId: 'page:page' });
+  const [gameState, setGameState] = useState<GameState>({
+    system: null,
+    currentPageId: 'page:page',
+  });
 
   const ws = useWebsocketStore().ws;
   const self = useWebsocketStore().useSelf();
@@ -198,7 +202,12 @@ export function SyncedCanvas() {
     return <div>Not connected</div>;
   }
 
-  return <div className="fixed inset-0 w-[100vw] h-[100vh]">{TldrawMemoized}</div>;
+  return (
+    <div className="fixed inset-0 w-[100vw] h-[100vh]">
+      {!gameState.system && <SystemSelectDialog />}
+      {TldrawMemoized}
+    </div>
+  );
 }
 
 // ----- Handling functions -----

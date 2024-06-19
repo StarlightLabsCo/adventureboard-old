@@ -16,6 +16,7 @@ interface Presence {
 }
 
 interface GameState {
+  system: 'd&d5e' | 'pathfinder' | 'other' | null;
   currentPageId: string;
 }
 

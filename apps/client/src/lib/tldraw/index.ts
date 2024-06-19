@@ -7,6 +7,7 @@ interface TldrawState {
 
 export const useTldrawStore = create<TldrawState>((set, get) => ({
   gameState: {
+    system: null,
     currentPageId: 'page:page',
   },
 }));
