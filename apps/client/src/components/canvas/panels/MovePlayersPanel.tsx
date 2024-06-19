@@ -15,6 +15,7 @@ export const MovePlayersPanel = track(() => {
     if (!ws) return;
 
     const newGameState = {
+      system: null, // TODO: fix
       currentPageId: editor.getCurrentPageId(),
     };
 
