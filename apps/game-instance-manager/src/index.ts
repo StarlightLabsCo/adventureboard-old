@@ -95,8 +95,10 @@ export class GameInstance extends DurableObject {
 		const gameStateJSON = await this.env.ADVENTUREBOARD_KV.get<string>(gameStateKey);
 		console.log(`[LoadGameState] ${gameStateJSON}`);
 		if (!gameStateJSON) {
+			console.log(`[LoadGameState] No game state found. Saving default game state.`);
 			this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
 		} else {
+			console.log(`[LoadGameState] Game state found. Setting local game state.`);
 			this.gameState = JSON.parse(gameStateJSON);
 		}
 	}
