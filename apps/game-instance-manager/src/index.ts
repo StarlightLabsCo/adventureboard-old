@@ -21,7 +21,7 @@ export class GameInstance extends DurableObject {
 	private campaignId: string | null = null;
 	private gameState: GameState = {
 		system: null,
-		currentPageId: 'page:page', // TODO: when a player connects, we should set their pageId to this pageId
+		currentPageId: 'page:page',
 	};
 
 	// ------ Init ------
@@ -245,6 +245,7 @@ export class GameInstance extends DurableObject {
 
 	/* Game State */
 	updateGameState(connectionId: string, gameState: GameState) {
+		console.log(`Updating game state: ${JSON.stringify(gameState)}`);
 		this.gameState = gameState;
 		this.broadcast(JSON.stringify({ type: 'gameState', gameState }), [connectionId]);
 		this.ctx.storage.put('gameState', this.gameState);

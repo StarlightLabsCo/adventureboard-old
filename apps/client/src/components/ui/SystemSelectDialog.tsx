@@ -13,10 +13,6 @@ export function SystemSelectDialog() {
 
   const systems: GameSystem[] = ['d&d5e', 'pathfinder', 'daggerheart', 'other'];
 
-  const handleSelectSystem = (system: GameSystem) => {
-    setSelectedSystem(system);
-  };
-
   const handleStartGame = () => {
     if (selectedSystem) {
       setGameState({ ...gameState, system: selectedSystem });
@@ -44,7 +40,7 @@ export function SystemSelectDialog() {
             <div
               key={system}
               className="relative w-full flex flex-col rounded-md hover:scale-105 transition-all duration-300 cursor-pointer"
-              onClick={() => handleSelectSystem(system)}
+              onClick={() => setSelectedSystem(system)}
             >
               <img src={`/covers/${system}.webp`} className="rounded-md hover:scale-105 transition-all duration-300" />
               {selectedSystem !== system && selectedSystem !== null && <div className="absolute inset-0 bg-black/50 z-[1001]" />}
