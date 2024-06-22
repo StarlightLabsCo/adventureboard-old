@@ -245,7 +245,7 @@ export class GameInstance extends DurableObject {
 
 	/* Game State */
 	updateGameState(connectionId: string, gameState: GameState) {
-		console.log(`Updating game state: ${JSON.stringify(gameState)}`);
+		console.log(`[GameInstance] Updating game state: ${JSON.stringify(gameState)}`);
 		this.gameState = gameState;
 		this.broadcast(JSON.stringify({ type: 'gameState', gameState }), [connectionId]);
 		this.ctx.storage.put('gameState', this.gameState);
