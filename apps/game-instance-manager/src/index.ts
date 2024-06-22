@@ -248,7 +248,10 @@ export class GameInstance extends DurableObject {
 		console.log(`[GameInstance] Updating game state: ${JSON.stringify(gameState)}`);
 		this.gameState = gameState;
 		this.broadcast(JSON.stringify({ type: 'gameState', gameState }), [connectionId]);
-		this.ctx.storage.put('gameState', this.gameState);
+
+		console.log(`[GameInstance] Updating cloudflare KV with new gamestate.`);
+		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
+		this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
 	}
 
 	/* Recovery */
