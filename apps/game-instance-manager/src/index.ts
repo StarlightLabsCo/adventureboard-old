@@ -93,6 +93,7 @@ export class GameInstance extends DurableObject {
 
 		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
 		const gameStateJSON = await this.env.ADVENTUREBOARD_KV.get<string>(gameStateKey);
+		console.log(`[LoadGameState] ${gameStateJSON}`);
 		if (!gameStateJSON) {
 			this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
 		} else {
@@ -244,14 +245,15 @@ export class GameInstance extends DurableObject {
 	}
 
 	/* Game State */
-	updateGameState(connectionId: string, gameState: GameState) {
+	async updateGameState(connectionId: string, gameState: GameState) {
 		console.log(`[GameInstance] Updating game state: ${JSON.stringify(gameState)}`);
 		this.gameState = gameState;
 		this.broadcast(JSON.stringify({ type: 'gameState', gameState }), [connectionId]);
 
 		console.log(`[GameInstance] Updating cloudflare KV with new gamestate.`);
 		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
-		this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
+		await this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(gameState));
+		console.log(`[GameInstance] Updated cloudflare KV`);
 	}
 
 	/* Recovery */
