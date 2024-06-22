@@ -96,7 +96,9 @@ export function SyncedCanvas() {
           handleUpdates(store, data, ws);
           break;
         case 'gameState':
+          console.log(`[SyncedCanvas] Game state update: ${JSON.stringify(data.gameState)}`);
           setGameState(data.gameState);
+          break;
       }
     },
     [store, editor, presenceMap, ws],
