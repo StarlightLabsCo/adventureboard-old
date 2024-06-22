@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { TLStore, TLStoreWithStatus, createTLStore, defaultShapeUtils, Editor, TLInstancePresence, TLComponents } from 'tldraw';
 
 interface TldrawState {
-  gameState: GameState;
   store: TLStore;
   storeWithStatus: TLStoreWithStatus;
   setStoreWithStatus: (status: TLStoreWithStatus) => void;
@@ -16,10 +15,6 @@ interface TldrawState {
 
 export const useTldrawStore = create<TldrawState>((set, get) => {
   return {
-    gameState: {
-      system: null,
-      currentPageId: 'page:page',
-    },
     store: createTLStore({ shapeUtils: [...defaultShapeUtils] }),
     storeWithStatus: { status: 'loading' },
     setStoreWithStatus: (status: TLStoreWithStatus) => set({ storeWithStatus: status }),

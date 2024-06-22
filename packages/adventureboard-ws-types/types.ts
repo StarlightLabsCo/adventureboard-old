@@ -15,9 +15,11 @@ interface Presence {
   // Add other presence-related fields here
 }
 
+type GameSystem = 'd&d5e' | 'pathfinder' | 'daggerheart' | 'other';
+
 interface GameState {
-  system: 'd&d5e' | 'pathfinder' | 'daggerheart' | 'other' | null;
+  system: GameSystem | null;
   currentPageId: string;
 }
 
-export type { Connections, Connection, Presence, GameState };
+export type { Connections, Connection, Presence, GameSystem, GameState };

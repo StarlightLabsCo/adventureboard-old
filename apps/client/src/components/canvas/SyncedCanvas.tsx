@@ -194,6 +194,8 @@ export function SyncedCanvas() {
     return <div>Not connected</div>;
   }
 
+  // const isDarkMode = editor.getUserPreferences();
+
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
       {!gameState.system && <SystemSelectDialog />}

@@ -1,12 +1,35 @@
 import { useState } from 'react';
+import { useGameStore } from '@/lib/game';
+import { GameSystem } from 'adventureboard-ws-types';
+import { useWebsocketStore } from '@/lib/websocket';
 
 export function SystemSelectDialog() {
-  const [selectedSystem, setSelectedSystem] = useState<string>('');
+  const [selectedSystem, setSelectedSystem] = useState<GameSystem | null>(null);
 
-  const systems = ['d&d5e', 'pathfinder', 'daggerheart', 'other'];
+  const gameState = useGameStore((state) => state.gameState);
+  const setGameState = useGameStore((state) => state.setGameState);
 
-  const handleSelectSystem = (system: string) => {
+  const ws = useWebsocketStore((state) => state.ws);
+
+  const systems: GameSystem[] = ['d&d5e', 'pathfinder', 'daggerheart', 'other'];
+
+  const handleSelectSystem = (system: GameSystem) => {
     setSelectedSystem(system);
+  };
+
+  const handleStartGame = () => {
+    if (selectedSystem) {
+      setGameState({ ...gameState, system: selectedSystem });
+
+      if (ws) {
+        ws.send(
+          JSON.stringify({
+            type: 'gameState',
+            gameState: useGameStore.getState().gameState,
+          }),
+        );
+      }
+    }
   };
 
   return (
@@ -21,12 +44,14 @@ export function SystemSelectDialog() {
               onClick={() => handleSelectSystem(system)}
             >
               <img src={`/covers/${system}.webp`} className="rounded-md hover:scale-105 transition-all duration-300" />
-              {selectedSystem !== system && selectedSystem !== '' && <div className="absolute inset-0 bg-black/50 z-[1001]" />}
+              {selectedSystem !== system && selectedSystem !== null && <div className="absolute inset-0 bg-black/50 z-[1001]" />}
             </div>
           ))}
         </div>
         <div className="w-full flex justify-center items-center">
-          <div className="w-full h-full flex justify-center items-center">Start</div>
+          <div className="w-full h-full flex justify-center items-center cursor-pointer" onClick={handleStartGame}>
+            Start
+          </div>
         </div>
       </div>
     </div>

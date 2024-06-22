@@ -1,6 +1,6 @@
 import { TLPageId, track, useEditor } from 'tldraw';
 import { useWebsocketStore } from '@/lib/websocket';
-import { useTldrawStore } from '@/lib/tldraw';
+import { useGameStore } from '@/lib/game';
 
 export const MovePlayersPanel = track(() => {
   const editor = useEditor();
@@ -8,18 +8,18 @@ export const MovePlayersPanel = track(() => {
 
   const connections = useWebsocketStore((state) => state.connections);
 
-  const playersPageId = useTldrawStore((state) => state.gameState.currentPageId);
+  const playersPageId = useGameStore((state) => state.gameState.currentPageId);
   const playersPage = editor.getPage(playersPageId as TLPageId);
 
   const handleTransition = () => {
     if (!ws) return;
 
     const newGameState = {
-      system: null, // TODO: fix
+      ...useGameStore.getState().gameState,
       currentPageId: editor.getCurrentPageId(),
     };
 
-    useTldrawStore.setState({ gameState: newGameState });
+    useGameStore.setState({ gameState: newGameState });
 
     ws.send(
       JSON.stringify({
