@@ -25,7 +25,10 @@ export function SystemSelectDialog() {
         ws.send(
           JSON.stringify({
             type: 'gameState',
-            gameState: useGameStore.getState().gameState,
+            gameState: {
+              ...gameState,
+              system: selectedSystem,
+            },
           }),
         );
       }
