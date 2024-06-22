@@ -26,9 +26,5 @@ export default function Page() {
     return <Loading />;
   }
 
-  return (
-    <>
-      <SyncedCanvas />
-    </>
-  );
+  return <SyncedCanvas />;
 }

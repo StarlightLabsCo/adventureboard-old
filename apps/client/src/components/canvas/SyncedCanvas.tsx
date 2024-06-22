@@ -1,20 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
-import { GameState, Presence } from 'adventureboard-ws-types';
+import { Presence } from 'adventureboard-ws-types';
 
 // Tl draw
 import {
-  TLStoreWithStatus,
   Editor,
   throttle,
   TLStore,
   HistoryEntry,
   TLRecord,
   TLInstancePresence,
-  createTLStore,
-  defaultShapeUtils,
   InstancePresenceRecordType,
   TLAsset,
   TLAssetId,
@@ -39,6 +36,8 @@ import { ImageGenTool } from './tools/ImageGenTool';
 import { DMKeyboardShortcutDialog } from './tools/DMKeyboardShortcutDialog';
 import { OutpaintSelectionUI } from './OutpaintSelectionUI';
 import { SystemSelectDialog } from '../ui/SystemSelectDialog';
+import { useGameStore } from '@/lib/game';
+import { useTldrawStore } from '@/lib/tldraw';
 const Tldraw = dynamic(async () => (await import('tldraw')).Tldraw, { ssr: false });
 const assetUrls = getAssetUrls();
 
@@ -73,21 +72,14 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 };
 
 export function SyncedCanvas() {
-  const [store] = useState(() => createTLStore({ shapeUtils: [...defaultShapeUtils] }));
-  const [storeWithStatus, setStoreWithStatus] = useState<TLStoreWithStatus>({ status: 'loading' });
-  const editorRef = useRef<Editor | null>(null);
-  const [components, setComponents] = useState({});
-
-  const presenceMap = useRef(new Map<string, TLInstancePresence>());
+  const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
-
-  const [gameState, setGameState] = useState<GameState>({
-    system: null,
-    currentPageId: 'page:page',
-  });
 
   const ws = useWebsocketStore().ws;
   const self = useWebsocketStore().useSelf();
+
+  const gameState = useGameStore((state) => state.gameState);
+  const setGameState = useGameStore((state) => state.setGameState);
 
   const handleWebSocketMessage = useCallback(
     (event: MessageEvent) => {
@@ -98,7 +90,7 @@ export function SyncedCanvas() {
           store.loadSnapshot(data.snapshot);
           break;
         case 'presence':
-          handlePresence(store, editorRef, presenceMap, data);
+          handlePresence(store, editor, presenceMap, data);
           break;
         case 'update':
           handleUpdates(store, data, ws);
@@ -107,7 +99,7 @@ export function SyncedCanvas() {
           setGameState(data.gameState);
       }
     },
-    [store, editorRef, presenceMap, ws],
+    [store, editor, presenceMap, ws],
   );
 
   const handleClose = () => {
@@ -148,10 +140,10 @@ export function SyncedCanvas() {
   }, [ws]);
 
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editor) return;
 
-    if (editorRef.current.getCurrentPageId() !== gameState.currentPageId) {
-      editorRef.current.setCurrentPage(gameState.currentPageId as TLPageId);
+    if (editor.getCurrentPageId() !== gameState.currentPageId) {
+      editor.setCurrentPage(gameState.currentPageId as TLPageId);
     }
   }, [gameState]);
 
@@ -167,7 +159,7 @@ export function SyncedCanvas() {
         assetUrls={assetOverrides}
         store={storeWithStatus}
         onMount={(editor) => {
-          editorRef.current = editor;
+          setEditor(editor);
 
           editor.on('event', (event) => {
             // TODO: handle laser pointer and stuff so it's visible
@@ -253,24 +245,19 @@ const sendPresence = throttle((editor: Editor, event: TLPointerEventInfo) => {
 
 const handlePresence = (
   store: TLStore,
-  editorRef: React.RefObject<Editor | null>,
-  presenceMapRef: React.RefObject<Map<string, TLInstancePresence>>,
+  editor: Editor | null,
+  presenceMap: Map<string, TLInstancePresence>,
   data: { connectionId: string; presence: Presence },
 ) => {
-  if (!editorRef.current) {
+  if (!editor) {
     console.log('[SyncedCanvas] Editor not initialized');
-    return;
-  }
-
-  if (!presenceMapRef.current) {
-    console.log('[SyncedCanvas] Presence map not initialized');
     return;
   }
 
   const { connectionId, presence } = data;
   const { cursor, pageId } = presence;
 
-  let peerPresence = presenceMapRef.current.get(connectionId);
+  let peerPresence = presenceMap.get(connectionId);
   if (!peerPresence) {
     const connection = useWebsocketStore.getState().connections[connectionId];
     if (!connection) {
@@ -286,7 +273,7 @@ const handlePresence = (
       cursor: { x: cursor?.x ?? 0, y: cursor?.y ?? 0, type: 'default', rotation: 0 },
     });
 
-    presenceMapRef.current.set(connectionId, peerPresence);
+    presenceMap.set(connectionId, peerPresence);
   } else {
     peerPresence = {
       ...peerPresence,

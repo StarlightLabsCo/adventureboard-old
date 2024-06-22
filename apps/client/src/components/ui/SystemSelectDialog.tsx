@@ -25,6 +25,9 @@ export function SystemSelectDialog() {
             </div>
           ))}
         </div>
+        <div className="w-full flex justify-center items-center">
+          <div className="w-full h-full flex justify-center items-center">Start</div>
+        </div>
       </div>
     </div>
   );
