@@ -254,10 +254,13 @@ const handlePresence = (
   presenceMap: Map<string, TLInstancePresence>,
   data: { connectionId: string; presence: Presence },
 ) => {
+  console.log('----------');
   console.log(`[SyncedCanvas] Handle presence`);
   console.log(`[SyncedCanvas] Editor:`, typeof editor);
+  console.log(`[SyncedCanvas] Editor:`, editor);
   if (editor == null) {
     console.log('[SyncedCanvas] Editor not initialized');
+    console.log('----------');
     return;
   }
 
