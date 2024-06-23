@@ -3,7 +3,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "prettier": "^3.2.5",
+    "prettier": "^3.3.2",
     "turbo": "latest"
   },
   "engines": {
@@ -22,7 +22,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@tldraw/assets": "^2.2.0-canary.7071b5fee24e",
-    "tldraw": "^2.2.0-canary.7071b5fee24e"
+    "@tldraw/assets": "^2.2.1",
+    "tldraw": "^2.2.1"
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
 import { Presence } from 'adventureboard-ws-types';
 
@@ -22,7 +22,7 @@ import {
   TLUiOverrides,
   TLPageId,
   TLUiAssetUrlOverrides,
-  TLEventInfo,
+  getUserPreferences,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -82,6 +82,8 @@ export function SyncedCanvas() {
 
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
+
+  const userPreferences = getUserPreferences();
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -193,10 +195,8 @@ export function SyncedCanvas() {
     return <div>Not connected</div>;
   }
 
-  // const isDarkMode = editor.getUserPreferences();
-
   return (
-    <div className="fixed inset-0 w-[100vw] h-[100vh]">
+    <div className={`fixed inset-0 w-[100vw] h-[100vh] ${userPreferences.isDarkMode ? 'tl-theme__dark' : 'tl-theme__light'}`}>
       {gameState.system == null && <SystemSelectDialog />}
       {TldrawMemoized}
     </div>
