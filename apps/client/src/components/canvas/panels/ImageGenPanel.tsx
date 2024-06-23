@@ -199,7 +199,7 @@ export const ImageGenPanel = track(() => {
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
       <div className="flex flex-col items-center gap-y-2">
-        <div className="text-white">Image Size</div>
+        <div className="text-[var(--color-text-0)]">Image Size</div>
         <div className="h-[100px] w-full flex gap-x-4">
           <div className="relative h-[100px] w-[100px] shrink-0 flex items-center justify-center">
             <div
@@ -210,7 +210,7 @@ export const ImageGenPanel = track(() => {
             </div>
             {showInverse && (
               <div
-                className="absolute border border-dashed border-white/50 hover:border-white transition-all rounded-[var(--radius-2)] cursor-pointer"
+                className="absolute border border-dashed border-[var(--color-grid)] hover:border-[var(--color-text-0)] transition-all rounded-[var(--radius-2)] cursor-pointer"
                 style={{
                   width: `${height}px`,
                   height: `${width}px`,
@@ -222,27 +222,27 @@ export const ImageGenPanel = track(() => {
             )}
           </div>
           <div className="flex flex-col h-full justify-center w-full gap-y-4">
-            <div className="w-full bg-slate-500 flex items-center justify-evenly rounded-full">
+            <div className="w-full bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-blue-500  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isPortrait ? 'bg-[var(--color-primary)]  hover:bg-[var(--color-info)]' : ' hover:bg-slate-400'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(1)}
               >
                 Portrait
               </div>
               <div
-                className={`w-1/3 ${isSquare ? 'bg-blue-500  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isSquare ? 'bg-[var(--color-primary)]  hover:bg-[var(--color-info)]' : ' hover:bg-slate-400'} text-white flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(4)}
               >
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-blue-500  hover:bg-blue-400' : ' hover:bg-slate-400'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isLandscape ? 'bg-[var(--color-primary)]  hover:bg-[var(--color-info)]' : ' hover:bg-slate-400'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(7)}
               >
                 Landscape
               </div>
             </div>
-            <div className="w-full h-[0.5px] bg-white/10 rounded-full" />
+            <div className="w-full h-[0.5px] bg-[var(--color-grid)] rounded-full" />
             <Slider
               value={[centerIndex, aspectRatioIndex]}
               min={0}
@@ -263,9 +263,9 @@ export const ImageGenPanel = track(() => {
         </div>
       </div>
       <div className="flex flex-col items-center gap-y-2">
-        <div className="text-white">Prompt</div>
+        <div className="text-[var(--color-text-0)]">Prompt</div>
         <textarea
-          className="w-full h-[100px] border border-white rounded-[var(--radius-2)] p-2 bg-[var(--color-panel)] text-white"
+          className="w-full h-[100px] border border-[var(--color-grid)] rounded-[var(--radius-2)] p-2 bg-[var(--color-panel)] text-[var(--color-text-0)]"
           placeholder="Describe the image you want to generate"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -273,7 +273,7 @@ export const ImageGenPanel = track(() => {
       </div>
       <div className="flex items-center justify-center">
         <div
-          className={`bg-blue-500 text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+          className={`bg-[var(--color-primary)] text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-[var(--color-info)] cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           onClick={prompt ? generateImage : undefined}
         >
           Generate
