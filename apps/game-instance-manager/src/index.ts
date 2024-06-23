@@ -17,6 +17,7 @@ export class GameInstance extends DurableObject {
 	private schema = createTLSchema();
 	private records: Record<string, TLRecord> = {};
 
+	private initialized = false;
 	private host: string | null = null;
 	private campaignId: string | null = null;
 	private gameState: GameState = {
@@ -31,18 +32,24 @@ export class GameInstance extends DurableObject {
 		this.env = env;
 
 		this.ctx.blockConcurrencyWhile(async () => {
-			try {
-				// TODO: loading connections and loading other info could be in parallel
-				await this.loadConnections();
-
-				await this.loadHost();
-				await this.loadCampaign();
-				await this.loadSnapshot();
-				await this.loadGameState();
-			} catch (e) {
-				console.error(e);
-			}
+			await this.init();
 		});
+	}
+
+	async init() {
+		try {
+			// TODO: loading connections and loading other info could be in parallel
+			await this.loadConnections();
+
+			await this.loadHost();
+			await this.loadCampaign();
+			await this.loadSnapshot();
+			await this.loadGameState();
+
+			this.initialized = true;
+		} catch (e) {
+			console.error(e);
+		}
 	}
 
 	async loadConnections() {
@@ -119,6 +126,11 @@ export class GameInstance extends DurableObject {
 		}
 
 		// Init GameInstance if brand new
+		if (!this.initialized) {
+			console.log(`[Fetch] GameInstance not initialized. Initializing.`);
+			await this.init();
+		}
+
 		if (!this.host) {
 			this.host = discordUser.id;
 			await this.ctx.storage.put('host', this.host);
