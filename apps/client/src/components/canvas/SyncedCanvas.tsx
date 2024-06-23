@@ -152,6 +152,10 @@ export function SyncedCanvas() {
     }
   }, [gameState]);
 
+  useEffect(() => {
+    console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode);
+  }, [userPreferences.isDarkMode]);
+
   const TldrawMemoized = useMemo(() => {
     const customTools = [ImageGenTool];
 
