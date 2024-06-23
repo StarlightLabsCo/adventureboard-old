@@ -17,7 +17,6 @@ export class GameInstance extends DurableObject {
 	private schema = createTLSchema();
 	private records: Record<string, TLRecord> = {};
 
-	private initialized = false;
 	private host: string | null = null;
 	private campaignId: string | null = null;
 	private gameState: GameState = {
@@ -42,11 +41,11 @@ export class GameInstance extends DurableObject {
 			await this.loadConnections();
 
 			await this.loadHost();
-			await this.loadCampaign();
-			await this.loadSnapshot();
-			await this.loadGameState();
-
-			this.initialized = true;
+			if (this.host) {
+				await this.loadCampaign();
+				await this.loadSnapshot();
+				await this.loadGameState();
+			}
 		} catch (e) {
 			console.error(e);
 		}
@@ -100,21 +99,15 @@ export class GameInstance extends DurableObject {
 
 		const gameStateKey = `${this.host}-${this.campaignId}-gameState`;
 		const gameStateJSON = await this.env.ADVENTUREBOARD_KV.get<string>(gameStateKey);
-		console.log(`[LoadGameState] ${gameStateJSON}`);
 		if (!gameStateJSON) {
-			console.log(`[LoadGameState] No game state found. Saving default game state.`);
 			this.env.ADVENTUREBOARD_KV.put(gameStateKey, JSON.stringify(this.gameState));
 		} else {
-			console.log(`[LoadGameState] Game state found. Setting local game state.`);
-			console.log(`[LoadGameState] Game state before: ${JSON.stringify(this.gameState)}`);
 			this.gameState = JSON.parse(gameStateJSON);
-			console.log(`[LoadGameState] Game state after: ${JSON.stringify(this.gameState)}`);
 		}
 	}
 
 	// ------ New Connection ------
 	async fetch(request: Request) {
-		console.log(`[Fetch] Fetching websocket connection`);
 		// Validation
 		if (request.headers.get('Upgrade') !== 'websocket') {
 			return new Response('Expected websocket', { status: 426 });
@@ -125,17 +118,13 @@ export class GameInstance extends DurableObject {
 			return new Response('Unauthorized', { status: 401 });
 		}
 
-		// Init GameInstance if brand new
-		if (!this.initialized) {
-			console.log(`[Fetch] GameInstance not initialized. Initializing.`);
-			await this.init();
-		} else {
-			console.log(`[Fetch] GameInstance already initialized.`);
-		}
-
 		if (!this.host) {
 			this.host = discordUser.id;
 			await this.ctx.storage.put('host', this.host);
+
+			await this.loadCampaign();
+			await this.loadSnapshot();
+			await this.loadGameState();
 		}
 
 		// Init WebSocket
@@ -152,9 +141,6 @@ export class GameInstance extends DurableObject {
 				snapshot: { store: this.records, schema: this.schema.serialize() },
 			}),
 		);
-
-		console.log(`[Fetch] Sending game state to client`);
-		console.log(`[Fetch] Game state: ${JSON.stringify(this.gameState)}`);
 		server.send(
 			JSON.stringify({
 				type: 'gameState',
