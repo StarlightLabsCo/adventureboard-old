@@ -9,7 +9,7 @@ interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimit
 
 const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, SliderProps>(({ className, center, ...props }, ref) => (
   <SliderPrimitive.Root ref={ref} className={cn('group relative flex w-full touch-none select-none items-center', className)} {...props}>
-    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-[var(--color-grid)]">
+    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-[var(--color-text-shadow)]">
       <SliderPrimitive.Range className="absolute h-full bg-[var(--color-primary)] rounded-full" />
     </SliderPrimitive.Track>
     {props.value && props.value.length === 2 ? (
