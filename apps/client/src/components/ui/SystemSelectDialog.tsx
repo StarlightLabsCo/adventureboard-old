@@ -39,7 +39,7 @@ export function SystemSelectDialog() {
           <h1 className="text-[var(--color-text-0)] text-lg font-bold shrink-0">Select a system</h1>
           <div className="w-full h-[1px] bg-[var(--color-overlay)] rounded-full" />
         </div>
-        <div className="flex justify-evenly items-center gap-x-5 w-full h-full px-2">
+        <div className="flex justify-evenly items-center gap-x-5 w-full">
           {systems.map((system) => (
             <div
               key={system}
