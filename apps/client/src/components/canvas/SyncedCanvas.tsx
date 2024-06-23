@@ -84,6 +84,8 @@ export function SyncedCanvas() {
   const setGameState = useGameStore((state) => state.setGameState);
 
   const userPreferences = getUserPreferences();
+  console.log(`[SyncedCanvas] userPreferences`, userPreferences);
+  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode);
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
