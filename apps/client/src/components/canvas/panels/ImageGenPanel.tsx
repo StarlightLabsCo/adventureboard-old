@@ -205,13 +205,13 @@ export const ImageGenPanel = track(() => {
           <div className="text-[var(--color-text-0)]">Mode</div>
           <div className="h-full w-1/2 bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
             <div
-              className={`w-1/2 ${model === 'fast' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-text-3)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
+              className={`h-full w-1/2 ${model === 'fast' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-text-3)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
               onClick={() => setModel('fast')}
             >
               Fast
             </div>
             <div
-              className={`w-1/2 ${model === 'ultra' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-text-3)]'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
+              className={`h-full w-1/2 ${model === 'ultra' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-text-3)]'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
               onClick={() => setModel('ultra')}
             >
               Ultra
