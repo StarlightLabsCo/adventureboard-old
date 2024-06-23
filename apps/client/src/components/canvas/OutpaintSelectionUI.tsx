@@ -1,4 +1,14 @@
-import { AssetRecordType, MediaHelpers, TLAssetId, TLImageShape, createShapeId, getHashForString, useEditor, useValue } from 'tldraw';
+import {
+  AssetRecordType,
+  MediaHelpers,
+  TLAssetId,
+  TLImageShape,
+  createShapeId,
+  getHashForString,
+  getUserPreferences,
+  useEditor,
+  useValue,
+} from 'tldraw';
 import { OutpaintInDirectionButton } from './OutpaintInDirectionButton';
 import { track } from 'tldraw';
 import { useDiscordStore } from '@/lib/discord';
@@ -17,6 +27,7 @@ async function blobToBase64(blob: Blob) {
 
 export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
+  const userPreferences = getUserPreferences();
   const [previewRect, setPreviewRect] = useState<{ deltaX: number; deltaY: number; w: number; h: number } | null>(null);
 
   const info = useValue(
@@ -267,6 +278,7 @@ export const OutpaintSelectionUI = track(() => {
         transform: `rotate(${info.rotation}rad)`,
         pointerEvents: 'all',
       }}
+      className={`${userPreferences.isDarkMode ? 'tl-theme__dark' : 'tl-theme__light'}`}
     >
       {previewRect && (
         <div

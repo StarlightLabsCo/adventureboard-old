@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { useDiscordStore } from '@/lib/discord';
-import { AssetRecordType, MediaHelpers, TLAssetId, createShapeId, getHashForString, throttle, useEditor, track } from 'tldraw';
+import {
+  AssetRecordType,
+  MediaHelpers,
+  TLAssetId,
+  createShapeId,
+  getHashForString,
+  throttle,
+  useEditor,
+  track,
+  getUserPreferences,
+} from 'tldraw';
 
 export const ImageGenPanel = track(() => {
   const editor = useEditor();
