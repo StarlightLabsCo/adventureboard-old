@@ -21,7 +21,10 @@ export function OutpaintInDirectionButton({
 }: OutpaintInDirectionButtonProps) {
   return (
     <div
-      className={cn('absolute cursor-pointer text-white/50 hover:scale-110 hover:text-white transition-transform', className)}
+      className={cn(
+        'absolute cursor-pointer text-[var(--text-color-3)] hover:scale-110 hover:text-[var(--text-color-2)] transition-all',
+        className,
+      )}
       style={{
         left: `${x}px`,
         top: `${y}px`,
