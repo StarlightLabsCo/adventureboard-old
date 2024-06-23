@@ -23,6 +23,7 @@ import {
   TLPageId,
   TLUiAssetUrlOverrides,
   getUserPreferences,
+  getFreshUserPreferences,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -74,8 +75,7 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 
 export function SyncedCanvas() {
   console.log(`[SyncedCanvas] Re-rendering`);
-  const { editor, setEditor, userPreferences, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } =
-    useTldrawStore();
+  const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
@@ -84,6 +84,10 @@ export function SyncedCanvas() {
 
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
+
+  const userPreferences = getFreshUserPreferences();
+  console.log(`[SyncedCanvas] userPreferences`, userPreferences);
+  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode); // never updates
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
