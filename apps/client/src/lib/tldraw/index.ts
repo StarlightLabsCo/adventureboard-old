@@ -1,5 +1,15 @@
 import { create } from 'zustand';
-import { TLStore, TLStoreWithStatus, createTLStore, defaultShapeUtils, Editor, TLInstancePresence, TLComponents } from 'tldraw';
+import {
+  TLStore,
+  TLStoreWithStatus,
+  createTLStore,
+  defaultShapeUtils,
+  Editor,
+  TLInstancePresence,
+  TLComponents,
+  getUserPreferences,
+  TLUserPreferences,
+} from 'tldraw';
 
 interface TldrawState {
   store: TLStore;
@@ -7,6 +17,7 @@ interface TldrawState {
   setStoreWithStatus: (status: TLStoreWithStatus) => void;
   editor: Editor | null;
   setEditor: (editor: Editor | null) => void;
+  userPreferences: TLUserPreferences;
   components: any;
   setComponents: (newComponents: any) => void;
   presenceMap: Map<string, TLInstancePresence>;
@@ -19,6 +30,7 @@ export const useTldrawStore = create<TldrawState>((set, get) => {
     setStoreWithStatus: (status: TLStoreWithStatus) => set({ storeWithStatus: status }),
     editor: null,
     setEditor: (editor: Editor | null) => set({ editor }),
+    userPreferences: getUserPreferences(),
     components: {},
     setComponents: (newComponents: TLComponents) => set({ components: newComponents }),
     presenceMap: new Map<string, TLInstancePresence>(),

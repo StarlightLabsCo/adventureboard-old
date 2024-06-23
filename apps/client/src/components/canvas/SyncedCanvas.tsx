@@ -74,7 +74,8 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 
 export function SyncedCanvas() {
   console.log(`[SyncedCanvas] Re-rendering`);
-  const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
+  const { editor, setEditor, userPreferences, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } =
+    useTldrawStore();
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
@@ -83,10 +84,6 @@ export function SyncedCanvas() {
 
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
-
-  const userPreferences = getUserPreferences();
-  console.log(`[SyncedCanvas] userPreferences`, userPreferences);
-  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode); // never updates
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -151,10 +148,6 @@ export function SyncedCanvas() {
       editor.setCurrentPage(gameState.currentPageId as TLPageId);
     }
   }, [gameState]);
-
-  useEffect(() => {
-    console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode);
-  }, [userPreferences.isDarkMode]);
 
   const TldrawMemoized = useMemo(() => {
     const customTools = [ImageGenTool];
