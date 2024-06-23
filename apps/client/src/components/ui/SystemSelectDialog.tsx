@@ -55,7 +55,7 @@ export function SystemSelectDialog() {
         </div>
         <div className="w-full flex justify-center items-center">
           <div
-            className={`px-4 py-2 rounded-full h-full flex justify-center items-center cursor-pointer ${selectedSystem ? 'bg-[var(--color-primary)] text-[var(--color-text-0)]' : 'bg-[var(--color-muted-1)] text-[var(--color-muted-2)] cursor-not-allowed'}`}
+            className={`px-4 py-2 rounded-full h-full flex justify-center items-center cursor-pointer ${selectedSystem ? 'bg-[var(--color-primary)] text-white' : 'bg-[var(--color-muted-1)] text-[var(--color-muted-2)] cursor-not-allowed'}`}
             onClick={selectedSystem ? handleStartGame : undefined}
           >
             Start
