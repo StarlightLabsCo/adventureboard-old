@@ -19,9 +19,9 @@ export const ImageGenPanel = track(() => {
   ];
 
   const centerIndex: number = 4;
-  const [model, setModel] = useState<'fast' | 'ultra'>('fast');
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
   const [prompt, setPrompt] = useState<string>('');
+  const [model, setModel] = useState<'fast' | 'ultra'>('fast');
 
   const calculateDimensions = (ratio: string) => {
     const [widthRatio, heightRatio] = ratio.split(':').map(Number);
@@ -132,7 +132,7 @@ export const ImageGenPanel = track(() => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex].ratio }),
+      body: JSON.stringify({ prompt, aspect_ratio: aspectRatios[aspectRatioIndex].ratio, model }),
     });
 
     if (!response.ok) {
@@ -276,7 +276,7 @@ export const ImageGenPanel = track(() => {
         <div className="text-[var(--color-text-0)]">Model</div>
         <div className="w-full flex justify-between">
           <div className="text-[var(--color-text-0)]">Mode</div>
-          <div className="h-full w-1/2 bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
+          <div className="h-full w-1/3 bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
             <div
               className={`h-full w-1/2 ${model === 'fast' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-text-3)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
               onClick={() => setModel('fast')}

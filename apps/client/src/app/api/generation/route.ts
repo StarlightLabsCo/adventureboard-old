@@ -42,23 +42,42 @@ export async function POST(req: NextRequest) {
   const user = await userResponse.json();
 
   // Generate image
-  const { prompt, aspect_ratio } = await req.json();
+  const { prompt, aspect_ratio, model } = await req.json();
   console.log(`Generating image in ${aspect_ratio} aspect ratio with prompt: ${prompt}`);
 
-  const formData = new FormData();
-  formData.append('prompt', prompt);
-  formData.append('aspect_ratio', aspect_ratio);
-  formData.append('output_format', 'png');
-  formData.append('model', 'sd3-large-turbo');
+  let stabilityResponse;
+  if (model === 'fast') {
+    const formData = new FormData();
+    formData.append('prompt', prompt);
+    formData.append('aspect_ratio', aspect_ratio);
+    formData.append('output_format', 'png');
+    formData.append('model', 'sd3-large-turbo');
 
-  const stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/sd3', {
-    method: 'POST',
-    headers: {
-      Accept: 'image/*',
-      Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
-    },
-    body: formData,
-  });
+    stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/sd3', {
+      method: 'POST',
+      headers: {
+        Accept: 'image/*',
+        Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
+      },
+      body: formData,
+    });
+  } else if (model === 'ultra') {
+    const formData = new FormData();
+    formData.append('prompt', prompt);
+    formData.append('aspect_ratio', aspect_ratio);
+    formData.append('output_format', 'png');
+
+    stabilityResponse = await fetch('https://api.stability.ai/v2beta/stable-image/generate/ultra', {
+      method: 'POST',
+      headers: {
+        Accept: 'image/*',
+        Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
+      },
+      body: formData,
+    });
+  } else {
+    return NextResponse.json({ error: 'Invalid model' }, { status: 400 });
+  }
 
   if (!stabilityResponse.ok) {
     console.error(stabilityResponse);
