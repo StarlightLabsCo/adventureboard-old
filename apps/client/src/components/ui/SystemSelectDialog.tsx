@@ -33,8 +33,8 @@ export function SystemSelectDialog() {
 
   return (
     <div className="absolute top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex items-center justify-center backdrop-blur-sm">
-      <div className="w-3/4 h-3/4 shrink-0 rounded-[30px] flex flex-col justify-between items-center bg-[var(--color-background)] text-[var(--color-text-0)] px-4 py-2 gap-y-5">
-        <div className="flex w-full justify-between items-center gap-x-4 px-4">
+      <div className="w-3/4 h-3/4 shrink-0 rounded-[30px] flex flex-col justify-between items-center bg-[var(--color-background)] text-[var(--color-text-0)] px-8 py-2 gap-y-5">
+        <div className="flex w-full justify-between items-center gap-x-4">
           <div className="w-full h-[1px] bg-[var(--color-grid)] rounded-full" />
           <div className="flex flex-col shrink-0 items-center gap-y-1">
             <div className="text-[var(--color-text-0)] text-lg font-bold shrink-0">Select a system</div>
@@ -52,7 +52,7 @@ export function SystemSelectDialog() {
               onClick={() => setSelectedSystem(system)}
             >
               <img src={`/covers/${system}.webp`} className="rounded-md hover:scale-105 transition-all duration-300" />
-              {selectedSystem !== system && selectedSystem !== null && <div className="absolute inset-0 bg-black/50 z-[1001]" />}
+              {selectedSystem !== system && selectedSystem !== null && <div className="absolute inset-0 bg-black/50 z-[1001] rounded-md" />}
             </div>
           ))}
         </div>
