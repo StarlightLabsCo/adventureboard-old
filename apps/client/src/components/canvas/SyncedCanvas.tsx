@@ -200,7 +200,7 @@ export function SyncedCanvas() {
 
   return (
     <div className="fixed inset-0 w-[100vw] h-[100vh]">
-      {!gameState.system && <SystemSelectDialog />}
+      {gameState.system == null && <SystemSelectDialog />}
       {TldrawMemoized}
     </div>
   );
