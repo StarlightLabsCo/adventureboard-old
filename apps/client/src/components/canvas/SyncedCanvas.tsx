@@ -73,6 +73,7 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 };
 
 export function SyncedCanvas() {
+  console.log(`[SyncedCanvas] Re-rendering`);
   const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
@@ -85,7 +86,7 @@ export function SyncedCanvas() {
 
   const userPreferences = getUserPreferences();
   console.log(`[SyncedCanvas] userPreferences`, userPreferences);
-  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode);
+  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode); // never updates
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
