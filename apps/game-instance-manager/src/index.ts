@@ -107,6 +107,7 @@ export class GameInstance extends DurableObject {
 
 	// ------ New Connection ------
 	async fetch(request: Request) {
+		console.log(`[Fetch] Fetching websocket connection`);
 		// Validation
 		if (request.headers.get('Upgrade') !== 'websocket') {
 			return new Response('Expected websocket', { status: 426 });
@@ -122,8 +123,8 @@ export class GameInstance extends DurableObject {
 			this.host = discordUser.id;
 			await this.ctx.storage.put('host', this.host);
 
-			await this.loadCampaign();
-			await this.loadSnapshot();
+			// await this.loadCampaign();
+			// await this.loadSnapshot();
 		}
 
 		// Init WebSocket
@@ -140,6 +141,9 @@ export class GameInstance extends DurableObject {
 				snapshot: { store: this.records, schema: this.schema.serialize() },
 			}),
 		);
+
+		console.log(`[Fetch] Sending game state to client`);
+		console.log(`[Fetch] Game state: ${JSON.stringify(this.gameState)}`);
 		server.send(
 			JSON.stringify({
 				type: 'gameState',
