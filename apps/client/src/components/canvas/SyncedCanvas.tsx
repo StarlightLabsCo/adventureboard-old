@@ -250,15 +250,9 @@ const sendPresence = throttle((editor: Editor, event: TLPointerEventInfo) => {
 
 const handlePresence = (
   store: TLStore,
-  editor: Editor | null,
   presenceMap: Map<string, TLInstancePresence>,
   data: { connectionId: string; presence: Presence },
 ) => {
-  if (editor == null) {
-    console.log('[SyncedCanvas] Editor not initialized');
-    return;
-  }
-
   const { connectionId, presence } = data;
   const { cursor, pageId } = presence;
 
