@@ -256,7 +256,7 @@ const handlePresence = (
 ) => {
   console.log(`[SyncedCanvas] Handle presence`);
   console.log(`[SyncedCanvas] Editor:`, typeof editor);
-  if (!editor) {
+  if (editor == null) {
     console.log('[SyncedCanvas] Editor not initialized');
     return;
   }
