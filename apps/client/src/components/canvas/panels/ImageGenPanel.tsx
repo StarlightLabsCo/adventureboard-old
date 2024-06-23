@@ -19,6 +19,7 @@ export const ImageGenPanel = track(() => {
   ];
 
   const centerIndex: number = 4;
+  const [model, setModel] = useState<'fast' | 'ultra'>('fast');
   const [aspectRatioIndex, setAspectRatioIndex] = useState<number>(4);
   const [prompt, setPrompt] = useState<string>('');
 
@@ -198,6 +199,26 @@ export const ImageGenPanel = track(() => {
 
   return (
     <div className="tlui-style-panel__wrapper w-[400px] flex flex-col gap-y-3 py-2 px-3">
+      <div className="flex flex-col items-center gap-y-2">
+        <div className="text-[var(--color-text-0)]">Model</div>
+        <div className="w-full flex justify-between">
+          <div className="text-[var(--color-text-0)]">Mode</div>
+          <div className="w-1/2 bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
+            <div
+              className={`w-1/2 ${model === 'fast' ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-3)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
+              onClick={() => setModel('fast')}
+            >
+              Fast
+            </div>
+            <div
+              className={`w-1/2 ${model === 'ultra' ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-3)]'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
+              onClick={() => setModel('ultra')}
+            >
+              Ultra
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col items-center gap-y-2">
         <div className="text-[var(--color-text-0)]">Image Size</div>
         <div className="h-[100px] w-full flex gap-x-4">
