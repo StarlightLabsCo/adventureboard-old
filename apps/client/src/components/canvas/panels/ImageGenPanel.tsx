@@ -273,7 +273,7 @@ export const ImageGenPanel = track(() => {
       </div>
       <div className="flex items-center justify-center">
         <div
-          className={`bg-[var(--color-primary)] text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-[var(--color-primary)/80] cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+          className={`bg-[var(--color-primary)] text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-blue-400 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           onClick={prompt ? generateImage : undefined}
         >
           Generate
