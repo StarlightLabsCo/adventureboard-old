@@ -204,7 +204,7 @@ export const ImageGenPanel = track(() => {
           <div className="relative h-[100px] w-[100px] shrink-0 flex items-center justify-center">
             <div
               style={{ width: `${width}px`, height: `${height}px` }}
-              className="rounded-[var(--radius-2)] border border-white flex items-center justify-center transition-all z-10"
+              className="rounded-[var(--radius-2)] border border-[var(--color-text-0)] flex items-center justify-center transition-all z-10"
             >
               {currentAspectRatio}
             </div>
