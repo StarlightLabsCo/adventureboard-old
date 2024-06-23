@@ -76,7 +76,7 @@ export function SyncedCanvas() {
   const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
   console.log(`-----------------`);
   console.log(`[SyncedCanvas] Editor:`, typeof editor);
-  console.log(`[SyncedCanvas] Editor:`, JSON.stringify(editor, null, 2));
+  console.log(`[SyncedCanvas] editor isNull`, editor === null);
   console.log(`-----------------`);
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
