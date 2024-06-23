@@ -91,7 +91,7 @@ export function SyncedCanvas() {
         store.loadSnapshot(data.snapshot);
         break;
       case 'presence':
-        handlePresence(store, editor, presenceMap, data);
+        handlePresence(store, presenceMap, data);
         break;
       case 'update':
         handleUpdates(store, data, ws);
