@@ -96,7 +96,6 @@ export function SyncedCanvas() {
           handleUpdates(store, data, ws);
           break;
         case 'gameState':
-          console.log(`[SyncedCanvas] Game state update: ${JSON.stringify(data.gameState)}`);
           setGameState(data.gameState);
           break;
       }
@@ -255,6 +254,8 @@ const handlePresence = (
   presenceMap: Map<string, TLInstancePresence>,
   data: { connectionId: string; presence: Presence },
 ) => {
+  console.log(`[SyncedCanvas] Handle presence`);
+  console.log(`[SyncedCanvas] Editor:`, typeof editor);
   if (!editor) {
     console.log('[SyncedCanvas] Editor not initialized');
     return;
