@@ -129,6 +129,8 @@ export class GameInstance extends DurableObject {
 		if (!this.initialized) {
 			console.log(`[Fetch] GameInstance not initialized. Initializing.`);
 			await this.init();
+		} else {
+			console.log(`[Fetch] GameInstance already initialized.`);
 		}
 
 		if (!this.host) {
