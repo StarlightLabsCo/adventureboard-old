@@ -166,6 +166,8 @@ export function SyncedCanvas() {
           editor.on('event', (event) => {
             // TODO: handle laser pointer and stuff so it's visible
             if (event.name === 'pointer_move' && event.target === 'canvas') {
+              console.log(`[SyncedCanvas] Sending presence`);
+              console.log(`[SyncedCanvas] Editor:`, typeof editor);
               sendPresence(editor, event);
             }
           });

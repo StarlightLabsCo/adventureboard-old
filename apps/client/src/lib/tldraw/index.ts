@@ -1,4 +1,3 @@
-import { GameState } from 'adventureboard-ws-types';
 import { create } from 'zustand';
 import { TLStore, TLStoreWithStatus, createTLStore, defaultShapeUtils, Editor, TLInstancePresence, TLComponents } from 'tldraw';
 
