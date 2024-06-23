@@ -224,19 +224,19 @@ export const ImageGenPanel = track(() => {
           <div className="flex flex-col h-full justify-center w-full gap-y-4">
             <div className="w-full bg-[var(--color-grid)] flex items-center justify-evenly rounded-full">
               <div
-                className={`w-1/3 ${isPortrait ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-shadow)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isPortrait ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-3)]'} text-white rounded-l-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(1)}
               >
                 Portrait
               </div>
               <div
-                className={`w-1/3 ${isSquare ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-shadow)]'} text-white flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isSquare ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-3)]'} text-white flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(4)}
               >
                 Square
               </div>
               <div
-                className={`w-1/3 ${isLandscape ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-shadow)]'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
+                className={`w-1/3 ${isLandscape ? 'bg-[var(--color-primary)]' : ' hover:bg-[var(--color-text-3)]'} text-white rounded-r-full flex items-center justify-center text-xs cursor-pointer`}
                 onClick={() => setAspectRatioIndex(7)}
               >
                 Landscape
@@ -273,7 +273,7 @@ export const ImageGenPanel = track(() => {
       </div>
       <div className="flex items-center justify-center">
         <div
-          className={`bg-[var(--color-primary)] text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:bg-[var(--color-)] cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+          className={`bg-[var(--color-primary)] text-white rounded-[var(--radius-2)] px-4 py-2 ${prompt ? 'hover:scale-105 transition-all cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           onClick={prompt ? generateImage : undefined}
         >
           Generate
