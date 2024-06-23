@@ -87,27 +87,24 @@ export function SyncedCanvas() {
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
 
-  const handleWebSocketMessage = useCallback(
-    (event: MessageEvent) => {
-      const data = JSON.parse((event as MessageEvent).data);
-      switch (data.type) {
-        case 'init':
-        case 'recovery':
-          store.loadSnapshot(data.snapshot);
-          break;
-        case 'presence':
-          handlePresence(store, editor, presenceMap, data);
-          break;
-        case 'update':
-          handleUpdates(store, data, ws);
-          break;
-        case 'gameState':
-          setGameState(data.gameState);
-          break;
-      }
-    },
-    [store, editor, presenceMap, ws],
-  );
+  const handleWebSocketMessage = (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    switch (data.type) {
+      case 'init':
+      case 'recovery':
+        store.loadSnapshot(data.snapshot);
+        break;
+      case 'presence':
+        handlePresence(store, editor, presenceMap, data);
+        break;
+      case 'update':
+        handleUpdates(store, data, ws);
+        break;
+      case 'gameState':
+        setGameState(data.gameState);
+        break;
+    }
+  };
 
   const handleClose = () => {
     setStoreWithStatus({
