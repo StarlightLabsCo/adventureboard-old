@@ -33,10 +33,10 @@ export function SystemSelectDialog() {
 
   return (
     <div className="absolute top-0 left-0 w-screen h-screen bg-black/50 z-[1000] flex items-center justify-center backdrop-blur-sm">
-      <div className="w-3/4 h-3/4 shrink-0 rounded-[30px] flex flex-col items-center bg-[var(--color-background)] text-[var(--color-text-0)]">
+      <div className="w-3/4 h-3/4 shrink-0 rounded-[30px] flex flex-col items-center bg-[var(--color-background)] text-[var(--color-text-0)] px-4 py-2">
         <div className="flex w-full justify-between items-center gap-x-4">
           <div className="w-full h-[1px] bg-[var(--color-overlay)] rounded-full" />
-          <h1 className="text-[var(--color-text-0)] text-lg font-bold">Select a system</h1>
+          <h1 className="text-[var(--color-text-0)] text-lg font-bold shrink-0">Select a system</h1>
           <div className="w-full h-[1px] bg-[var(--color-overlay)] rounded-full" />
         </div>
         <div className="flex justify-evenly items-center gap-x-5 w-full h-full px-2">
@@ -55,7 +55,7 @@ export function SystemSelectDialog() {
         </div>
         <div className="w-full flex justify-center items-center">
           <div
-            className={`px-4 py-2 rounded-full h-full flex justify-center items-center cursor-pointer ${selectedSystem ? 'bg-[var(--color-panel)] text-[var(--color-text-1)]' : 'bg-[var(--color-muted-1)] text-[var(--color-muted-2)] cursor-not-allowed'}`}
+            className={`px-4 py-2 rounded-full h-full flex justify-center items-center cursor-pointer ${selectedSystem ? 'bg-[var(--color-primary)] text-[var(--color-text-0)]' : 'bg-[var(--color-muted-1)] text-[var(--color-muted-2)] cursor-not-allowed'}`}
             onClick={selectedSystem ? handleStartGame : undefined}
           >
             Start
