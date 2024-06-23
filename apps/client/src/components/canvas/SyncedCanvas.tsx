@@ -23,7 +23,6 @@ import {
   TLPageId,
   TLUiAssetUrlOverrides,
   getUserPreferences,
-  getFreshUserPreferences,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -85,7 +84,7 @@ export function SyncedCanvas() {
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
 
-  const userPreferences = getFreshUserPreferences();
+  const userPreferences = getUserPreferences();
   console.log(`[SyncedCanvas] userPreferences`, userPreferences);
   console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode); // never updates
 
