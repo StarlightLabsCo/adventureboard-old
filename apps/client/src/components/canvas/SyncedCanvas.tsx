@@ -22,6 +22,7 @@ import {
   TLUiOverrides,
   TLPageId,
   TLUiAssetUrlOverrides,
+  TLEventInfo,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -73,6 +74,11 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 
 export function SyncedCanvas() {
   const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
+  console.log(`-----------------`);
+  console.log(`[SyncedCanvas] Editor:`, typeof editor);
+  console.log(`[SyncedCanvas] Editor:`, JSON.stringify(editor, null, 2));
+  console.log(`-----------------`);
+
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
   const ws = useWebsocketStore().ws;
@@ -163,10 +169,7 @@ export function SyncedCanvas() {
           setEditor(editor);
 
           editor.on('event', (event) => {
-            // TODO: handle laser pointer and stuff so it's visible
             if (event.name === 'pointer_move' && event.target === 'canvas') {
-              console.log(`[SyncedCanvas] Sending presence`);
-              console.log(`[SyncedCanvas] Editor:`, typeof editor);
               sendPresence(editor, event);
             }
           });
@@ -254,13 +257,8 @@ const handlePresence = (
   presenceMap: Map<string, TLInstancePresence>,
   data: { connectionId: string; presence: Presence },
 ) => {
-  console.log('----------');
-  console.log(`[SyncedCanvas] Handle presence`);
-  console.log(`[SyncedCanvas] Editor:`, typeof editor);
-  console.log(`[SyncedCanvas] Editor:`, editor);
   if (editor == null) {
     console.log('[SyncedCanvas] Editor not initialized');
-    console.log('----------');
     return;
   }
 
