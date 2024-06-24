@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
 import { Presence } from 'adventureboard-ws-types';
 
@@ -23,6 +23,7 @@ import {
   TLPageId,
   TLUiAssetUrlOverrides,
   getUserPreferences,
+  TLUiEventHandler,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -74,7 +75,18 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 
 export function SyncedCanvas() {
   console.log(`[SyncedCanvas] Re-rendering`);
-  const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
+  const {
+    editor,
+    setEditor,
+    isDarkMode,
+    setIsDarkMode,
+    store,
+    storeWithStatus,
+    setStoreWithStatus,
+    components,
+    setComponents,
+    presenceMap,
+  } = useTldrawStore();
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
@@ -83,10 +95,6 @@ export function SyncedCanvas() {
 
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
-
-  const userPreferences = getUserPreferences();
-  console.log(`[SyncedCanvas] userPreferences`, userPreferences);
-  console.log(`[SyncedCanvas] userPreferences.isDarkMode`, userPreferences.isDarkMode); // never updates
 
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data);
@@ -152,6 +160,13 @@ export function SyncedCanvas() {
     }
   }, [gameState]);
 
+  const handleUiEvent = useCallback<TLUiEventHandler>((name, data: any) => {
+    console.log(`[SyncedCanvas] handleUiEvent`, name, data);
+    // if (name === '') {
+    //   setIsDarkMode(data.value === 'dark');
+    // }
+  }, []);
+
   const TldrawMemoized = useMemo(() => {
     const customTools = [ImageGenTool];
 
@@ -163,6 +178,7 @@ export function SyncedCanvas() {
         overrides={overrides}
         assetUrls={assetOverrides}
         store={storeWithStatus}
+        onUiEvent={handleUiEvent}
         onMount={(editor) => {
           setEditor(editor);
 
@@ -199,7 +215,7 @@ export function SyncedCanvas() {
   }
 
   return (
-    <div className={`fixed inset-0 w-[100vw] h-[100vh] ${userPreferences.isDarkMode ? 'tl-theme__dark' : 'tl-theme__light'}`}>
+    <div className={`fixed inset-0 w-[100vw] h-[100vh] ${isDarkMode ? 'tl-theme__dark' : 'tl-theme__light'}`}>
       {gameState.system == null && <SystemSelectDialog />}
       {TldrawMemoized}
     </div>

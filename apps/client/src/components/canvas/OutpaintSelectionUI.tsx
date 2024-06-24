@@ -278,7 +278,6 @@ export const OutpaintSelectionUI = track(() => {
         transform: `rotate(${info.rotation}rad)`,
         pointerEvents: 'all',
       }}
-      // className={`${userPreferences.isDarkMode ? 'tl-theme__dark' : 'tl-theme__light'}`}
     >
       {previewRect && (
         <div
