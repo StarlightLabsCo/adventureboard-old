@@ -160,12 +160,15 @@ export function SyncedCanvas() {
     }
   }, [gameState]);
 
-  const handleUiEvent = useCallback<TLUiEventHandler>((name, data: any) => {
-    console.log(`[SyncedCanvas] handleUiEvent`, name, data);
-    // if (name === '') {
-    //   setIsDarkMode(data.value === 'dark');
-    // }
-  }, []);
+  const handleUiEvent = useCallback<TLUiEventHandler>(
+    (name, data: any) => {
+      console.log(`[SyncedCanvas] handleUiEvent`, name, data);
+      if (name === 'toggle-dark-mode') {
+        setIsDarkMode(!isDarkMode);
+      }
+    },
+    [isDarkMode, setIsDarkMode],
+  );
 
   const TldrawMemoized = useMemo(() => {
     const customTools = [ImageGenTool];
