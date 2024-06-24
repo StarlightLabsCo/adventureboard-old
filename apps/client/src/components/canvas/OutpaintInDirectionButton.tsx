@@ -22,7 +22,7 @@ export function OutpaintInDirectionButton({
   return (
     <div
       className={cn(
-        'absolute cursor-pointer text-[var(--color-text-1)] hover:scale-110 hover:text-[var(--color-text-0)] transition-colors z-index[var(--layer-above)]',
+        'absolute cursor-pointer text-[var(--color-text-1)] hover:scale-110 hover:text-[var(--color-text-0)] transition-colors z-[var(--layer-above)]',
         className,
       )}
       style={{
