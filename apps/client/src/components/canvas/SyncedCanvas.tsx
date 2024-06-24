@@ -77,7 +77,7 @@ export function SyncedCanvas() {
   const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
 
   const isDarkMode = useValue(
-    'dark mode',
+    'isDarkMode',
     () => {
       const userPreferences = getUserPreferences();
       return userPreferences?.isDarkMode ?? false;
