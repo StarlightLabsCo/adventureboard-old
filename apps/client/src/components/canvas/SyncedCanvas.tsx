@@ -22,7 +22,6 @@ import {
   TLUiOverrides,
   TLPageId,
   TLUiAssetUrlOverrides,
-  getUserPreferences,
   TLUiEventHandler,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
@@ -164,6 +163,8 @@ export function SyncedCanvas() {
     (name, data: any) => {
       console.log(`[SyncedCanvas] handleUiEvent`, name, data);
       if (name === 'toggle-dark-mode') {
+        console.log(`[SyncedCanvas] toggle-dark-mode, current isDarkMode: ${isDarkMode}`);
+        console.log(`[SyncedCanvas] toggle-dark-mode, setting to: ${!isDarkMode}`);
         setIsDarkMode(!isDarkMode);
       }
     },
