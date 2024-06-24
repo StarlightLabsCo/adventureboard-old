@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useWebsocketStore } from '@/lib/websocket';
 import { Presence } from 'adventureboard-ws-types';
 
@@ -22,7 +22,8 @@ import {
   TLUiOverrides,
   TLPageId,
   TLUiAssetUrlOverrides,
-  TLUiEventHandler,
+  useValue,
+  getUserPreferences,
 } from 'tldraw';
 import { getAssetUrls } from '@tldraw/assets/selfHosted';
 import 'tldraw/tldraw.css';
@@ -73,19 +74,16 @@ const assetOverrides: TLUiAssetUrlOverrides = {
 };
 
 export function SyncedCanvas() {
-  console.log(`[SyncedCanvas] Re-rendering`);
-  const {
-    editor,
-    setEditor,
-    isDarkMode,
-    setIsDarkMode,
-    store,
-    storeWithStatus,
-    setStoreWithStatus,
-    components,
-    setComponents,
-    presenceMap,
-  } = useTldrawStore();
+  const { editor, setEditor, store, storeWithStatus, setStoreWithStatus, components, setComponents, presenceMap } = useTldrawStore();
+
+  const isDarkMode = useValue(
+    'dark mode',
+    () => {
+      const userPreferences = getUserPreferences();
+      return userPreferences?.isDarkMode ?? false;
+    },
+    [],
+  );
 
   let pendingChanges: HistoryEntry<TLRecord>[] = [];
 
@@ -159,18 +157,6 @@ export function SyncedCanvas() {
     }
   }, [gameState]);
 
-  const handleUiEvent = useCallback<TLUiEventHandler>(
-    (name, data: any) => {
-      console.log(`[SyncedCanvas] handleUiEvent`, name, data);
-      if (name === 'toggle-dark-mode') {
-        console.log(`[SyncedCanvas] toggle-dark-mode, current isDarkMode: ${isDarkMode}`);
-        console.log(`[SyncedCanvas] toggle-dark-mode, setting to: ${!isDarkMode}`);
-        setIsDarkMode(!isDarkMode);
-      }
-    },
-    [isDarkMode, setIsDarkMode],
-  );
-
   const TldrawMemoized = useMemo(() => {
     const customTools = [ImageGenTool];
 
@@ -182,7 +168,6 @@ export function SyncedCanvas() {
         overrides={overrides}
         assetUrls={assetOverrides}
         store={storeWithStatus}
-        onUiEvent={handleUiEvent}
         onMount={(editor) => {
           setEditor(editor);
 

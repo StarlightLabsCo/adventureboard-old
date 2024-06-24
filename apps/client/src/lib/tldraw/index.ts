@@ -17,8 +17,6 @@ interface TldrawState {
   setStoreWithStatus: (status: TLStoreWithStatus) => void;
   editor: Editor | null;
   setEditor: (editor: Editor | null) => void;
-  isDarkMode: boolean;
-  setIsDarkMode: (isDarkMode: boolean) => void;
   components: any;
   setComponents: (newComponents: any) => void;
   presenceMap: Map<string, TLInstancePresence>;
@@ -31,8 +29,6 @@ export const useTldrawStore = create<TldrawState>((set, get) => {
     setStoreWithStatus: (status: TLStoreWithStatus) => set({ storeWithStatus: status }),
     editor: null,
     setEditor: (editor: Editor | null) => set({ editor }),
-    isDarkMode: getUserPreferences()?.isDarkMode ?? false,
-    setIsDarkMode: (isDarkMode: boolean) => set({ isDarkMode }),
     components: {},
     setComponents: (newComponents: TLComponents) => set({ components: newComponents }),
     presenceMap: new Map<string, TLInstancePresence>(),
