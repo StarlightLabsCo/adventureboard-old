@@ -276,6 +276,7 @@ export const OutpaintSelectionUI = track(() => {
         transformOrigin: 'top left',
         transform: `rotate(${info.rotation}rad)`,
         pointerEvents: 'all',
+        zIndex: 'var(--layer-canvas)',
       }}
     >
       {previewRect && (
