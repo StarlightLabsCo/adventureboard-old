@@ -27,7 +27,6 @@ async function blobToBase64(blob: Blob) {
 
 export const OutpaintSelectionUI = track(() => {
   const editor = useEditor();
-  const userPreferences = getUserPreferences();
   const [previewRect, setPreviewRect] = useState<{ deltaX: number; deltaY: number; w: number; h: number } | null>(null);
 
   const info = useValue(
